@@ -38,7 +38,7 @@ Le préréglage choisit les modules : les fonctions que le kit ajoute. Tu pourra
 | `expert` | espace IA | Passes expertes et sessions à part | | | | ✓ |
 | ▌ `pistes` | espace IA | Plusieurs axes de travail sur le même dépôt (§ 5) | | | ✓ | ✓ |
 
-**En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une quarantaine de fichiers
+▌ **En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une trentaine de fichiers
 qu'un débutant n'a pas à lire. Dans un groupe, les camarades n'ont besoin que du dépôt.
 
 Dans les commandes, « Standard » s'écrit `perso-standard`, et « Complet », `perso-complet`.

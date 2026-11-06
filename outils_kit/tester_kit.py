@@ -183,13 +183,19 @@ SCENARIOS: list[dict] = [
      + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md", "outils/clone_c.py", "outils/archiver.py",
         OUTIL_PISTES],
      "jamais_cite": CITES_PISTES,
+     # sans relectures : une clôture courte, et les 7 titres que lit extraire_piste.py
+     "contient": {"conception/CONTEXTE.md": ["**Prochaine étape**", "## 7. Prochaine séance"]},
+     "sans": {"conception/CONTEXTE.md": ["Ce qu'a fait", "États d'avant", "METHODE.md` en entier"],
+              "conception/kit/gabarits/OUVERTURES_A.md": ["METHODE.md` en entier"],
+              "conception/kit/prompts/PREMIERE_A.md": ["METHODE.md` ; le § 0"]},
      "refus": {"piste": "analyse"}},
     {"nom": "espace-perso-standard", "data": {"couche": "espace", "preset": "perso-standard", "public": True},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
      + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
      "absents": espace_archives() + espace_expert() + ["conception/kit/MUTATION.md", "outils/archiver.py"],
-     # dépôt public : les parades anonymes sont données
-     "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"]},
+     # dépôt public : les parades anonymes sont données ; avec relectures, la clôture complète
+     "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"],
+                  "conception/CONTEXTE.md": ["Ce qu'a fait la", "États d'avant"]},
      "sans": {"conception/kit/MACHINE.md": ["Le dépôt est privé"]}},
     {"nom": "espace-perso-complet", "data": {"couche": "espace", "preset": "perso-complet"},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_archives()

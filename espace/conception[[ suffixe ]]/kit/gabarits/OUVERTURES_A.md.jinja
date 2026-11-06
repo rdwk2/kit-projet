@@ -21,8 +21,8 @@ automatiquement : «non | oui, «quand»».*
 - `main` et le miroir à `«sha»` ; «les jalons complets» ; «les PR ouvertes, ou aucune».
 - **Le jalon en cours** : «où en sont son cadrage et son brief ; ce [[ que_humain ]] a tranché, et où c'est
   écrit».
-- «Ce qui attend une lecture ou une réponse : [% if 'expert' in modules %]un rapport de session à part, [% endif %]un relais, une PR de
-  l'autre piste.»
+- «Ce qui attend une lecture ou une réponse : [% if 'expert' in modules %]un rapport de session à part, [% endif %][% if 'pistes' in modules %]un relais, une PR de
+  l'autre piste[% else %]une PR[% endif %].»
 
 ## 1. Avant d'ouvrir — à faire par [[ humain ]], dans l'ordre
 
@@ -64,24 +64,29 @@ automatiquement : «non | oui, «quand»».*
 > Projet [[ projet ]], piste [[ piste ]]. Tu es la «n»ᵉ A (conception). «L'état en deux phrases :
 > ce qui est complet, `main` = `«sha»`, le jalon en cours.» Ta mission : «les étapes, dans l'ordre».
 >
-> Lis `conception[[ suffixe ]]/kit/METHODE.md` en entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis
-> `CONTEXTE.md` en entier et les ★ de `kit/LECONS.md`[% if piste != 'principale' %], puis `kit/PISTES.md`[% endif %], et applique-les ; puis «les pièces de la mission : le cadrage, les notes,
+> [% if 'relectures' in modules %]Lis `conception[[ suffixe ]]/kit/METHODE.md` en entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis
+> `CONTEXTE.md` en entier et les ★ de `kit/LECONS.md`[% else %]▌ Lis le § 0 de `conception[[ suffixe ]]/kit/METHODE.md`, puis
+> `CONTEXTE.md` en entier[% endif %][% if piste != 'principale' %], puis `kit/PISTES.md`[% endif %], et applique-les ; puis «les pièces de la mission : le cadrage, les notes,
 > et dans le miroir `docs/ROADMAP.md` et les fiches de décision, avec leurs sections». Ta mission est au
-> § 7 du CONTEXTE, « «jalon» — mission de la «n»ᵉ A ».
+> § 7 du CONTEXTE, [% if 'relectures' in modules %]« «jalon» — mission de la «n»ᵉ A »[% else %]▌ « Prochaine étape »[% endif %].
 >
 > Si ta conversation a été résumée automatiquement, dis-le en tête de ton message, et propose-moi de
 > passer à une conversation neuve.
 >
 > Vérifie d'abord l'état dans les fichiers :
 > - `main` distant (`v_for_cowork[[ suffixe ]]/ETAT_DISTANT.txt`) et miroir à `«sha»` ;
+[% if 'relectures' in modules -%]
 > - les PR ouvertes et leurs têtes, dans le même fichier («la tête de la #… a-t-elle bougé depuis `«sha»` ?») ;
 > - les empreintes : `CONTEXTE.md` = `«empreinte»…` ; «les autres pièces vivantes et celles de la mission :
 >   `fichier` = `«empreinte»…`» ;
+[% endif -%]
 [% if 'archives' in modules %]> - l'archivage de la «n−1»ᵉ A fait ;
 [% endif -%]
 [% if piste != 'principale' %]> - les empreintes des extraits reçus de la piste principale (§ 2 du CONTEXTE) ;
 [% endif -%]
+[% if 'relectures' in modules -%]
 > - en me le demandant : «la lecture de `…`, la tête d'une PR de l'autre piste».
+[% endif -%]
 >
 > «Ce [[ que_humain ]] a fait ou décidé depuis la clôture.» Puis «première étape de la mission».
 [% if 'expert' in modules %]

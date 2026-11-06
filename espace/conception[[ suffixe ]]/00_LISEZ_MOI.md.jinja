@@ -24,9 +24,9 @@ Ils se rafraîchissent à chaque mise à jour du kit (`copier recopy`) et ne se 
 
 | Fichier | Contenu | Quand le lire |
 |---|---|---|
-| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | **à l'ouverture**, en entier, avant `CONTEXTE.md` |
-| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | **à l'ouverture** (§ 0) ; le reste avant un passage de main |
-| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ **à l'ouverture** ; le thème concerné **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | [% if 'relectures' in modules %]**à l'ouverture**, en entier, avant `CONTEXTE.md`[% else %]▌ le § 0 **à l'ouverture**, avant `CONTEXTE.md` ; le reste, quand il sert[% endif %] |
+| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | [% if 'relectures' in modules %]**à l'ouverture** (§ 0) ; le reste avant un passage de main[% else %]▌ **avant un passage de main**[% endif %] |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | [% if 'relectures' in modules %]les ★ **à l'ouverture** ; le thème concerné[% else %]▌ les ★ et le thème concerné[% endif %] **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
 | `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | **avant de donner des commandes** à [[ humain ]] |
 | `kit/VOCABULAIRE.md` | les termes du workflow et du kit | **à la demande** |
 | `kit/IDIOMES_DEV.md` | les idiomes de développement, par niveau | **avant le premier brief** qui crée du code ; pour expliquer du code à [[ humain ]] |
