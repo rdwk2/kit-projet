@@ -10,7 +10,7 @@ github: alice/mon-projet   # compte/nom
 # (perso-standard est le préréglage « Standard », perso-complet le préréglage « Complet »)
 preset: solo-leger
 # avec preset: personnalise, la liste des modules :
-# modules_choisis: [relectures, archives]
+# modules_choisis: [relectures, pistes, archives]
 langage: python            # python | autre
 racine: ~/dev/mon-projet   # le dossier de l'espace (couche espace seulement)
 public: false              # true si le dépôt est (ou sera) public

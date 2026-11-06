@@ -21,6 +21,7 @@ Ce que vérifie chaque scénario :
 - update (dépôt) : une nouveauté du kit arrive, une modification locale reste ;
 - extraction entre pistes : le CONTEXTE généré suit le plan fixe d'extraire_piste.py ;
 - chaque renvoi à une entrée de kit/MACHINE.md existe ;
+- un préréglage ne cite aucun fichier qu'il n'a pas, et refuse une piste sans le module pistes ;
 - un `racine` en `~/…` donne un chemin absolu aux scripts ;
 - avec --complet : uv sync, uv sync --locked et just check dans chaque dépôt Python généré,
   avec un module qui écrit comme un mathématicien (`A`, `X`, `l`, lettres grecques).
@@ -115,13 +116,10 @@ def espace_socle(s: str = "") -> list[str]:
         f"{c}/passations/LISEZ_MOI.md",
         f"{c}/kit/METHODE.md", f"{c}/kit/MODELES_ET_EFFORTS.md", f"{c}/kit/LECONS.md",
         f"{c}/kit/MACHINE.md", f"{c}/kit/VOCABULAIRE.md", f"{c}/kit/IDIOMES_DEV.md",
-        f"{c}/kit/PISTES.md",
         f"{c}/kit/gabarits/LISEZ_MOI.md", f"{c}/kit/gabarits/BRIEF_JALON.md",
         f"{c}/kit/gabarits/OUVERTURES_A.md", f"{c}/kit/gabarits/CONSIGNE_CODE.md",
         f"{c}/kit/gabarits/FEU_VERT_PLAN.md", f"{c}/kit/gabarits/CORRECTIFS.md",
         f"{c}/kit/gabarits/ARBITRAGE.md", f"{c}/kit/gabarits/REVUE_PR.md",
-        f"{c}/kit/gabarits/RELAIS.md", f"{c}/kit/gabarits/REPONSE_RELAIS.md",
-        f"{c}/kit/gabarits/MESSAGE_FUSION_PISTE.md", f"{c}/kit/gabarits/NOTE_PISTE.md",
         f"{c}/kit/prompts/PREMIERE_A.md", f"{c}/kit/prompts/CONSOLIDATION_KIT.md",
         f"{c}/kit/prompts/SESSION_EXPLICATION.md",
         f"v_for_cowork{s}/LISEZ_MOI.md",
@@ -130,9 +128,11 @@ def espace_socle(s: str = "") -> list[str]:
 
 ESPACE_RACINE = [
     "00_LISEZ_MOI_ESPACE.md", "outils/espace.py", "outils/diff_pr.py", "outils/miroir.py",
-    "outils/compte_rendu_pr.py", "outils/revue_pr.py", "outils/extraire_piste.py",
-    "outils/tete_pr.py",
+    "outils/compte_rendu_pr.py", "outils/revue_pr.py", "outils/tete_pr.py",
 ]
+OUTIL_PISTES = "outils/extraire_piste.py"
+# Ce qu'un projet sans le module pistes ne cite nulle part : il n'a pas ces fichiers.
+CITES_PISTES = ["PISTES.md", "NOTE_PISTE", "RELAIS.md", "MESSAGE_FUSION_PISTE", "extraire_piste"]
 
 
 def espace_relectures(s: str = "") -> list[str]:
@@ -142,6 +142,12 @@ def espace_relectures(s: str = "") -> list[str]:
         f"{c}/kit/gabarits/ANNEXE_B.md", f"{c}/kit/gabarits/ANNEXE_C.md",
         f"{c}/kit/gabarits/DEPART_B.md", f"{c}/kit/gabarits/DEMARRAGE_C.md",
     ]
+
+
+def espace_pistes(s: str = "") -> list[str]:
+    g = f"conception{s}/kit/gabarits"
+    return [f"conception{s}/kit/PISTES.md", f"{g}/RELAIS.md", f"{g}/REPONSE_RELAIS.md",
+            f"{g}/MESSAGE_FUSION_PISTE.md", f"{g}/NOTE_PISTE.md"]
 
 
 def espace_archives(s: str = "") -> list[str]:
@@ -173,19 +179,22 @@ SCENARIOS: list[dict] = [
      "absents": DEPOT_PYTHON + DEPOT_DONNEES + DEPOT_GROUPE},
     {"nom": "espace-solo-leger", "data": {"couche": "espace", "preset": "solo-leger"},
      "presents": espace_socle() + ESPACE_RACINE,
-     "absents": espace_relectures() + espace_archives() + espace_expert()
-     + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md", "outils/clone_c.py", "outils/archiver.py"]},
+     "absents": espace_relectures() + espace_archives() + espace_expert() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md", "outils/clone_c.py", "outils/archiver.py",
+        OUTIL_PISTES],
+     "jamais_cite": CITES_PISTES,
+     "refus": {"piste": "analyse"}},
     {"nom": "espace-perso-standard", "data": {"couche": "espace", "preset": "perso-standard", "public": True},
-     "presents": espace_socle() + ESPACE_RACINE + espace_relectures()
-     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py"],
+     "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
      "absents": espace_archives() + espace_expert() + ["conception/kit/MUTATION.md", "outils/archiver.py"],
      # dépôt public : les parades anonymes sont données
      "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"]},
      "sans": {"conception/kit/MACHINE.md": ["Le dépôt est privé"]}},
     {"nom": "espace-perso-complet", "data": {"couche": "espace", "preset": "perso-complet"},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_archives()
-     + espace_expert() + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md",
-                          "outils/clone_c.py", "outils/archiver.py"],
+     + espace_expert() + espace_pistes() + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md",
+                                            "outils/clone_c.py", "outils/archiver.py", OUTIL_PISTES],
      "absents": [], "recopy": True,
      # dépôt privé (défaut) : pas de parade anonyme
      "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "Le dépôt est privé"]},
@@ -193,9 +202,20 @@ SCENARIOS: list[dict] = [
      # puis une piste « analyse » dans la même racine
      "piste": {"data": {"couche": "espace", "preset": "perso-complet", "piste": "analyse"},
                "presents": espace_socle("_analyse") + espace_relectures("_analyse")
-               + espace_archives("_analyse") + espace_expert("_analyse")
+               + espace_archives("_analyse") + espace_expert("_analyse") + espace_pistes("_analyse")
                + [".copier-answers.espace_analyse.yml"],
                "absents": []}},
+    # Le module pistes sans relectures : extraire_piste.py doit lire le CONTEXTE de ce préréglage.
+    {"nom": "espace-pistes-seules", "data": {"couche": "espace", "preset": "personnalise",
+                                              "modules_choisis": ["pistes"]},
+     "presents": espace_socle() + ESPACE_RACINE + espace_pistes() + [OUTIL_PISTES],
+     "absents": espace_relectures() + espace_archives() + espace_expert()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py"],
+     "piste": {"data": {"couche": "espace", "preset": "personnalise", "modules_choisis": ["pistes"],
+                        "piste": "analyse"},
+               "presents": espace_socle("_analyse") + espace_pistes("_analyse")
+               + [".copier-answers.espace_analyse.yml"],
+               "absents": espace_relectures("_analyse")}},
 ]
 
 
@@ -270,6 +290,27 @@ def verifier_renvois(dest: Path) -> list[str]:
                 if renvoi not in connues:
                     erreurs.append(f"renvoi sans entrée : {f.relative_to(dest).as_posix()}:{n}: {renvoi}")
     return erreurs
+
+
+def verifier_jamais_cite(dest: Path, noms: list[str]) -> list[str]:
+    """Un fichier qu'un préréglage n'a pas n'y est cité nulle part : un renvoi ne mène pas dans le vide."""
+    erreurs = []
+    for f in sorted(dest.rglob("*")):
+        if not f.is_file() or f.suffix not in {".md", ".py"} or ".git" in f.parts:
+            continue
+        for n, ligne in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            erreurs += [f"cite un fichier absent : {f.relative_to(dest).as_posix()}:{n}: {nom}"
+                        for nom in noms if nom in ligne]
+    return erreurs
+
+
+def verifier_refus(racine: Path, data: dict) -> list[str]:
+    """Une piste sans le module pistes est refusée, avec un message qui dit quoi faire."""
+    try:
+        generer(racine / "refus", data)
+    except Exception as exc:  # noqa: BLE001 — Copier lève selon la version ; seul le message compte
+        return [] if "module pistes" in str(exc) else [f"refus sans explication : {exc}"]
+    return ["une piste est acceptée sans le module pistes"]
 
 
 def verifier_chemins(dest: Path) -> list[str]:
@@ -478,6 +519,9 @@ def main() -> int:
             erreurs += verifier_textes(dest, sc.get("contient", {}), sc.get("sans", {}))
             erreurs += verifier_contenu(dest)
             erreurs += verifier_renvois(dest)
+            erreurs += verifier_jamais_cite(dest, sc.get("jamais_cite", []))
+            if "refus" in sc:
+                erreurs += verifier_refus(racine, {**sc["data"], **sc["refus"]})
             erreurs += verifier_outils(dest)
             erreurs += verifier_chemins(dest)
             if sc.get("recopy"):

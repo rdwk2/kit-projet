@@ -111,7 +111,9 @@ Ils vivent dans ce dossier aussi ; leur bloc d'en-tête fait foi pour l'emplacem
 | `ANNEXE_B.md` | avant chaque passe de B : l'annexe du brief de B, réécrite à chaque passe | A | `v_for_cowork[[ suffixe ]]/07_ANNEXE_«jalon»_PASSE«x».md` ; déplacée dans `passations/` une fois la passe close | `kit/METHODE.md`, § 4 |
 | `ANNEXE_C.md` | avant chaque relecture de PR | A | `v_for_cowork[[ suffixe ]]/06_ANNEXE_PR-«n».md`, copiée aussi dans le paquet de la C (`C_PR-«n»/`) | `kit/METHODE.md`, § 6 |
 [% endif -%]
+[% if 'pistes' in modules -%]
 | `NOTE_PISTE.md` | avant d'ouvrir une piste parallèle (une seconde ligne de travail sur le même dépôt, avec sa propre conception) : la note d'ouverture, écrite par l'A de la piste de référence | A de référence | `conception[[ suffixe ]]/NOTE_PISTE_«piste».md` | `kit/PISTES.md` |
 | `RELAIS.md` | à chaque point de contact qui demande l'autre piste (accord, information, calendrier de fusion) | A | `conception[[ suffixe ]]/relais/RELAIS_«émetteur»_«nn».md` ; [[ humain ]] le copie dans le `relais/` de l'autre piste | `kit/PISTES.md` |
 | `REPONSE_RELAIS.md` | en réponse à un relais reçu | A | `conception[[ suffixe ]]/relais/REPONSE_RELAIS_«émetteur»_«nn».md` (l'émetteur du relais auquel elle répond) | `kit/PISTES.md` |
 | `MESSAGE_FUSION_PISTE.md` | après la fusion d'une PR qui touche un point de contact | A | `conception[[ suffixe ]]/relais/MESSAGE_«émetteur»_FUSION_PR-«m».md` | `kit/PISTES.md` |
+[% endif -%]

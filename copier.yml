@@ -62,6 +62,13 @@ _exclude:
   - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEPART_B*[% endif %]"
   - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEMARRAGE_C*[% endif %]"
   - "[% if 'relectures' not in modules %]outils/clone_c.py[% endif %]"
+  # ── couche espace : module pistes
+  - "[% if 'pistes' not in modules %]conception*/kit/PISTES.md*[% endif %]"
+  - "[% if 'pistes' not in modules %]conception*/kit/gabarits/NOTE_PISTE*[% endif %]"
+  - "[% if 'pistes' not in modules %]conception*/kit/gabarits/RELAIS*[% endif %]"
+  - "[% if 'pistes' not in modules %]conception*/kit/gabarits/REPONSE_RELAIS*[% endif %]"
+  - "[% if 'pistes' not in modules %]conception*/kit/gabarits/MESSAGE_FUSION_PISTE*[% endif %]"
+  - "[% if 'pistes' not in modules %]outils/extraire_piste.py[% endif %]"
   # ── couche espace : module archives
   - "[% if 'archives' not in modules %]/archives_conception*[% endif %]"
   - "[% if 'archives' not in modules %]conception*/INVENTAIRE_ARCHIVES.md*[% endif %]"
@@ -200,6 +207,7 @@ modules_choisis:
     "Espace — archives de la conception (inventaire, script d'archivage)": archives
     "Espace — test de mutation : vérifier que les tests détectent une erreur (mutmut)": mutation
     "Espace — passes expertes et sessions à part": expert
+    "Espace — pistes parallèles : plusieurs axes de travail sur le même dépôt": pistes
   default: [relectures]
 
 # Valeur calculée (jamais posée) : la liste effective des modules.
@@ -207,7 +215,7 @@ modules:
   type: yaml
   when: false
   default: >-
-    [% if preset == 'solo-leger' %][][% elif preset == 'groupe-scolaire' %][groupe][% elif preset == 'perso-standard' %][relectures][% elif preset == 'perso-complet' %][donnees-privees, relectures, archives, mutation, expert][% else %][[ modules_choisis | tojson ]][% endif %]
+    [% if preset == 'solo-leger' %][][% elif preset == 'groupe-scolaire' %][groupe][% elif preset == 'perso-standard' %][relectures, pistes][% elif preset == 'perso-complet' %][donnees-privees, relectures, archives, mutation, expert, pistes][% else %][[ modules_choisis | tojson ]][% endif %]
 
 # ─── Couche depot ───────────────────────────────────────────────────────────
 paquet:
@@ -249,7 +257,7 @@ piste:
   help: "Nom de la piste, un axe de travail parallèle (« principale » pour la première ; ex. : analyse)"
   default: principale
   validator: >-
-    [% if not (piste | regex_search('^[a-z][a-z0-9-]*$')) %]Minuscules, chiffres et tirets.[% endif %]
+    [% if not (piste | regex_search('^[a-z][a-z0-9-]*$')) %]Minuscules, chiffres et tirets.[% elif piste != 'principale' and 'pistes' not in modules %]Une piste parallèle demande le module pistes : ajoute-le d'abord (docs/GUIDE.md du kit, § 5).[% endif %]
 
 prefixe_jalon:
   type: str
