@@ -2,30 +2,29 @@
 
 ## 0.4.0 — 2026-11-06
 
-▌ Un débutant reçoit moins. Solo léger et Groupe scolaire s'allègent ; Standard et Complet ne changent pas :
-leur rendu reste le même, à l'octet près. Aucun fichier vivant ne change de structure. Les paragraphes
-changés portent une barre `▌`, à retirer avant de publier (`uv run outils_kit/retirer_barres.py`).
+Un débutant reçoit moins. Solo léger et Groupe scolaire s'allègent ; Standard et Complet ne changent pas :
+leur rendu reste le même, à l'octet près. Aucun fichier vivant ne change de structure.
 
-- ▌ **Dépôt pour débuter.** Une valeur calculée, `debutant`, porte les variantes de Solo léger et de Groupe
+- **Dépôt pour débuter.** Une valeur calculée, `debutant`, porte les variantes de Solo léger et de Groupe
   scolaire. `CLAUDE.md` garde ses huit règles et leurs numéros, en une ou deux lignes chacune ; numpy, scipy
   et matplotlib sont acceptés d'office, et les tests de propriété sont bienvenus, pas exigés. `mypy` passe en
   mode souple (`strict = false`, `check_untyped_defs = true`) : les annotations ne sont demandées que sur les
   fonctions publiques. `hypothesis`, `TID251`, les blocs d'extras et `py.typed` sortent. `docs/ROADMAP.md`
   tient ses trois principes en trois lignes, sous le même titre.
-- ▌ **Module `pistes`.** `kit/PISTES.md`, ses quatre gabarits et `outils/extraire_piste.py` ne sont plus
+- **Module `pistes`.** `kit/PISTES.md`, ses quatre gabarits et `outils/extraire_piste.py` ne sont plus
   générés en Solo léger ni en Groupe scolaire. Standard et Complet ont le module d'office ; en Personnalisé,
   il se coche. Créer une piste sans le module est refusé, avec un message qui dit quoi faire.
-- ▌ **`JOURNAL` en groupe.** Une entrée par livraison, dans la PR de livraison d'un responsable, au lieu d'une
+- **`JOURNAL` en groupe.** Une entrée par livraison, dans la PR de livraison d'un responsable, au lieu d'une
   entrée par PR : deux PR ouvertes n'entrent plus en conflit. En Solo léger, le `JOURNAL`, les fiches de
   décision et `docs/PIEGES.md` deviennent facultatifs.
-- ▌ **Clôture courte.** Sans le module `relectures`, le § 7 de `CONTEXTE.md` se réduit à l'état, aux points
+- **Clôture courte.** Sans le module `relectures`, le § 7 de `CONTEXTE.md` se réduit à l'état, aux points
   ouverts et à la prochaine étape, la clôture à quatre étapes, et la lecture d'ouverture au § 0 de
   `kit/METHODE.md` et à `CONTEXTE.md`. Les sept titres de `CONTEXTE.md` restent, la copie d'avant aussi. Le
   § 8.3 d'un brief court devient facultatif.
-- ▌ **Banc.** Nouveaux scénarios `depot-perso-standard` et `espace-pistes-seules`. Il vérifie les huit règles
+- **Banc.** Nouveaux scénarios `depot-perso-standard` et `espace-pistes-seules`. Il vérifie les huit règles
   de `CLAUDE.md`, qu'aucun fichier absent n'est cité, qu'une piste sans le module est refusée, qu'une fonction
   sans annotations passe `just check` en préréglage débutant, et qu'un filet `---` suit une ligne vide.
-- ▌ **Mettre à jour un projet.** En Personnalisé, coche `pistes` si le projet a plusieurs pistes : sans lui,
+- **Mettre à jour un projet.** En Personnalisé, coche `pistes` si le projet a plusieurs pistes : sans lui,
   `copier recopy` ne rafraîchit plus `kit/PISTES.md` ni ses gabarits. Il n'efface pas non plus les fichiers
   devenus inutiles : en Solo léger ou en Groupe scolaire, ils restent tels quels, jusqu'à ce que tu les retires.
 

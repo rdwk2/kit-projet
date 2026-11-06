@@ -9,7 +9,7 @@
 > § 0 de `kit/MODELES_ET_EFFORTS.md`. B et C ne le lisent jamais (`kit/METHODE.md`, § 2) ;
 > l'agent de code non plus.
 [%- else -%]
-> ▌ **À lire en entier à l'ouverture de toute conversation A, après le § 0 de `kit/METHODE.md`.**
+> **À lire en entier à l'ouverture de toute conversation A, après le § 0 de `kit/METHODE.md`.**
 > L'agent de code ne le lit pas.
 [%- endif %]
 >
@@ -37,14 +37,14 @@ TENUE DE L'EN-TÊTE
 - « Dernière mise à jour » : la dernière clôture et la précédente, pas plus. Format :
   « _Dernière mise à jour : «date», à «heure» — clôture de la «n»ᵉ A : «état en une phrase» ;
   «ce [[ que_humain ]] lance ensuite». Avant : «date», à «heure» — clôture de la «n−1»ᵉ A : «…»._ »
-  [% if 'relectures' in modules %]Les clôtures plus anciennes ne sont qu'au § 7, « États d'avant ».[% else %]▌ Les clôtures plus anciennes ne sont que dans les copies d'avant (`passations/`).[% endif %]
+  [% if 'relectures' in modules %]Les clôtures plus anciennes ne sont qu'au § 7, « États d'avant ».[% else %]Les clôtures plus anciennes ne sont que dans les copies d'avant (`passations/`).[% endif %]
   (Pourquoi : sans plafond, cette ligne grossit à chaque clôture.)
 - Toute heure se lit sur une horloge au moment de l'écrire (outil de la conversation, ou `date`),
   jamais de mémoire.
 -->
 
 **Entrée de reprise.** Lire, dans l'ordre : [% if 'relectures' in modules %]`kit/METHODE.md` en entier ; le § 0 de
-`kit/MODELES_ET_EFFORTS.md` ; ce fichier en entier ; les ★ de `kit/LECONS.md`[% else %]▌ le § 0 de `kit/METHODE.md` ; ce fichier en entier[% endif %][% if piste != 'principale' %] ; puis `kit/PISTES.md`[% endif %]. Le § 7 donne l'état et la suite, étape
+`kit/MODELES_ET_EFFORTS.md` ; ce fichier en entier ; les ★ de `kit/LECONS.md`[% else %]le § 0 de `kit/METHODE.md` ; ce fichier en entier[% endif %][% if piste != 'principale' %] ; puis `kit/PISTES.md`[% endif %]. Le § 7 donne l'état et la suite, étape
 par étape ; le § 2, « Commandes [[ de_humain ]] », les commandes à redonner telles quelles à chaque
 lancement. Le statut des fichiers du dossier est dans `00_LISEZ_MOI.md`[% if 'archives' in modules %] ; ce qui a été
 archivé, et quand en avoir besoin, dans `INVENTAIRE_ARCHIVES.md`[% endif %]. Les briefs, plans, rapports et
@@ -417,11 +417,11 @@ RÈGLES DU § 7
 -->
 [%- else -%]
 <!--
-▌ RÈGLES DU § 7
+RÈGLES DU § 7
 - Réécrite à chaque clôture : c'est la seule chose qui ne se retrouve nulle part ailleurs.
-- ▌ Trois blocs : l'état, les points ouverts, la prochaine étape. Pas d'historique : il reste dans la
+- Trois blocs : l'état, les points ouverts, la prochaine étape. Pas d'historique : il reste dans la
   copie d'avant.
-- ▌ Ce qui a été donné à [[ humain ]], sans savoir si c'est fait, s'écrit comme tel (« fait ou non :
+- Ce qui a été donné à [[ humain ]], sans savoir si c'est fait, s'écrit comme tel (« fait ou non :
   à vérifier »).
 -->
 [%- endif %]
@@ -430,7 +430,7 @@ RÈGLES DU § 7
 **Lecture d'ouverture d'une A** : `kit/METHODE.md` en entier ; le § 0 de
 `kit/MODELES_ET_EFFORTS.md` ; ce fichier en entier ; les ★ de `kit/LECONS.md`.
 [%- else -%]
-▌ **Lecture d'ouverture d'une A** : le § 0 de `kit/METHODE.md` ; ce fichier en entier.
+**Lecture d'ouverture d'une A** : le § 0 de `kit/METHODE.md` ; ce fichier en entier.
 [%- endif %]
 
 **État à la création** : espace généré par kit-projet [[ version_kit ]] ; aucune conversation A
@@ -520,13 +520,13 @@ déclenche» ; jalons complets : «liste».
 Pièces de travail du jalon en cours : «chemins en conception, rôle de chacun, quand il part».
 Chemins qui ne survivent pas à la conversation (`«…»`) : perdus avec elle.
 [%- else -%]
-▌ **État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
+**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
 («dernière fusion» ; PR ouvertes : «aucune | #«p»»). «Ce qui a été donné à [[ humain ]] (fait ou non : à
 vérifier).»
 
-▌ **Points ouverts** : «ceux du § 5 qui comptent pour la suite, ou « aucun »».
+**Points ouverts** : «ceux du § 5 qui comptent pour la suite, ou « aucun »».
 
-▌ **Prochaine étape** : «ce que fait la «n+1»ᵉ A, et ce [[ que_humain ]] lance avant» ; ouverture avec
+**Prochaine étape** : «ce que fait la «n+1»ᵉ A, et ce [[ que_humain ]] lance avant» ; ouverture avec
 `OUVERTURES_A«n+1».md`.
 [%- endif %]
 
@@ -555,10 +555,10 @@ vérifier).»
 10. Finir le compte rendu à [[ humain ]] par ses commandes, dans l'ordre[% if 'archives' in modules %] : l'archivage, puis[% else %] :[% endif %] l'ouverture
     de l'A suivante (message, dossiers à connecter, modèle et effort).
 [%- else -%]
-1. ▌ Copier ce fichier tel quel dans `passations/CONTEXTE_avant_A«n».md`, avant toute modification.
-2. ▌ Réécrire les §§ 4, 5 et 7 ; ajouter aux §§ 1, 2, 3 et 6 ce qui a été appris ; le dire à [[ humain ]].
-3. ▌ Écrire `OUVERTURES_A«n+1».md` (`kit/gabarits/OUVERTURES_A.md`) et tenir `00_LISEZ_MOI.md`[% if 'archives' in modules %] ;
+1. Copier ce fichier tel quel dans `passations/CONTEXTE_avant_A«n».md`, avant toute modification.
+2. Réécrire les §§ 4, 5 et 7 ; ajouter aux §§ 1, 2, 3 et 6 ce qui a été appris ; le dire à [[ humain ]].
+3. Écrire `OUVERTURES_A«n+1».md` (`kit/gabarits/OUVERTURES_A.md`) et tenir `00_LISEZ_MOI.md`[% if 'archives' in modules %] ;
    écrire `INVENTAIRE_ARCHIVES.md` et `passations/A_ARCHIVER_A«n».txt` (`kit/ARCHIVES.md`)[% endif %].
-4. ▌ Finir le compte rendu à [[ humain ]] par ses commandes, dans l'ordre[% if 'archives' in modules %] : l'archivage, puis[% else %] :[% endif %] l'ouverture
+4. Finir le compte rendu à [[ humain ]] par ses commandes, dans l'ordre[% if 'archives' in modules %] : l'archivage, puis[% else %] :[% endif %] l'ouverture
    de l'A suivante (message, dossiers à connecter, modèle et effort).
 [%- endif %]

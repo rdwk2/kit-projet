@@ -25,7 +25,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
    sous Claude Code, le hook de `.claude/settings.json` le refuse ; tout autre agent doit s'y
    tenir sans filet. Les commandes sur les données réelles sont lancées par l'humain.
 [%- elif debutant -%]
-1. ▌ **Aucun secret ni donnée privée dans le dépôt** : ni identifiant, ni token, ni `.env`, ni donnée réelle
+1. **Aucun secret ni donnée privée dans le dépôt** : ni identifiant, ni token, ni `.env`, ni donnée réelle
    qui identifie quelqu'un, nulle part, commits et PR compris. Les tests utilisent des données inventées.
 [%- else -%]
 1. **Aucun secret ni donnée privée dans le dépôt.**
@@ -35,10 +35,10 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 [%- endif %]
 
 [% if debutant -%]
-2. ▌ **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.** Si tu n'y arrives pas,
+2. **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.** Si tu n'y arrives pas,
    tu t'arrêtes et tu le dis : aucun contournement sans le signaler et en donner la raison.
 
-3. ▌ **Tu ne fais que ce qui est demandé.** Toute autre idée va dans `BACKLOG.md`, en une ligne.
+3. **Tu ne fais que ce qui est demandé.** Toute autre idée va dans `BACKLOG.md`, en une ligne.
 [%- else -%]
 2. **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.**
    Si tu n'arrives pas à le rendre vert, tu t'arrêtes et tu le dis. Tu ne contournes pas
@@ -51,7 +51,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 [%- endif %]
 
 [% if debutant -%]
-4. ▌ **Toute logique a un test.** Un calcul sans test n'est pas fini. Un jeu d'essai a au moins
+4. **Toute logique a un test.** Un calcul sans test n'est pas fini. Un jeu d'essai a au moins
    deux éléments, à valeurs distinctes. Pour un invariant simple, un test de propriété est
    bienvenu, pas exigé.
 [%- else -%]
@@ -62,7 +62,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 [%- endif %]
 
 [% if debutant -%]
-5. ▌ **Pas de nouvelle dépendance sans accord.**
+5. **Pas de nouvelle dépendance sans accord.**
    Tu la proposes, avec la raison, et tu attends.[% if langage == 'python' %] Seul le socle scientifique (numpy,
    scipy, matplotlib) est accepté d'office : il s'ajoute par `uv add`.[% endif %]
 [%- else -%]
@@ -77,7 +77,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
    aval doit être entièrement régénérable à partir du brut. Si une lecture est fausse, on
    relit le brut — on ne re-télécharge pas.
 [%- elif debutant -%]
-6. ▌ **Ce qui est généré se régénère, ne se corrige pas à la main.** Un fichier produit par un script
+6. **Ce qui est généré se régénère, ne se corrige pas à la main.** Un fichier produit par un script
    se corrige dans sa source.
 [%- else -%]
 6. **Ce qui est généré se régénère, ne se corrige pas à la main.**
@@ -86,7 +86,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 [%- endif %]
 
 [% if debutant -%]
-7. ▌ **Le calcul vit dans [% if langage == 'python' %]`src/`[% else %]la bibliothèque du projet[% endif %].** Un script ou un notebook ne fait que l'appeler.
+7. **Le calcul vit dans [% if langage == 'python' %]`src/`[% else %]la bibliothèque du projet[% endif %].** Un script ou un notebook ne fait que l'appeler.
 [%- else -%]
 7. **Pas de logique métier dans l'interface[% if 'analyse-donnees' in modules %], ni dans un notebook[% endif %].**
    L'interface appelle la bibliothèque ; si elle calcule quelque chose, c'est que ça manque
@@ -96,7 +96,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 [%- endif %]
 
 [% if debutant -%]
-8. ▌ **Jamais de commit direct sur `main`.**
+8. **Jamais de commit direct sur `main`.**
 [% if 'groupe' in modules %]   Une tâche = une branche (`«type»/«sujet»`, ex. `feat/calcul-du-stock`) = une pull request, relue par un
    camarade (`CONTRIBUTING.md`). Messages de commit et titres de PR préfixés :
 [% else %]   Une tâche = une branche ; on fusionne par une pull request quand [% if langage == 'python' %]`just check` est vert[% else %]la vérification est verte[% endif %]
@@ -146,17 +146,17 @@ elle est évaluée. Si une tâche te conduit à mélanger les deux, tu t'arrête
   probablement mal découpée : signale-le dans la PR.
 - **Ne termine pas une session sur du code cassé** : répare, ou annule et note où tu en es.
 [% if 'groupe' in modules -%]
-- ▌ **Ta PR ne touche pas à `docs/JOURNAL.md`** : un responsable y écrit une entrée par livraison
+- **Ta PR ne touche pas à `docs/JOURNAL.md`** : un responsable y écrit une entrée par livraison
   (`docs/LIVRAISONS.md`).
 [% elif debutant -%]
-- ▌ **`docs/JOURNAL.md` est facultatif** : une entrée à la fin d'une session qui compte.
+- **`docs/JOURNAL.md` est facultatif** : une entrée à la fin d'une session qui compte.
 [% else -%]
 - **Une entrée dans `docs/JOURNAL.md`** à la fin de chaque session de travail : date, ce
   qui a été fait, la conclusion, où c'est rangé.
 [% endif -%]
 - **Le README décrit `main`** : une PR qui rend l'une de ses phrases fausse la corrige.
 [% if debutant and 'groupe' not in modules -%]
-- ▌ **Facultatif** : une fiche dans `docs/decisions/` pour une décision structurante, une ligne dans
+- **Facultatif** : une fiche dans `docs/decisions/` pour une décision structurante, une ligne dans
   `docs/PIEGES.md` pour un piège payé une fois.
 [%- else -%]
 - **Une décision structurante = un fichier dans `docs/decisions/`** (gabarit
@@ -225,7 +225,7 @@ qui l'a créé.»
 
 [% if langage == 'python' -%]
 [% if debutant -%]
-- ▌ Python [[ python_version ]]+, annotations de type sur les fonctions publiques ; `ruff` pour le lint et
+- Python [[ python_version ]]+, annotations de type sur les fonctions publiques ; `ruff` pour le lint et
   le formatage. `mypy` vérifie les types sans exiger d'annotation partout, et accepte les
   bibliothèques sans types (scipy, pandas…). La notation mathématique est permise (`A`, `X`, `l`,
   `σ`, `α`).
