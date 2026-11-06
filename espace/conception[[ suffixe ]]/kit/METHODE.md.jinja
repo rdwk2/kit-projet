@@ -1,0 +1,531 @@
+# Méthode — le workflow [% if 'relectures' in modules %]A / B / C / Code[% else %]A / Code[% endif %]
+
+En clair : **A** conçoit avec [[ humain ]] et n'écrit pas de code ; [% if 'relectures' in modules %]**B** relit le brief et le plan,
+**C** relit la PR, sans avoir vu A ; [% endif %]**Code**, l'agent de code, est seul à écrire dans le dépôt ;
+[[ humain ]] tranche et fusionne. Un mot inconnu (brief, plan, PR, CI…) : `kit/VOCABULAIRE.md`.
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **À lire en entier à l'ouverture de toute conversation A**, avant `CONTEXTE.md`. [% if 'relectures' in modules %]B, C et
+> l'agent de code ne le lisent pas : leurs briefs et `CLAUDE.md` leur suffisent.[% else %]L'agent de
+> code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.[% endif %]
+>
+> Ce fichier porte les règles communes à tous les projets générés par ce kit, avec leur
+> « pourquoi ». Le `CONTEXTE.md` de chaque piste ne porte que ce qui est propre au projet
+> (emplacements, état, points ouverts, leçons locales) ; il ne déroge à ce fichier que par
+> son § 2, en le disant.
+
+## Table des matières
+
+- 0. En une page
+- 1. Rôles
+- 2. [% if 'relectures' in modules %]Trois conversations aux visions séparées[% else %]Une conversation de conception[% endif %]
+- 3. Les dossiers : une frontière vaut mieux qu'une consigne
+- 4. Le cycle d'un jalon
+- 5. Le brief et le plan
+- 6. La relecture de PR
+- 7. Trois modes d'échec, trois instruments
+- 8. Modèle d'IA et effort
+- 9. Parler à [[ humain ]]
+- 10. Ouvrir, relancer, clôturer
+- 11. Ce qui vit hors de ce fichier
+- 12. Faire évoluer le kit
+
+---
+
+## 0. En une page
+
+Sept principes. Tout le reste en découle.
+
+1. **Une frontière vaut mieux qu'une consigne.** Ce qu'une conversation ne doit pas lire,
+   elle ne doit pas pouvoir le lire : des dossiers frères, connectés selon le rôle. Le geste
+   dépend de l'outil (« connecter », `kit/VOCABULAIRE.md`, § 0) ; sans cette limite, la frontière
+   redevient une consigne. La consigne « n'ouvre pas ce fichier » reste en ceinture ; elle n'est
+   plus la bretelle.
+2. **Une relecture ne paie que si elle dispose d'une référence écrite qu'elle n'a pas
+   produite elle-même.** Brief contre ROADMAP, plan contre brief, diff contre brief et plan :
+   trois références, trois étapes qui paient. Sans étalon, un relecteur invente ce qui manque.
+3. **Une conversation ne peut pas relire ce qu'elle vient d'écrire.** Elle lit son texte
+   comme sa propre conclusion, pas comme une spécification. D'où des relectures neuves, qui
+   ne voient pas le raisonnement de l'auteur.
+4. **Un fichier, un rédacteur.** Deux conversations qui éditent le même fichier sans se
+   voir, c'est une divergence garantie.
+5. **Le dépôt est la source de vérité.** Les conventions sont dans `CLAUDE.md`, le
+   raisonnement dans `docs/decisions/`, le plan dans `docs/ROADMAP.md`, l'historique dans
+   `docs/JOURNAL.md`. L'espace de conception porte ce que le dépôt ne porte pas, et y renvoie.
+6. **Lire tôt, conclure tard.** On relit le brief avant le code, le plan avant le diff ; on
+   ne commente et ne fusionne que l'état final.
+7. **Le rôle prime sur le moteur.** Ce qui définit un relecteur, ce n'est pas le moteur qui le
+   porte, c'est de ne pas avoir écrit ce qu'il relit. Le kit reste lisible par n'importe quel moteur (Claude,
+   Codex ou autre) : pas de raccourci qui suppose un outil particulier.
+
+```
+[% if 'relectures' in modules -%]
+brief (A) → relu (B) → plan (Code) → relu (B) → validé (A) → PR → relue (C) → arbitrée (A)
+        → correctifs (Code) → CI verte → commentaire de revue et fusion ([[ humain ]]) → clôture (A)
+[% else -%]
+brief (A) → plan (Code) → relu (A) → PR → CI verte → commentaire de revue et fusion ([[ humain ]]) → clôture (A)
+[% endif -%]
+```
+
+---
+
+## 1. Rôles
+
+| | Rôle |
+|---|---|
+| **[[ humain ]]** | tranche ce qui lui appartient (ci-dessous) ; relit et fusionne les PR ; lance les commandes sur sa machine ; **transporte** les rapports et les messages d'une conversation à l'autre |
+| **L'agent de code** (Claude Code, Codex…) | **seul à écrire dans le dépôt.** Une tâche = une session = une branche = une PR, mode plan d'abord. Il exécute ; il ne décide pas |
+| **Les conversations** (A[% if 'relectures' in modules %], B, C[% endif %][% if 'expert' in modules %], passes expertes[% endif %]) | réfléchir avant de coder, relire, produire ce qui n'est pas du code. **Lecture seule sur le dépôt** |
+
+**Ce qui appartient à [[ humain ]]**, jamais tranché sans son accord explicite (liste reprise dans
+`CLAUDE.md` du dépôt, « Ce qui appartient à l'humain ») : l'architecture (les briques et les
+contrats entre elles), le modèle (mathématique ou métier) et ses hypothèses, la métrique
+d'erreur et le protocole de validation, tout ce qui touche aux données personnelles. Quand
+l'une de ces décisions se présente, la conversation pose les options, leur coût, sa
+recommandation, et attend.
+
+**Qui écrit le code d'une PR.** L'agent de code écrit tout le code et tous les tests,
+d'après le brief. A n'écrit ni code ni tests pour lui. Un prototype de A, s'il en faut un,
+reste dans `conception` comme **oracle** (valeurs attendues, pièges, contre-épreuves) :
+jamais joint, jamais poussé. *Pourquoi* : quand la conception fournit le code, plus personne
+ne relit ce qu'il fait en le relisant contre ce qui était demandé ; et la dérive arrive en
+silence, chaque pas semblant un gain de temps.
+
+**[[ humain ]] est le seul canal entre conversations.** Elles ne se voient pas : tout passe par des
+fichiers nommés et des messages prêts à coller (gabarits de `kit/gabarits/`). Un message
+qui oblige [[ humain ]] à reformuler est un message mal écrit.
+[% if 'groupe' in modules %]
+**En groupe.** Ici, [[ humain ]] est la personne qui tient l'espace, et le groupe la choisit. Deux
+montages : un espace par personne, ou un seul pour le groupe. Les responsables du dépôt
+(`.github/CODEOWNERS`) fusionnent ; ce qui appartient à l'humain se tranche en groupe.
+[% endif %]
+---
+
+## 2. [% if 'relectures' in modules %]Trois conversations aux visions séparées[% else %]Une conversation de conception[% endif %]
+
+Constat d'origine : une fois les briefs, les fiches de décision et le CONTEXTE écrits, la
+conversation de conception ne porte presque plus rien d'unique, et coûte cher au tour
+puisqu'elle relit tout son historique ; et **une conversation ne peut pas relire ce qu'elle
+vient d'écrire** — une définition écrite par A, relue par A sans rien voir, était fausse.
+
+[% if 'relectures' in modules -%]
+| | Rôle | Voit | Ne voit pas | Brief | Durée de vie |
+|---|---|---|---|---|---|
+| **A — conception** | discussion, décisions, **écriture du brief**, arbitrage des constats, tenue du kit et du CONTEXTE | `conception[[ suffixe ]]/` **et** `v_for_cowork[[ suffixe ]]/` | — | ce fichier et `CONTEXTE.md` | un contexte partagé : au plus un jalon |
+| **B — relecture d'artefact** | le brief contre la ROADMAP et les fiches de décision (passe 1) ; puis le plan de Code contre le brief (passe 2) | `v_for_cowork[[ suffixe ]]/` seul | `conception[[ suffixe ]]/`, donc A | `07_BRIEF_RELECTURE_ARTEFACT.md` + son annexe | un jalon (passes bis dans la même conversation) |
+| **C — relecture de PR** | la relecture profonde du diff, et rien d'autre | son **poste** : un clone neuf sur la tête de la PR, et le paquet préparé par A (le 06 et son annexe, le brief, le plan validé et son message de validation) | `conception[[ suffixe ]]/`, donc A **et les rapports de B** ; `v_for_cowork[[ suffixe ]]/` n'est pas connecté | `06_BRIEF_RELECTURE_PR.md` + son annexe | une PR |
+
+**Le critère qui décide d'ajouter une étape** :
+
+> Une étape de relecture ne paie que si elle dispose d'une **référence écrite qu'elle n'a
+> pas produite elle-même.**
+
+Une étape « vérifier qu'on n'a rien oublié » sans référence extérieure n'en est pas une.
+
+**Ce que B et C ne voient pas de A est le mécanisme entier.** Une relecture qui lit le
+raisonnement de la conception adopte ce raisonnement. Ce que B trouve remonte à C **par
+l'annexe du brief de C**, filtré par A — jamais en lui donnant le rapport de B.
+
+**Le relecteur ne prend pas son énoncé des mains de l'auteur.** Le compte rendu de fin de
+session de l'agent de code et sa description de PR ne vont ni à B ni à C (A les lit). C
+calcule le diff elle-même depuis le point où la branche a quitté `main` (`git diff origin/main...HEAD` dans son clone),
+ou lit `pr-«n».diff`, produit par `outils/diff_pr.py` et joint au paquet.
+
+**Durée de vie.** B se renouvelle au jalon, C à chaque PR relue : c'est ce qui leur donne
+leur indépendance, et leur permet d'ouvrir à l'effort voulu sans payer la relecture d'un
+historique.
+[% else -%]
+Ce projet n'a pas pris le module `relectures` : une seule conversation, **A**, qui discute,
+écrit le brief et tient le CONTEXTE. Les principes ne changent pas, ils s'allègent :
+
+- une PR qui porte une décision (contrat, modèle, protocole) passe quand même par une
+  **relecture neuve** : une conversation qui n'a pas vu A, avec le brief, le plan et le diff ;
+  les autres PR passent par la CI et par la relecture [[ de_humain ]] ;
+- A ne relit pas son propre brief pour « vérifier qu'il ne manque rien » : il le confronte à
+  une référence écrite (ROADMAP, fiches de décision) ou le fait relire.
+
+Le module `relectures` s'ajoute plus tard sans rien casser : relancer `copier recopy` sans
+`--defaults`, choisir « Personnalisé » et cocher le module (`docs/GUIDE.md` du kit).
+[%- endif %]
+
+---
+
+## 3. Les dossiers : une frontière vaut mieux qu'une consigne
+
+| Dossier | Contenu | Connecté à |
+|---|---|---|
+| `conception[[ suffixe ]]/` | ce que A seule voit : `CONTEXTE.md`, `kit/`, brouillons, calculs, rapports de relecture rangés, `passations/` | A |
+| `v_for_cowork[[ suffixe ]]/` | le **miroir** du dépôt (`[[ slug ]]/`), les briefs vivants, [% if 'relectures' in modules %]les annexes, [% endif %]les diffs `pr-«n».diff` | A[% if 'relectures' in modules %], B[% endif %] |
+[% if 'archives' in modules -%]
+| `archives_conception[[ suffixe ]]/` | ce qui ne sert plus au travail courant | **personne, jamais par défaut** (`kit/ARCHIVES.md`) |
+[% endif -%]
+[% if 'relectures' in modules -%]
+| `[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/` | le poste d'une C : un clone neuf sur la tête de la PR, et le paquet de démarrage | la session de la C |
+[% endif -%]
+| `[[ racine ]]/outils/` | les scripts [[ de_humain ]] | personne : [[ humain ]] les lance |
+
+[% if 'relectures' in modules -%]
+**Pourquoi deux dossiers frères, et pas un sous-dossier.** Un dossier se connecte avec tout
+son sous-arbre : un `conception/` placé dans `v_for_cowork/` serait visible de B et de C.
+Il faut deux dossiers **frères** : B ne connecte que `v_for_cowork[[ suffixe ]]` ; A connecte
+les deux ; C ne connecte rien, elle travaille dans son poste, où A lui a mis ses pièces.
+
+**Interdire par dossier, pas par nom de fichier.** Un interdit par nom fuit dès qu'un
+fichier change de nom (un rapport de B nommé autrement, rangé dans le dossier que C voit).
+Les briefs de B et de C gardent leurs interdits en ceinture ; la frontière est le dossier.
+[% else -%]
+**Pourquoi deux dossiers frères, et pas un sous-dossier.** Un dossier se connecte avec tout
+son sous-arbre : un `conception/` placé dans `v_for_cowork/` serait visible d'une relecture neuve.
+Il faut deux dossiers **frères** : A connecte les deux ; une relecture neuve ne reçoit que ses pièces.
+
+**Interdire par dossier, pas par nom de fichier.** Un interdit par nom fuit dès qu'un
+fichier change de nom : la frontière est le dossier.
+[% endif -%]
+
+**Tout rapport de relecture finit dans `conception[[ suffixe ]]/`**, déplacé à la main dès
+que son auteur a fini, avant d'ouvrir la relecture suivante. Sinon le relecteur suivant
+hérite des conclusions du précédent, ce que la topologie interdit.
+
+**Le miroir** est un clone qui ne reçoit que des `git pull`, lancés par [[ humain ]] après chaque
+fusion (`uv run outils/miroir.py`)[% if not public %], et chaque fois que l'A a besoin de l'état distant :
+le dépôt étant privé, c'est le seul moyen de le lire[% endif %] — sinon la conversation suivante lit un dépôt périmé.
+Une conversation n'y lance jamais `git status` ni `git fetch`, qui écrivent dans `.git` :
+pour lire, `git --no-optional-locks …` ; pour voir les PR, `ETAT_DISTANT.txt`, que le script écrit à côté
+du miroir[% if public %] (ou `git ls-remote`)[% endif %]. S'il est modifié
+par accident, dans le miroir seulement : `git reset --hard origin/main` (efface toute modification
+locale). Tant qu'une PR n'est pas fusionnée, son code n'est pas dans le miroir : c'est le diff qui le porte.
+
+**Une session de code ne reçoit qu'un sous-dossier** de `v_for_cowork[[ suffixe ]]` (celui
+du jalon : le brief, la note d'entrée), jamais le dossier entier : les rapports et les
+briefs voisins donnent envie d'en faire plus que prescrit. Les outils d'une relecture n'y
+sont jamais (Code serait tenté de recopier une réimplémentation).
+[% if 'archives' in modules %]
+
+**Archives** : ce qui ne sert plus part dans `archives_conception[[ suffixe ]]/`, jamais
+connecté, par un script qui ne fait que déplacer (`kit/ARCHIVES.md`).
+[% endif %]
+
+---
+
+## 4. Le cycle d'un jalon
+
+[% if 'relectures' in modules -%]
+| # | Étape | Qui | Lit | Produit | Porte de sortie |
+|---|---|---|---|---|---|
+| 1 | Cadrage, décisions | A avec [[ humain ]] | ROADMAP, fiches de décision, CONTEXTE | fiches de décision proposées, brief révision 0 (`kit/gabarits/BRIEF_JALON.md`) | [[ humain ]] a tranché ce qui lui appartient |
+| 2 | Relecture du brief | B, passe 1 | brief, ROADMAP, fiches de décision, annexe de B | `RELECTURE_BRIEF-«jalon».md` | verdict de B, constats arbitrés par A |
+| 3 | Révision | A | rapport de B | brief révision 1 (passe 1 bis si la révision porte des choix neufs) | — |
+| 4 | Plan | Code, **mode plan** | brief (sous-dossier du jalon) | le plan | — |
+| 5 | Relecture du plan | B, passe 2 | plan, brief, annexe | `RELECTURE_PLAN-«jalon».md` | A trie : révision de plan, ou message en cours de session |
+| 6 | Implémentation | Code | plan validé | branche, commits, PR | CI verte |
+[% if 'mutation' in modules -%]
+| 7 | Balayage mécanique | A | la tête de la PR, archivée par [[ humain ]] (`uv run outils/tete_pr.py «n»`) | survivants triés, lacunes (`kit/MUTATION.md`) | — |
+[% endif -%]
+| 8 | Relecture profonde | C, neuve | 06 + annexe, brief, plan validé, diff | `RELECTURE_PR-«n».md` | verdict de C |
+| 9 | Arbitrage | A | rapport de C | `ARBITRAGE_PR-«n».md`, consigne de correctifs | — |
+| 10 | Correctifs | Code | consigne de correctifs | un commit par constat, ou par nature s'ils sont nombreux | CI verte |
+| 11 | Fusion | [[ humain ]] | état final | commentaire de revue, *Squash and merge*, `git pull` du miroir | — |
+| 12 | Clôture | A | tout ce qui précède | CONTEXTE à jour, message d'ouverture suivant | règle de clôture (§ 10) |
+
+**Quand ouvrir chaque conversation** : A à l'ouverture du jalon ; B quand le brief est prêt à
+relire, pas avant ; C quand la PR est ouverte. Lire la PR soi-même pendant que la C tourne
+est du bon temps employé : on arrive sur son rapport en connaissant déjà le code.
+
+**Toutes les PR ne passent pas par tout le cycle.** Une PR d'entretien (configuration,
+documentation sans décision, hygiène) passe par la CI et la relecture [[ de_humain ]]. Le cycle
+complet est pour les PR qui portent une décision ou un contrat ; c'est A qui le propose, en
+une phrase, à l'ouverture du jalon.
+[% else -%]
+1. **Cadrage** (A avec [[ humain ]]) : fiches de décision proposées, brief (`kit/gabarits/BRIEF_JALON.md`,
+   variante courte).
+2. **Plan** (Code, mode plan) ; A le relit contre le brief ; [[ humain ]] valide.
+3. **Implémentation** (Code) : branche, commits, PR, CI verte.
+4. **Relecture** : [[ humain ]] ; et, pour une PR qui porte une décision, une relecture neuve.
+5. **Fusion** ([[ humain ]]) : commentaire de revue, *Squash and merge*, `git pull` du miroir.
+6. **Clôture** (A) : règle de clôture (§ 10).
+[%- endif %]
+
+**Lire tôt, conclure tard.** Ce qui doit attendre la branche stabilisée, c'est le
+commentaire de revue et la fusion : le commentaire dit ce qui a été vérifié, donc il porte
+sur l'état final.
+
+---
+
+## 5. Le brief et le plan
+
+**Le brief** est prescriptif : un périmètre borné, des barrières explicites (ce qui n'est
+pas dans la PR), des décisions numérotées et sourcées, des critères d'acceptation
+vérifiables, les tests attendus. Gabarit : `kit/gabarits/BRIEF_JALON.md`. Si le critère
+d'acceptation n'est pas clair, c'est le brief qui n'est pas fini. Ce qui déborde part au
+`BACKLOG.md` du dépôt, en une ligne.
+
+**Relire le plan, pas seulement le diff.** C'est moins cher : deux cents mots de plan valent
+mieux que quelques centaines de lignes de diff — c'est le même argument que le mode plan, poussé d'un
+cran. À la relecture d'un plan, la question n'est pas « est-ce correct ? », c'est **« y a-t-il
+là-dedans quelque chose que le brief ne demande pas ? »** (règle 3 de `CLAUDE.md`). Un
+modèle fort a tendance à bien faire, puis à ajouter la petite chose adjacente qui manquait.
+
+**Révision du plan, ou message en cours de session.** Dans Claude Code, le dialogue de plan
+n'offre pas de « valider avec un commentaire » : toute remarque relance un tour complet et
+régénère un plan **entièrement nouveau** ; ailleurs, vérifier ce que fait l'outil. Donc :
+
+- **révision** seulement si la remarque change **la forme du plan** : ce qui est construit,
+  dans quel ordre, avec quelles frontières de périmètre ; et alors **toutes** les corrections
+  en un seul message, puis le plan suivant se relit **en entier**, pas seulement les changements ;
+- **message en cours de session** pour tout le reste (un type local, un nom, une ligne de
+  configuration, une précision de test) : l'agent l'intègre sans régénérer de plan.
+
+Le passage du plan n'est pas la dernière occasion de cadrer : c'est ce qui permet de valider
+vite sans rien perdre.
+
+---
+
+## 6. La relecture de PR
+
+**Le rituel.** Avant chaque fusion, [% if 'groupe' in modules %]un autre membre du groupe relit et approuve la PR
+(`docs/RELIRE_UNE_PR.md`) ; un commentaire de revue dit ce qui a été vérifié[% else %][[ humain ]] laisse un commentaire de revue (option *Comment* :
+GitHub interdit d'approuver sa propre PR) disant ce qui a été vérifié[% endif %] — écrit par A dans
+`passations/REVUE_PR-«n».md`, publié par `uv run outils/revue_pr.py «n»` (demande `gh`, connecté
+à ton compte). Vingt secondes, et c'est la trace visible que la relecture a eu lieu.
+
+**Deux portes distinctes** : l'acceptation dans la session de code (« est-ce
+bien ce que j'ai demandé ») ; la PR sur GitHub (« est-ce fusionnable »). Sur GitHub, les
+cases *Viewed* sont un bloc-notes, pas la relecture ; un push ne décoche que les fichiers
+qu'il modifie ; le sélecteur « Changes from all commits » permet de ne relire qu'une plage
+de commits après un correctif.
+
+**Ce que la relecture par conversation apporte, et ce qu'elle n'apporte pas.** Elle ne remplace
+pas la lecture du code par [[ humain ]] ; elle a le *pourquoi* des décisions. Elle attrape « ça ne
+correspond pas à ce qu'on avait décidé », « ça ferme une porte qu'on voulait garder ouverte »
+— pas d'abord « ce code est faux ». Et **[[ humain ]] et A ne sont pas deux relecteurs
+indépendants** : ils ont pris les mêmes décisions ensemble ; une décision mauvaise à la
+racine échappe aux deux. D'où la relecture **neuve**.
+[% if 'relectures' in modules %]
+
+**La relecture se fait dans une session neuve**, ouverte au modèle et à l'effort voulus
+(`kit/MODELES_ET_EFFORTS.md`), avec quatre pièces, que A range dans le paquet
+(`passations/«nom»/`, gabarit `DEMARRAGE_C`) : `06_BRIEF_RELECTURE_PR.md` et son annexe
+`06_ANNEXE_PR-«n».md`, le brief du jalon, le plan validé (avec le message de validation, qui
+prime sur le plan), et le diff (que la C peut aussi calculer elle-même). La C travaille dans un
+poste neuf — un clone sur la tête de la PR (`uv run outils/clone_c.py «n» --paquet «nom»`) —
+pour **exécuter** tests et mutations.
+
+**L'annexe est la pièce critique.** Elle porte ce qui a été décidé *après* l'écriture du brief
+(en relecture de plan, ou par message en cours de session) et les points déjà soulevés et
+tranchés. Sans elle, le relecteur signale comme écarts des choses déjà validées, et le tri
+coûte plus cher que la relecture. **C'est A qui l'écrit** (`kit/gabarits/ANNEXE_C.md`),
+puisqu'elle seule sait ce qui n'a pas été consigné ; faire relire l'annexe contre la tête par
+un agent neuf quand elle paraphrase du code.
+
+**Quelles PR, combien de C.** Une C pour toute PR qui porte une décision de modélisation ou
+de contrat, ou qui modifie une fiche de décision (même petite) ; deux C sur deux moteurs
+différents seulement pour les plus structurantes, et c'est [[ humain ]] qui décide ; une **C bornée**
+sur des correctifs qui touchent la logique, quand le lot dépasse le trivial.
+[% endif %]
+
+**Un fichier, un rédacteur.** La relecture écrit son rapport et rien d'autre ; A tient le
+CONTEXTE et les briefs.
+
+**Ce que la relecture rapporte revient à A avant d'être exécuté.** A dit si un écart signalé
+contredit vraiment une décision ou si l'intention a été mal lue, puis transforme les constats
+retenus en une **consigne bornée** : un commit par constat, ou, quand ils se comptent par dizaines,
+un commit par nature (`fix:`, `test:`, `docs:`) qui nomme ceux qu'il ferme ; avec la barrière de
+périmètre explicite (gabarits `ARBITRAGE` et `CORRECTIFS`).
+
+**Les correctifs ne repartent pas en relecture par défaut.** Quand l'auteur des correctifs
+les a écrits d'après une prescription, la question restante n'est pas « ces correctifs
+sont-ils justes » mais « leur application a-t-elle cassé autre chose », et le filtre pour ça
+est la CI. Un second tour ne se justifie que si le lot est plus gros que trivial, s'il touche
+autre chose que ce qui était prescrit, ou si l'auteur s'est écarté de la prescription.
+
+**Exécuter les mutations plutôt que les imaginer.** Pour chaque invariant : *si je le retire,
+quel test rougit ?* Une relecture qui l'a fait a trouvé un test qui passait grâce à un autre
+invariant — un constat qu'aucune lecture, même attentive, n'aurait produit.[% if 'relectures' in modules %] À redemander
+explicitement dans chaque brief de C.[% endif %]
+[% if 'mutation' in modules %]
+
+**Balayage mécanique par A, avant l'annexe** : A passe un outil de mutation sur les modules
+que la PR touche, trie les survivants et porte les lacunes dans l'annexe ou les correctifs ;
+les C ne le refont pas et visent ce que l'outil ne voit pas (contrats, préconditions,
+relations entre sorties, messages, fichiers hors de `src/`). Les deux instruments ne se
+recoupent presque pas : ils sont complémentaires. Procédure et pièges : `kit/MUTATION.md`.
+[% endif %]
+
+---
+
+## 7. Trois modes d'échec, trois instruments
+
+Quand l'agent de code démarre, les décisions sont prises et figées. La relecture de PR ne les
+rejuge pas : elle vérifie la **conformité**.
+
+| L'échec | Ce qui l'attrape |
+|---|---|
+| La **décision** est mauvaise (hypothèse fausse, contrat mal pensé) | **La vérité terrain externe** : une mesure, un test sur des données passées, un usage réel — le seul relecteur sans les mêmes biais |
+| Le **code ne correspond pas** à la décision | **La relecture** du plan et de la PR |
+| Le **code ne fait pas ce qu'il prétend** (bug) | **Les tests et la CI** |
+
+Aucun ne remplace les autres. Le mode plan agit en amont, la revue de PR en aval : ce ne sont
+pas deux fois le même contrôle. **Corollaire** : le jour où la vérité terrain montre qu'une
+hypothèse était fausse, ce n'est pas un échec de la relecture, c'est le processus qui
+fonctionne. La réponse est une nouvelle fiche de décision disant ce qui a changé et pourquoi.
+
+**La conversation de conception est le maillon le moins protégé** : ses décisions n'ont aucun
+filet en aval (la relecture ne vérifie que la conformité, les tests que le code). Elle mérite
+au moins autant de soin — et d'effort — que la session de code.
+
+---
+
+## 8. Modèle d'IA et effort
+
+Politique détaillée : `kit/MODELES_ET_EFFORTS.md` (lire son § 0 à l'ouverture). Ici, « modèle »
+veut dire modèle d'IA. Les règles qui ne bougent pas :
+
+- **On choisit à l'ouverture, en visant le moment le plus dur de la conversation, et on n'y
+  touche plus** : changer de modèle ou d'effort en route fait relire tout l'historique. S'il
+  faut corriger, le faire dans les premiers tours.
+- **Un artefact mérite plus d'effort qu'une conversation** : une erreur en conversation est
+  corrigée au tour suivant ; une erreur dans un brief, une relecture de plan ou de diff part
+  telle quelle.
+- **Jamais de mode multi-agents (ultracode dans Claude Code) sur un brief prescriptif** : il n'y
+  a rien à explorer, la seule chose qu'on gagne est du hors-périmètre. Ce mode, c'est pour un
+  balayage large.
+- **À chaque passage de main** (vers [% if 'relectures' in modules %]B, Code, C[% else %]Code[% endif %][% if 'expert' in modules %], une passe experte, une session à part[% endif %]), A
+  indique : (1) modèle et effort recommandés ; (2) une alternative raisonnable ; (3) la raison
+  en une phrase ; (4) toute dérogation au réglage habituel.
+
+---
+
+## 9. Parler à [[ humain ]]
+
+- **Toute explication impliquant une action se termine par une consigne explicite** : qui
+  agit ([[ humain ]], ou l'agent de code), quoi exactement, et quand. Sans ça, la réponse est
+  incomplète. Les explications de fond sont bienvenues ; c'est l'absence de conclusion
+  actionnable qui ne l'est pas.
+- **Ne pas énumérer ce que l'agent de code fait seul** à partir de `CLAUDE.md` (créer la
+  branche, ouvrir la PR, nommer les commits) : une consigne ne liste que ce qui revient
+  réellement à [[ humain ]].
+- **Les commandes se redonnent telles quelles**, depuis le tableau « Commandes [[ de_humain ]] » du
+  § 2 de `CONTEXTE.md`. Chaque bloc commence par `cd <dossier absolu>` (« dans le miroir : »
+  sans `cd` ne suffit pas : la commande tourne dans le dernier dossier ouvert). Préférer les
+  scripts d'`outils/` à une recette tapée à la main.
+- **À l'ouverture d'une conversation ou d'un jalon, rappeler à [[ humain ]] ce qui reste à faire à
+  la main** (commandes, connexions de dossiers, réglages de session), sans attendre la question.
+- **Un schéma en notation standard vaut mieux qu'un pavé** : diagramme de séquence UML pour un
+  échange, diagramme d'états pour un cycle de vie, organigramme pour un flux, `gitGraph` pour des
+  branches — en Mermaid, pour pouvoir les reprendre.
+- **Modifier un document existant** : signaler visuellement le paragraphe changé (une barre
+  `▌` en marge, ou une note datée « *Modifié le … (n-ième A)* ») et retirer la marque à la
+  passe suivante.
+- **Une sous-tâche dont seul le résultat compte** (un inventaire, une recherche, un
+  rapport) : préparer un prompt pour une session à part — dossiers à brancher, modèle,
+  effort, fichier de sortie — plutôt que s'y disperser dans la conversation en cours.
+- **Où poser une question** : « est-ce qu'on devrait… ? » (architecture, modèle, métrique) →
+  une conversation A ; « est-ce que ça marchera ? » → l'agent de code, qui a le dépôt sous les
+  yeux.
+
+---
+
+## 10. Ouvrir, relancer, clôturer
+
+**Le test, pour relancer une conversation comme une session de code : ce que je vais perdre
+est-il reproductible ?** Si oui, on relance. Sinon, on l'écrit d'abord dans le CONTEXTE.
+
+**Une conversation A par jalon.** Relancer quand un jalon est fini et que le suivant porte sur
+un autre sujet, quand la conversation a dérivé sur beaucoup de sujets sans rapport, quand les
+réponses ralentissent ou tournent en rond. **Ne pas relancer au milieu d'une discussion sur
+un seul sujet**, même longue : là, le fil du raisonnement *est* la valeur.
+
+**Ouvrir.** [[ humain ]] connecte les dossiers du rôle (§ 3) et colle le message du dernier
+`OUVERTURES_A«n».md` (gabarit `kit/gabarits/OUVERTURES_A.md`), qui donne aussi le modèle et
+l'effort. À défaut :
+
+> *Projet [[ projet ]], piste [[ piste ]]. Lis `conception[[ suffixe ]]/kit/METHODE.md` en
+> entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis `CONTEXTE.md` en entier et les ★ de
+> `kit/LECONS.md`[% if piste != 'principale' %], puis
+> `kit/PISTES.md`[% endif %], et applique-les. Si `kit/perso/` existe, lis-le aussi : il complète ces règles et il prime.
+> Puis, selon la mission, `docs/ROADMAP.md` et `docs/decisions/` dans
+> le miroir. [ce qu'on fait aujourd'hui]*
+
+Cette liste est **la** liste de l'ouverture : le CONTEXTE, l'index et les messages d'ouverture
+y renvoient.
+
+L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir, dernier JOURNAL), pas dans
+sa mémoire ni dans un résumé.
+
+**Une A compactée passe la main.** Une A dont la conversation a été compactée — l'historique
+remplacé par un résumé automatique — le signale à [[ humain ]] dès qu'elle s'en aperçoit, et propose
+de passer la main à une A neuve à la **prochaine étape stable** (brief publié, arbitrage écrit,
+PR fusionnée) plutôt que de continuer : un résumé perd des décisions et des nuances que le
+CONTEXTE ne porte pas encore. Elle ne modifie pas l'état du projet à partir de ce résumé : elle
+revérifie dans les fichiers.
+
+**Règle de clôture.** Avant sa première modification de `CONTEXTE.md`, l'A le copie tel quel
+dans `passations/CONTEXTE_avant_A«n».md` (une copie par clôture). Puis :
+
+1. elle **réécrit** les §§ 4, 5 et 7 (état, points ouverts, suite), mais n'en retire que ce
+   qui est fait ou clos, et le dit à [[ humain ]] ; une consigne durable qui s'y trouve passe d'abord
+   aux §§ 1, 2, 3 ou 6, jamais à la seule copie ;
+2. elle **ajoute** aux §§ 1, 2, 3 et 6 ce qu'elle a appris (règle locale, leçon, particularité
+   de la machine), et le dit à [[ humain ]] ;
+3. elle ne **retire ni ne résume** rien des §§ 1, 2, 3 et 6 sans l'accord explicite [[ de_humain ]] ;
+   une règle devenue fausse se corrige par une note datée, à côté du texte d'origine ;
+4. elle met à jour la table des matières si elle ajoute, renomme ou déplace une sous-section ;
+5. si [[ humain ]] maintient le kit, ou si l'enseignant le demande, ce qui vaut au-delà du projet
+   (une règle, une leçon, un piège d'outillage, un gabarit amélioré) va **aussi** dans
+   `REMONTEES_KIT.md` (§ 12) ; sinon, à ignorer ;
+6. elle écrit le message d'ouverture de l'A suivante, `OUVERTURES_A«n+1».md`, avec modèle et
+   effort, et ce [[ que_humain ]] fait avant de l'ouvrir.
+
+**Le CONTEXTE a un plafond** (environ 60 Ko). Au-delà, il devient un coût fixe à chaque
+ouverture : l'historique et le détail des jalons fusionnés partent [% if 'archives' in modules %]aux archives
+(`kit/ARCHIVES.md`)[% else %]dans un fichier d'historique à part, qu'aucune A ne lit par défaut[% endif %], avec l'accord [[ de_humain ]].
+
+**Écrire le kit avant d'en avoir besoin.** Un CONTEXTE et un arbitrage écrits au fil de l'eau
+ont permis de reprendre une A arrêtée au milieu d'un jalon. Et **ne pas forcer le
+calendrier** : un jalon bâclé coûte plus cher qu'un jalon reporté ; face à une date de rendu, on
+réduit le périmètre, pas le soin.
+
+---
+
+## 11. Ce qui vit hors de ce fichier
+
+| Fichier du kit | Contenu | Quand le lire |
+|---|---|---|
+| `kit/MODELES_ET_EFFORTS.md` | politique de modèle et d'effort, réglages actifs (§ 0) | § 0 à l'ouverture ; le reste avant un passage de main |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ à l'ouverture ; le thème concerné avant d'écrire un brief, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | avant de donner une commande à [[ humain ]] |
+| `kit/VOCABULAIRE.md` | les termes du workflow | à la demande |
+| `kit/IDIOMES_DEV.md` | les idiomes de développement repérés | en écrivant un brief ; pour expliquer du code à [[ humain ]] |
+| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | à l'ouverture d'une A d'une piste parallèle ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+[% if 'archives' in modules -%]
+| `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire | à chaque clôture |
+[% endif -%]
+[% if 'mutation' in modules -%]
+| `kit/MUTATION.md` | le balayage mécanique par A, ses pièges | avant l'annexe de C |
+[% endif -%]
+[% if 'expert' in modules -%]
+| `kit/EXPERT.md` | passes expertes et sessions à part | avant de figer une décision de son ressort |
+[% endif -%]
+| `kit/gabarits/` | les documents qu'A remplit à chaque usage (brief, [% if 'relectures' in modules %]annexes, [% endif %]consignes, arbitrage, revue, messages d'ouverture…) | à l'usage |
+| `kit/prompts/` | les messages à coller pour des sessions hors du cycle (première A d'un projet, session « explications », consolidation du kit) | à l'usage |
+
+---
+
+## 12. Faire évoluer le kit
+
+- **On ne modifie jamais un fichier du kit dans un projet** (ce fichier, `kit/`, [% if 'relectures' in modules %]les briefs
+  `06_` et `07_`, [% endif %]`outils/`) : il serait écrasé à la mise à jour suivante, et les autres
+  projets n'en profiteraient pas. Une dérogation propre au projet va au § 2 de `CONTEXTE.md`.
+- **Ce qui vaut au-delà du projet va dans `REMONTEES_KIT.md`** (fichier vivant, à côté de
+  `CONTEXTE.md`), à la clôture : une ligne par remontée — date, A, quoi, pourquoi, fichier du
+  kit visé, texte proposé. C'est facultatif pour qui ne maintient pas le kit ; dans une classe,
+  une remontée se transmet à l'enseignant.
+- **Le mainteneur du kit consolide** de temps en temps, dans une session à part
+  (`kit/prompts/CONSOLIDATION_KIT.md`) : les remontées de tous les projets deviennent une nouvelle
+  version du kit (un tag).
+- **Mettre à jour un projet** : `copier recopy` dans chaque espace et
+  `copier update -a .copier-answers.depot.yml` dans chaque dépôt (`docs/GUIDE.md` du kit). Un
+  étudiant met à jour ainsi, sans consolider.

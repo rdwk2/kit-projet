@@ -1,0 +1,81 @@
+# [[ projet ]]
+
+<!-- Les textes entre «…» sont à remplacer. -->
+
+[[ description ]]
+
+> **Ce README décrit `main`** : une PR qui rend l'une de ses phrases fausse la corrige.
+
+## État
+
+«Ce qui marche aujourd'hui, en trois lignes. Le jalon en cours : voir `docs/ROADMAP.md`.»
+
+## Installation
+
+[% if langage == 'python' -%]
+Prérequis, à installer une fois :
+
+- [git](https://git-scm.com) garde l'historique du projet ;
+- [uv](https://docs.astral.sh/uv/) gère Python et les dépendances ; il installe Python tout seul ;
+- [just](https://just.systems) lance les commandes du projet : `uv tool install rust-just`, puis
+  `uv tool update-shell`, puis ferme et rouvre le terminal ;
+- [GitHub CLI](https://cli.github.com) t'identifie auprès de GitHub, qui refuse les mots de passe
+  dans le terminal : `gh auth login`, puis `gh auth setup-git`.
+[% if 'groupe' in modules %]
+Le pas à pas se trouve dans [`CONTRIBUTING.md`](CONTRIBUTING.md), section 1.
+[% endif %]
+```bash
+git clone https://github.com/[[ github ]].git
+cd [[ github.split('/')[-1] ]]
+[% if 'donnees-privees' in modules -%]
+cp .env.example .env   # puis renseigne le chemin
+[% endif -%]
+uv sync
+just check   # style, types et tests : vert = le projet va bien
+```
+
+**Au premier commit du projet**, commite aussi `uv.lock`, que `uv sync` vient de créer : la CI
+s'en sert, et elle est rouge sans lui.
+[%- else -%]
+«Les étapes pour installer et vérifier le projet.»
+[%- endif %]
+[% if 'donnees-privees' in modules %]
+**Protection des données, sous Claude Code.** Avant d'ouvrir l'agent, installe `uv` et remplis
+`.env` (`cp .env.example .env`, puis renseigne le chemin) : sans `.env`, le hook ne connaît pas le
+dossier des données et ne le protège pas. Si le hook tombe en panne, tout outil est refusé :
+écris toi-même `{"disableAllHooks": true}` dans `.claude/settings.local.json`, puis répare. Les
+autres agents n'ont pas ce hook : ils s'en tiennent à la règle 1 de `CLAUDE.md`.
+[% endif %]
+## Utilisation
+
+«Un exemple minimal, copiable.»
+
+## Comment le projet est mené
+
+- Les règles de développement (humains et agents de code) : [`CLAUDE.md`](CLAUDE.md).
+- Le plan, par jalons : [`docs/ROADMAP.md`](docs/ROADMAP.md) ; l'historique des sessions :
+  [`docs/JOURNAL.md`](docs/JOURNAL.md).
+- Chaque décision structurante a sa fiche, avec les options écartées :
+  [`docs/decisions/`](docs/decisions/).
+- Une tâche = une branche = une pull request, relue avant fusion ; la liste des PR fusionnées
+  est la table des matières du projet.
+[% if 'groupe' in modules -%]
+- Pour contribuer : [`CONTRIBUTING.md`](CONTRIBUTING.md) ; pour relire :
+  [`docs/RELIRE_UNE_PR.md`](docs/RELIRE_UNE_PR.md) ; les livraisons :
+  [`docs/LIVRAISONS.md`](docs/LIVRAISONS.md).
+[% else %]
+Pour une tâche, sans jamais travailler sur `main` (une pull request, ou PR, c'est « voici mon
+travail, à faire entrer dans `main` ») :
+
+1. Pars de la dernière version : `git switch main`, puis `git pull`[% if langage == 'python' %], puis `uv sync`[% endif %].
+2. Crée la branche : `git switch -c [[ prefixe_jalon | lower ]]1/mon-sujet`.
+3. Travaille, [% if langage == 'python' %]lance `just check` (si le format est rouge : `just fmt`), [% endif %]puis `git add chemin/du/fichier` et `git commit -m "feat: ce que ça fait"`.
+4. Envoie la branche : `git push -u origin [[ prefixe_jalon | lower ]]1/mon-sujet`.
+5. Sur GitHub, ouvre la PR (« Compare & pull request »)[% if langage == 'python' %] ; quand la CI est verte, clique[% else %], puis clique[% endif %] sur « Squash and merge ».
+6. Reviens sur `main` : `git switch main`, `git pull`, puis `git branch -D [[ prefixe_jalon | lower ]]1/mon-sujet`.
+[% endif %]
+## Structure
+
+```
+«arborescence commentée, tenue à jour»
+```

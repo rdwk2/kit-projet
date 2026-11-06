@@ -1,0 +1,54 @@
+# Feu vert du plan, ou message en cours de session — «jalon»
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom
+> `FEU_VERT_PLAN_«jalon».md` (feu vert, ou demande de révision) ou `MESSAGE_CODE_«jalon»_«k».md`
+> (message en cours de session), remplir les `«…»`, retirer ce bloc et les variantes inutiles.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrit par** A[% if 'relectures' in modules %], après la passe 2 de B (`RELECTURE_PLAN-«jalon».md`) et son arbitrage[% else %], après avoir relu le plan contre le brief[% endif %] ; **collé par**
+> [[ humain ]] dans la session de code. Le feu vert **prime sur le plan**[% if 'relectures' in modules %] : il part aussi dans le paquet de
+> la C (`kit/gabarits/DEMARRAGE_C.md`)[% endif %].
+> **Choisir la variante** (`kit/METHODE.md`, § 5) : une **révision du plan** seulement si la remarque
+> change la forme du plan — ce qui est construit, dans quel ordre, avec quelles frontières de
+> périmètre —, et alors toutes les corrections en un seul message, puis le plan suivant se relit
+> en entier ; un **message en cours de session** pour tout le reste (un type local, un nom, une
+> ligne de configuration, une précision de test).
+> **Champs** : `«jalon»`, `«n»` (l'A qui écrit), `«date»`, `«heure»`, `«empreinte»` (du plan), `«k»` (numéro
+> du message, ou nombre de précisions), le verdict de la relecture, les précisions et leurs raisons.
+
+## Variante 1 — Feu vert du plan
+
+*Le message envoyé à la session de code le «date» (vers «heure») en réponse à son plan
+(`PLAN_«jalon».md`, empreinte `«empreinte»…`)[% if 'relectures' in modules %], après la passe 2 de B (« «son verdict» » ; aucune révision du plan)[% endif %]. Écrit
+par la «n»ᵉ A. Il prime sur le plan, et sur le § «…» du brief là où il le précise.*
+
+> Plan validé. «k» précisions à intégrer, sans régénérer le plan :
+>
+> 1. **«Le point.»** «Ce qu'il faut faire, et ce qui t'arrête» — «raison ; renvoi au brief, § …».
+> 2. «…»
+
+## Variante 2 — Révision du plan
+
+*Écrit le «date» par la «n»ᵉ A.*
+
+> Ton plan doit être révisé sur ces points, tous dans ce message :
+>
+> 1. «ce qui change dans la forme du plan» — «raison ; renvoi au brief, § …».
+> 2. «…»
+>
+> Propose le plan révisé en entier.
+
+## Variante 3 — Message en cours de session
+
+*Écrit le «date» par la «n»ᵉ A ; message «k» de ce jalon.*
+
+> Précision pour la suite, sans changer ton plan : «…» («raison ; renvoi au brief, § …»).
+> Intègre-la «au commit …».
+
+## Ensuite, pour A
+
+- Une décision prise dans ce message s'écrit le jour même dans le brief (sa rubrique des
+  révisions)[% if 'relectures' in modules %] et dans l'annexe de la C (`kit/gabarits/ANNEXE_C.md`), rubrique des consignes passées en
+  cours de session[% endif %] : sinon la relecture la signalera comme un écart.
+- Après une variante 2, le plan révisé se relit en entier[% if 'relectures' in modules %], par B si la révision porte des choix
+  neufs[% endif %].

@@ -1,0 +1,76 @@
+# Arbitrage — [% if 'relectures' in modules %]«PR #«n» | «jalon», passe «x» de B»[% else %]PR #«n»[% endif %]
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom `ARBITRAGE_PR-«n».md`
+> (relecture de PR)[% if 'relectures' in modules %] ou `ARBITRAGE_B_«jalon»_PASSE«x».md` (passe de B)[% endif %][% if 'expert' in modules %] ou `ARBITRAGE_EXPERT_«sujet».md` (passe experte)[% endif %], remplir les
+> `«…»`, retirer ce bloc.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrit par** A ; **lu par** [[ humain ]], qui tranche ce qui lui appartient ; il nourrit la consigne de
+> correctifs (`CORRECTIFS.md`)[% if 'relectures' in modules %], la révision du brief et l'annexe de la relecture suivante[% else %] et la révision du brief[% endif %].
+> **Règles** : ce que la relecture rapporte revient à A avant d'être exécuté — un écart signalé
+> contredit-il vraiment une décision, ou l'intention a-t-elle été mal lue ? (`kit/METHODE.md`,
+> § 6) ; chaque constat est **rejoué** : vérifié à nouveau, sur le dernier commit de la branche (ou
+> sur le prototype, ou par une contre-épreuve), avant d'être retenu ; un défaut se corrige par une
+> règle aussi étroite que lui ; ce qui déborde part au `BACKLOG.md`, en une ligne.[% if 'relectures' in modules %] Classes de
+> constats : **B-a…B-h** pour une relecture d'artefact, **C-a…C-g** pour une relecture de PR (leurs
+> briefs les définissent).[% endif %]
+> **Champs** : `«n»` (PR), `«jalon»`, `«branche»`,[% if 'relectures' in modules %] `«x»` (passe),[% endif %] `«k»` (l'A qui écrit), `«date»`, les pièces
+> arbitrées (auteur, étendue, empreinte, verdict), les constats, les correctifs[% if 'relectures' in modules %], la liste des
+> mutations à rejouer (le banc)[% endif %].
+
+*Écrit le «date» par la «k»ᵉ A.*
+
+## Pièces
+
+- `«RELECTURE_…».md` (`«empreinte»…`) — «le relecteur : moteur, effort ; complet, ou partiel, arrêté
+  où et pourquoi» ; «ce qu'il a exécuté : mutations, contre-exemples verts et rouges» ; constats
+  «1 à k, par classe», lignes « pour le backlog » ; verdict : « «sa phrase» ».
+[% if 'mutation' in modules -%]
+- Le balayage mécanique (`«tri»`) : «fichiers, mutants, survivants ; lacunes réelles, équivalents,
+  messages».
+[% endif -%]
+- Le contrôle réel (le lancement sur les vraies données par [[ humain ]]), s'il y en a eu un : «ce qui
+  a été comparé à quoi, et le résultat».
+
+## Ce que disent les relectures
+
+«Le ou les défauts du code ; les défauts mineurs ; les phrases fausses ; ce qui n'est qu'une
+garantie écrite que rien ne teste — et si le code calcule juste malgré tout.»
+
+**Recoupement** (plusieurs instruments) : «ce qu'ils trouvent ensemble ; ce que chacun trouve seul,
+et pourquoi c'était hors de portée des autres».
+
+## Constats
+
+| # |[% if 'relectures' in modules %] Classe |[% endif %] Constat, en une phrase | Rejoué ? | Verdict | Raison | Suite |
+|---|[% if 'relectures' in modules %]---|[% endif %]---|---|---|---|---|
+| [% if 'relectures' in modules %]«C-a1» | «C-a»[% else %]«1»[% endif %] | «…» | «oui : comment, résultat» | «retenu · écarté · non retenu ici : antérieur à la PR · note · déjà tranché · à trancher par [[ humain ]]» | «…» | «commit de correctif … · test … · révision du brief, § … · ligne de `BACKLOG.md` · `docs/JOURNAL.md`[% if 'relectures' in modules %] · annexe de la relecture suivante[% endif %]» |
+
+## À trancher par [[ humain ]]
+
+- «La question» — options : «(a) … ; (b) …», leur coût ; recommandation de A : «…».
+  *Décision [[ de_humain ]] : « «sa phrase» », le «date», à «heure».*
+
+## Ce qui en découle
+
+- **Correctifs**, par l'agent de code, qui écrit le code et les tests : `CORRECTIFS_PR-«n».md`, «k»
+  commits sur `«branche»` — «par commit : préfixe, fichiers, constats fermés» —, cas de référence
+  dans `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/cas/` ; ou « aucun ».
+[% if 'relectures' in modules -%]
+- **C bornée** : «oui, sur … | non : `src/` ne change que par …, tenu par les tests neufs et le banc ;
+  précédents : PR #…».
+- **Vérification par A, avant la fusion** : «la liste des mutations à rejouer (le banc) : chaque
+  mutation retenue rejouée sur la tête des correctifs, une à une, en processus neuf ; chacune doit
+  rougir dans un test neuf, par une valeur ; les contre-exemples rouges des relectures doivent
+  passer». Puis «le contrôle réel sur cette tête», la revue, la fusion.
+[% else -%]
+- **Vérification par A, avant la fusion** : «les tests passent sur la tête des correctifs». Puis «le
+  contrôle réel sur cette tête», la revue, la fusion.
+[% endif -%]
+- **Révision du brief** : «révision «r+1», sections …» — ou « aucune ».[% if 'relectures' in modules %] Une révision qui porte des
+  choix neufs repasse en relecture : «passe bis de B : oui | non, parce que …».[% endif %]
+- **`BACKLOG.md`** : «lignes ajoutées».
+[% if 'relectures' in modules -%]
+- **Pour l'annexe de la relecture suivante** : «points déjà soulevés et tranchés, à ne pas
+  remonter ; décisions prises après le brief».
+[% endif -%]

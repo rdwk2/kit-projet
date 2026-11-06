@@ -1,0 +1,127 @@
+# Espace de travail — [[ projet ]]
+
+- **A** : la conversation de conception. Elle réfléchit avec toi, écrit les briefs, et n'écrit pas de code.
+[% if 'relectures' in modules -%]
+- **B** : une conversation neuve qui relit un brief ou un plan, sans avoir vu A.
+- **C** : une session neuve qui relit le code d'une PR, sans avoir vu A.
+[% endif -%]
+- **Code** : l'agent de code (Claude Code, Codex…). Lui seul écrit dans le dépôt.
+- **Toi**, [[ humain ]] : tu tranches, tu lances les commandes, tu transportes les messages, tu fusionnes.
+
+Deux dossiers frères séparent ces rôles : `conception/` pour A seule, `v_for_cowork/` pour ce qui se
+partage. Une conversation ne lit que ce qu'on lui connecte. Un mot inconnu : `conception/kit/VOCABULAIRE.md`.
+
+> **Fichier vivant** de [[ projet ]] : créé par kit-projet [[ version_kit ]], tenu ensuite
+> par [[ humain ]] et les conversations A. C'est l'index de l'espace : ce qu'il y a, qui connecte
+> quoi, comment ouvrir. Le dépôt ([[ github ]]) est la source de vérité du code ; cet espace
+> porte ce que le dépôt ne porte pas.
+
+## Ce qu'il y a ici
+
+| Dossier | Contenu | Connecté à |
+|---|---|---|
+| `[[ depot_travail ]]` | la **copie de travail** du dépôt, où travaille l'agent de code | la session de l'agent de code (Claude Code, Codex…), seule |
+| `conception/` | ce que la conversation A seule voit : `CONTEXTE.md`, `kit/`, `passations/` | A |
+| `v_for_cowork/` | le **miroir** du dépôt (`[[ slug ]]/`, `git pull` seul), les briefs vivants, les diffs | A[% if 'relectures' in modules %], B (C reçoit ses pièces dans son paquet)[% endif %] ; l'agent de code, le seul sous-dossier du jalon |
+[% if 'archives' in modules -%]
+| `archives_conception/` | ce qui ne sert plus | **personne** ; accès ponctuel, accordé par [[ humain ]] pour un fichier précis |
+[% endif -%]
+[% if 'relectures' in modules -%]
+| `relecture/c-pr«n»/` | un poste par relecture C : un clone neuf et le paquet de démarrage | la session de la C, seule |
+[% endif -%]
+[% if 'expert' in modules -%]
+| `sessions/«nom»/` | le dossier d'une session à part (inventaire, recherche, note de méthode) : son prompt et ses pièces ; le rapport revient dans `conception/passations/` | la session, seule |
+[% endif -%]
+| `outils/` | les scripts [[ que_humain ]] lance (`uv run outils/….py`) | personne |
+
+Pistes supplémentaires (si une piste parallèle est ouverte, `conception/kit/PISTES.md`) :
+`conception_«piste»/`, `v_for_cowork_«piste»/`[% if 'archives' in modules %], `archives_conception_«piste»/`[% endif %].
+
+## Qui connecte quoi — la frontière fait le travail
+
+Connecter un dossier, c'est donner accès à ce dossier, et à lui seul. Le geste dépend de l'outil :
+`conception/kit/VOCABULAIRE.md`, § 0.
+
+| Session | Dossiers à connecter | Rien d'autre, parce que… |
+|---|---|---|
+| **A — conception** | `conception/` + `v_for_cowork/` | A voit tout ce qui sert au projet[% if 'archives' in modules %], sauf les archives[% endif %] |
+[% if 'relectures' in modules -%]
+| **B — relecture d'artefact** | `v_for_cowork/` seul | B ne doit pas voir le raisonnement de A |
+| **C — relecture de PR** | aucun : l'agent de code (Claude Code, Codex…) lancé **dans** `relecture/c-pr«n»/` | C ne voit ni A ni les rapports de B |
+[% endif -%]
+| **Code — agent de code** | l'agent de code (Claude Code, Codex…) dans `[[ depot_travail ]]`, en mode plan s'il en a un ; au plus un dossier ajouté : le sous-dossier du jalon dans `v_for_cowork/` | le reste donne envie d'en faire plus que prescrit |
+
+## Ce qu'il te faut (une fois)
+
+| Outil | Pour quoi | Installation |
+|---|---|---|
+| **git** | l'historique du projet | <https://git-scm.com/downloads> ; macOS : `xcode-select --install` |
+| **uv** | Python et les dépendances ; lance aussi Copier et les scripts d'`outils/` | <https://docs.astral.sh/uv/getting-started/installation/> |
+[% if langage == 'python' -%]
+| **just** | les commandes du projet | `uv tool install rust-just`, puis `uv tool update-shell` ; ferme et rouvre le terminal |
+[% endif -%]
+| **Un compte GitHub** | héberger le dépôt, faire tourner la CI | <https://github.com> |
+| **gh**, connecté | GitHub en ligne de commande : lire les PR, poster une revue, cloner un dépôt privé | <https://cli.github.com>, puis `gh auth login` et `gh auth setup-git` |
+| **Un agent** | concevoir avec A, écrire le code | un agent de code (Claude Code, Codex…), avec ou sans outil de conversation à côté |
+
+Pour vérifier : `git --version`, `uv --version`, [% if langage == 'python' %]`just --version`, [% endif %]`gh auth status`.
+Le détail : `docs/GUIDE.md` du kit, § 1.
+
+## Premiers pas (une fois)
+
+1. Le dépôt existe sur GitHub et la copie de travail est à `[[ depot_travail ]]`
+   (`docs/GUIDE.md` du kit, « Après la génération »).
+2. Le miroir, une seconde copie du dépôt, en lecture seule, pour les conversations. Le dépôt doit
+   déjà être sur GitHub. En cas d'échec sur un dépôt privé : `gh auth login`, puis `gh auth setup-git`.
+   ```bash
+   cd [[ racine ]]
+   uv run outils/miroir.py
+   ```
+3. La première A. Dans ton outil de conversation : nouvelle conversation, donne-lui accès à
+   `conception` et `v_for_cowork`, colle le message de `conception/kit/prompts/PREMIERE_A.md`
+   (modèle et effort y sont indiqués). Avec un agent en terminal : lance-le dans `conception`,
+   ajoute `v_for_cowork` s'il le permet, et colle le même message.
+
+## Commandes [[ de_humain ]] les plus courantes
+
+Toutes depuis la racine de l'espace (`cd [[ racine ]]`) ; ajouter `--piste «nom»` pour une
+piste supplémentaire. La liste complète, propre au projet, est au § 2 de
+`conception/CONTEXTE.md`.
+
+| Quand | Commande |
+|---|---|
+| Après chaque fusion | `uv run outils/miroir.py` |
+| PR ouverte, pour [% if 'relectures' in modules %]B, C ou [% endif %]A | `uv run outils/diff_pr.py «n»` → `v_for_cowork/pr-«n».diff` |
+| Compte rendu de l'agent de code, pour A seulement | `uv run outils/compte_rendu_pr.py «n»` |
+[% if 'relectures' in modules -%]
+| Poste de C | `uv run outils/clone_c.py «n» --paquet «nom»`, puis `cd relecture/c-pr«n»` et lancer ton agent de code (mode normal) ; à la fin : `uv run outils/clone_c.py «n» --recuperer` ; une C bornée ou seconde : `--variante «nom»` aux deux commandes (poste `relecture/c-pr«n»-«nom»`) |
+[% endif -%]
+[% if 'mutation' in modules -%]
+| Tête de la PR pour le balayage de A | `uv run outils/tete_pr.py «n»` → `conception/passations/TETE_PR-«n».tar` |
+[% endif -%]
+| Avant la fusion | `uv run outils/revue_pr.py «n»` (commentaire écrit par A), puis *Squash and merge* sur GitHub |
+[% if 'archives' in modules -%]
+| Archivage (liste écrite par A) | `uv run outils/archiver.py conception/passations/A_ARCHIVER_«étape».txt`, relu, puis avec `--executer` |
+[% endif -%]
+
+## Mettre à jour le kit dans cet espace
+
+Les **fichiers du kit** (`conception/kit/`, [% if 'relectures' in modules %]les briefs `06_` et `07_`, [% endif %]`outils/`) se
+rafraîchissent ; les **fichiers vivants** (`CONTEXTE.md`, les index, [% if 'archives' in modules %]l'inventaire, [% endif %]les
+remontées, `passations/`) ne sont jamais touchés :
+
+```bash
+cd [[ racine ]]
+uvx copier recopy --defaults --overwrite -a .copier-answers.espace.yml
+# piste supplémentaire : -a .copier-answers.espace_«piste».yml
+```
+
+## Ajouter une piste parallèle
+
+Lire d'abord `conception/kit/PISTES.md` (quand c'est utile, et quand s'en passer), puis :
+
+```bash
+cd [[ racine ]]
+uvx copier copy --data-file «fichier de réponses» --data couche=espace --data piste=«nom» «chemin du kit» [[ racine ]]
+# «fichier de réponses» : le fichier de réponses du projet, ex. [[ slug ]].yml ; «chemin du kit» : le dossier du kit, ou son URL git
+```

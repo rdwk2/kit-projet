@@ -1,0 +1,116 @@
+# Idiomes de développement
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> À lire en écrivant un brief, et pour expliquer du code à [[ humain ]] (`kit/METHODE.md`, § 11). Repérés
+> dans un premier projet ; les exemples sont génériques.
+
+**Niveaux.** *Socle* : tout projet Python, y compris un projet de groupe avec des débutants.
+*Intermédiaire* : un projet suivi et outillé (CI, tests de propriété, données hors du dépôt, agent
+de code). *Avancé* : un projet de mesure ou de recherche, où un résultat doit se rejouer à
+l'identique. Un idiome avancé coûte : ne le prendre que si le projet en a besoin. Une
+reproductibilité « au bit » pour une erreur mesurée à quelques pour cent près, c'est de la précision
+payée pour rien.
+
+## 1. Les données et leurs contrats
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **Un objet invalide ne peut pas exister** : type immuable, invariants vérifiés à la construction | `@dataclass(frozen=True)` et un `__post_init__` qui lève une erreur de contrat | Le code qui reçoit l'objet n'a jamais à revérifier (*parse, don't validate* ; *make illegal states unrepresentable*) | socle |
+| **Une erreur de contrat dédiée, sous-classe de `ValueError`** | `class ContractError(ValueError)` | On attrape les violations à part, et le code qui attrape déjà `ValueError` continue de marcher ; la ligne de commande l'affiche sans pile d'appels | socle |
+| **Une boîte à outils de vérifications, générique** ; les bornes du domaine vivent ailleurs | `require_finite(x, "x")`, `require_same_length(**tableaux)` ; les plages physiques dans un module à part | « une vérification réécrite quinze fois est un bug en attente » ; l'outil d'un côté, la connaissance du domaine de l'autre | socle |
+| **Comparer pour refuser `NaN` sans test dédié** | `if not low <= value <= high: raise …` | Toute comparaison avec `NaN` vaut `False` : écrit `value < low or value > high`, le test laisse passer `NaN` | socle |
+| **Un argument de choix obligatoire et nommé** | `require_increasing(seq, name, strict=…)` | On ne peut pas oublier de choisir entre croissance stricte et large | socle |
+| **Erreur dure ou suspicion** : refuser ce qui n'a pas de sens, marquer ce qui est douteux | une erreur de contrat contre un drapeau de qualité porté par l'objet | « le contrat est strict, l'ingestion est tolérante et tracée » : un enregistrement douteux ne fait pas tomber tout un lot, et rien ne passe en silence | intermédiaire |
+| **Ne stocker que ce qui ne se recalcule pas depuis le même objet** | une moyenne et un total en `@property`, pas en champs | « deux champs qui portent la même information finissent toujours par diverger » | socle |
+| **Une valeur dérivée en propriété, pour rester idempotent** | le décalage horaire lu sur le fuseau de la date, pas stocké à côté | Avec deux sources de vérité, un objet recréé par `replace` ne passait plus sa propre validation | intermédiaire |
+| **Un champ calculé, jamais passé** | `field(init=False)`, rempli dans `__post_init__` par `object.__setattr__` | Impossible de construire un cumul qui contredirait ses termes | intermédiaire |
+| **Refuser plutôt que copier** | exiger un `tuple`, refuser une `list` avec « passer un tuple » | Zéro copie, garantie mécanique ; un seul endroit à élargir le jour où numpy arrivera | intermédiaire |
+| **Des tableaux parallèles plutôt qu'une liste d'objets** | `x_m`, `y_m`, `z_m` de même longueur | Un million d'objets Python coûtent cher ; `Sequence[float]` accepte un tuple aujourd'hui et un tableau numpy demain | intermédiaire |
+| **Une seule unité interne, l'unité dans chaque nom, les conversions aux frontières** | `longueur_m`, `masse_kg`, `duree_s` ; les grammes seulement à la lecture d'un fichier | Une erreur d'unité se voit à la lecture du nom | socle |
+| **Toute date porte un fuseau** ; UTC, sauf quand l'heure locale a un sens physique ; les durées en secondes | `require_aware(dt, name)` ; `duration_s: float` | Deux dates naïves se comparent sans erreur : l'heure d'écart ressemble à une erreur de modèle et coûte des jours | socle |
+| **Des réglages déclarés** (nom, unité, bornes, défaut, une phrase) et validés ; un nom inconnu est refusé | une spécification par réglage ; un jeu de réglages qui refuse `{"tolerence": 0.9}` | Une seule source pour les défauts ; une faute de frappe ne tourne pas en silence avec la valeur par défaut | intermédiaire |
+| **Chaque résultat porte les réglages qui l'ont produit** | un résultat garde les paramètres de sa construction | Un résultat sauvegardé se rejoue à l'identique | intermédiaire |
+| **Des bornes de contrat plus larges que la plage utile** | utile de 1 à 10 ; bornes de 0 à 100 | « pour ne pas transformer une exploration en erreur de contrat » | intermédiaire |
+| **Séparer ce qui décrit le calcul (stocké, versionné) de ce qui décrit l'écran (jetable)** | la plage d'un curseur n'est jamais stockée | Un champ d'affichage dans un type stocké imposerait un nouveau format ; changer une plage ne change aucun résultat | intermédiaire |
+| **Ne rien deviner d'un nom** | une catégorie `UNKNOWN` par défaut, jamais tirée d'un nom | Ce genre d'inférence « se trompe en silence » | socle |
+| **Pas de branche par cas avant d'en avoir deux** | pas de `if format == …` avant la deuxième variante réelle | Une branche écrite sans second cas réel fige une forme qu'on ne connaît pas | socle |
+| **Un contrat peut devenir une vue** : calculé à la lecture, jamais écrit | un type construit à la lecture depuis l'enregistrement brut | On garde la source fidèle, et on présente au consommateur la forme qu'il attend | avancé |
+| **Un refus est une valeur** | une énumération des motifs de refus ; `None` compté comme « erreur du modèle » | On compte et on explique, au lieu de lever une exception au milieu d'un lot | intermédiaire |
+
+## 2. Fonctions, modules, frontières
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **Cœur fonctionnel, coquille impérative** | une fonction pure `build(donnees, parametres)` ; la lecture du fichier à part ; la ligne de commande lit et affiche | Mêmes entrées, même sortie : on teste en mémoire, et tous les appelants s'en servent de la même façon | socle |
+| **Un contrat propre, des diagnostics à côté** | `build(…)` et `build_with_diagnostics(…)`, qui rend un type de diagnostics à part | Le contrat n'a pas à accueillir les besoins de la ligne de commande | intermédiaire |
+| **Les diagnostics ne gardent que ce qui n'existe nulle part ailleurs** | les parts extrapolées, pas leurs dénominateurs, que l'appelant a déjà | Pas de doublon ; l'interface n'a rien à calculer | avancé |
+| **Une règle appelée, jamais copiée** | l'estimateur appelle la règle du lecteur, et relit ses lignes avec le lecteur lui-même | Une seule définition : aucune dérive possible entre deux usages | socle |
+| **Une exception par couche** | une erreur de format pour le fichier, une erreur de contrat pour la valeur, une erreur par étape | On sait qui a refusé, et pourquoi ; l'erreur nomme l'élément fautif (`ligne[12].valeur`) | intermédiaire |
+| **Valider avant de transformer** | l'objet est construit avec tous les points lus, avant le dédoublonnage | Une valeur absurde dans un point écarté ensuite est quand même refusée | socle |
+| **Tolérant sur la forme, strict sur le fond** | le nom local des balises XML (`tag.rpartition("}")[2]`) ; une valeur obligatoire absente est une erreur | On accepte les variantes d'un format, jamais une donnée absente | socle |
+| **Départager les égalités explicitement** | trier par `(écart, abscisse)` plutôt que par écart seul | Le résultat reste reproductible quand deux candidats sont à égalité | intermédiaire |
+| **Une façade de paquet, tenue** | `__init__.py` et `__all__` ; `_nom` veut dire interne | Une frontière à moitié tenue n'en est pas une : importer `_aide` d'un autre module est le signe qu'il faut un module commun | socle |
+| **Des frontières d'import testées** | un test : tel paquet n'importe ni tel autre, ni une dépendance optionnelle ; la règle ruff `TID251` | Une dépendance interdite se voit à la CI, pas à la relecture | intermédiaire |
+| **Un module commun à la racine, qui n'importe aucun domaine** ; on le sort sans changer son comportement | un module « commun » dans sa docstring, né dans un domaine et sorti par une PR qui ne change rien d'autre | Deux pistes partagent une définition sans dépendre l'une de l'autre | intermédiaire |
+| **Aucun calcul dans l'interface** ; l'interface se génère depuis les déclarations | les curseurs parcourent les spécifications des réglages | Un effet ajouté au modèle apparaît dans l'interface sans toucher à son code | socle |
+| **Le calcul est strict, l'affichage ne plante jamais** | `moyenne(())` lève ; `format_moyenne(None)` rend `—` | Une erreur de calcul s'arrête net ; un rapport de quarante lignes ne plante pas pour une valeur indéfinie | socle |
+| **Un cœur sans dépendance, les besoins nouveaux en extras confinés** | un extra par besoin, confiné à un module | Le cœur s'installe partout ; le prix : des algorithmes réécrits à la main (exemple : une décomposition SVD en Python pur) | avancé |
+
+## 3. Fichiers, provenance, reproductibilité
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **Les données hors du dépôt, désignées par une variable d'environnement** ; l'erreur dit quoi faire | `[[ sigle ]]_DATA_DIR` ; « Copie `.env.example` en `.env` et renseigne la variable » | Le dépôt peut être public ; la CI tourne sans aucun dossier de données | socle |
+| **Des fixtures inventées, versionnées** | `tests/fixtures/` : un petit cas dont chaque valeur se calcule de tête | Les tests ne touchent jamais au réel, et leurs valeurs se vérifient à la main | socle |
+| **Un garde-fou qui empêche l'agent de code de lire les données** | un hook de l'agent de code (Claude Code en propose ; sinon, la consigne seule) qui refuse tout accès au dossier des données | « un garde-fou, pas une enceinte » : une commande qui atteint le dossier sans le nommer passerait | intermédiaire |
+| **Un résultat dit ce qui l'a produit** : refuser un arbre de travail modifié, enregistrer le commit | la commande refuse de tourner si un fichier suivi est modifié | Un chiffre sans commit ne se rejoue pas | intermédiaire |
+| **Ne jamais réécrire un résultat** | des rapports numérotés ; des dossiers datés et nommés par l'empreinte des entrées | On ne perd aucun essai, et deux exécutions ne se confondent pas | intermédiaire |
+| **Un fichier compagnon de provenance, obligatoire** ; identifier par le nom et l'empreinte | `donnees.csv` et `donnees.meta.json` ; le nom suivi de 12 caractères du SHA-256 | Appliquer le mauvais fichier ne lève aucune erreur ; deux fichiers peuvent porter le même nom | intermédiaire |
+| **Écrire prudemment, sans base de données** | création exclusive (`open(…, "xb")`), compagnon d'abord, retrait en cas d'échec, tout calculé avant d'écrire | Tient lieu de transaction ; un fichier apparu entre la vérification et l'écriture n'est pas écrasé | intermédiaire |
+| **Un numéro de format pour chaque document stocké** | `"format": 3` en tête du document | Un lecteur sait ce qu'il lit, et un ancien document reste lisible | intermédiaire |
+| **Une écriture canonique** : mêmes données, mêmes octets | JSON sans espace, champs dans le même ordre, clés triées | On compare deux productions par leur empreinte | avancé |
+| **Un journal en ajout seul, chaîné par empreintes, la déclaration avant le calcul** | chaque ligne porte l'empreinte de la précédente ; une déclaration, puis un résultat ou un échec | Un préenregistrement : on ne peut pas relancer jusqu'au résultat qui plaît sans que le journal le montre | avancé |
+| **Pas de fuite de données** : ne caler que sur ce qui précède | un facteur appris sur les données antérieures à l'origine de la prévision (exemple : les seules observations antérieures à J−7) | Un modèle calé sur ce qu'il prédit serait avantagé à tort | avancé |
+| **Rendre une garantie démontrable** | des bornes choisies pour que la finitude se prouve, et la preuve dans la docstring de la constante | La finitude est démontrée, pas espérée | avancé |
+
+## 4. Messages d'erreur et données personnelles
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **Un message nomme le champ et, pour un tableau, l'indice fautif** | « `valeur_m[48213]` doit être fini » | Sur un million de points, il fait gagner une heure | socle |
+| **Un message dit quoi faire** | « passer un tuple, reçu list » ; « lancer `just «recette»` » | L'erreur se corrige sans chercher | socle |
+| **Un message ne recopie jamais une donnée personnelle** | le nom du fichier, jamais son chemin ; pas de valeur reçue quand c'est un chemin | Un chemin comme `C:/Users/<nom>/…` ou `/home/<nom>/…` finirait dans une trace d'erreur publique | socle |
+
+## 5. Documentation
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **La docstring de module dit pourquoi le fichier existe et quelle décision il applique** | « applique `0007` D3 » | C'est le premier endroit qu'on lit | socle |
+| **Les décisions citées dans le code par numéro et section** | `0007` D4.5 | On remonte d'une ligne à sa raison | socle |
+| **Une docstring de type en cinq rubriques** : Champs, Invariants, Producteur, Consommateurs, Non promis | | Le contrat ajoute au schéma ce qui le relie aux autres | intermédiaire |
+| **Écrire ce qu'on ne promet pas** | « aucune moyenne : elle se calcule ailleurs » | « c'est elle qui laisse le droit de changer d'implémentation plus tard » | intermédiaire |
+| **Une documentation générée depuis le code, et un test qui échoue si elle est périmée** | une fonction pure `render()` ; une recette qui écrit le fichier ; un test qui compare le fichier commité au rendu | Une documentation qui ne peut pas mentir | intermédiaire |
+| **Un rendu déterministe** | ni date ni version dans la sortie, fins de ligne LF, annotations lues dans le texte source | Sinon le test de fraîcheur est fragile | intermédiaire |
+| **Les membres d'une énumération décrits à côté, avec un test** | un dictionnaire `«ENUM»_DESCRIPTIONS` voisin, qui couvre chaque membre | Python ne garde pas de docstring par membre d'une `Enum` | intermédiaire |
+| **Une seule langue pour les noms du code (par défaut l'anglais), la documentation en français** | | Une convention écrite une fois, dans `CLAUDE.md` | socle |
+
+## 6. Tests
+
+| Idiome | Exemple court | Pourquoi | Niveau |
+|---|---|---|---|
+| **Un test par invariant dur, qui vérifie que c'est la bonne règle qui refuse** | `pytest.raises(ContractError, match="longueur_m")` | Sans `match`, un objet refusé pour une autre raison donne un faux vert | socle |
+| **Le fichier de test miroir du module, et un nom de test qui est une phrase** | `tests/test_«bloc»_«module».py` ; `test_series_must_start_at_zero` | Le test sert de mode d'emploi | socle |
+| **Une valeur attendue écrite en dur, jamais recalculée par le test** | `assert total == 500` plutôt que `assert total == sum(…)` | Recalculée, elle suit l'implémentation dans son erreur | socle |
+| **Des exemples calculables de tête** | une petite série inventée : écarts `(0.25, 0.25, 0.0, …)` | Une propriété dit que c'est cohérent, un exemple dit que c'est juste | socle |
+| **Des fichiers cassés écrits dans `tmp_path`** | XML mal formé, heure sans fuseau, instants qui reculent | Chaque refus vérifie que c'est la bonne erreur qui sort | socle |
+| **Des tests de propriété (Hypothesis), avec des stratégies partagées qui fabriquent tout contrat valide** | `@given(series())` : somme des hausses − somme des baisses = valeur finale − valeur initiale | Une loi vérifiée sur des centaines d'entrées ; le contre-exemple est réduit au plus petit | intermédiaire |
+| **Des tests de structure, qui protègent les décisions** | « ce type a exactement ces champs » ; « ce type est gelé » | Un agent qui contredit une décision sans le dire fait rougir la CI | intermédiaire |
+| **Des oracles analytiques** : la valeur attendue vient d'un calcul à la main | sur un cercle de rayon R, l'arc vaut `R·Δθ` | Détecte une fenêtre décalée d'un seul point | intermédiaire |
+| **Choisir un cas qui sépare deux conventions** | un point où les deux conventions donnent des valeurs différentes | « un test qui ne sépare pas les deux conventions ne vérifie rien » de la décision | intermédiaire |
+| **Tester l'invariance aux choix arbitraires** | subdiviser une ligne brisée ne change pas sa longueur | Le résultat ne doit pas dépendre de la densité de l'échantillonnage | avancé |
+| **Une non-régression au bit pour un remaniement** | les sorties du nouveau code comparées bit à bit à celles de l'ancien | La preuve la plus forte qu'une réorganisation n'a rien changé | intermédiaire |
+| **Les scénarios du brief deviennent des tests numérotés** | S01, S02… | Ce que le brief promettait se retrouve dans la suite | intermédiaire |
+| **Des tests de garantie, nés d'une relecture** | `tests/test_«module»_guarantees.py`, dont la docstring dit quelle relecture l'a fait naître | Une garantie écrite sans test n'est pas une garantie | intermédiaire |

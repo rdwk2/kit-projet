@@ -1,0 +1,658 @@
+# Pistes parallèles — plusieurs conversations A sur un même dépôt
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **À lire** avant d'ouvrir une piste, et à chaque point de contact entre pistes : une PR qui
+> touche un fichier commun, un relais reçu, une fusion de l'autre piste pendant un cycle. Lire
+> d'abord `kit/METHODE.md`, §§ 0 à 3, et `kit/VOCABULAIRE.md`.
+>
+> Ce kit est celui de la piste « [[ piste ]] » : ses dossiers sont `conception[[ suffixe ]]/` et
+> `v_for_cowork[[ suffixe ]]/`. Dans ce fichier, « la référence » désigne la piste qui existait
+> déjà (en général `principale`), `«piste»` le nom de la nouvelle (`«PISTE»`, `«RÉFÉRENCE»` : les
+> noms en capitales, dans les noms de fichiers), et `«préfixe»` le préfixe de ses jalons, choisi à
+> sa création (exemple : `AN` pour une piste `analyse`).
+
+## Table des matières
+
+- 0. En une page
+- 1. Quand ouvrir une piste, et quand s'en passer
+- 2. Deux niveaux : léger et complet
+- 3. Dossiers et connexions
+- 4. Partagé, dérivé, propre — et l'extraction
+- 5. Les points de contact et leurs régimes
+- 6. Coordination : les relais
+- 7. L'ordre des fusions
+- 8. Le code de l'autre piste
+- 9. Quand il faut [[ humain ]]
+- 10. Ouvrir une piste : qui fait quoi
+
+---
+
+## 0. En une page
+
+- **Une piste** est un sujet qui avance en parallèle dans le **même dépôt**, avec **la même
+  méthode**, sa propre suite de jalons et ses propres conversations A[% if 'relectures' in modules %], B et C[% endif %]. Exemple :
+  un moteur de calcul d'un côté, l'analyse de ses résultats de l'autre.
+- **La barrière.** Aucune conversation d'une piste ne connecte les dossiers d'une autre : elle
+  ne peut donc rien y écrire. C'est le principe 1 de `kit/METHODE.md` (« une frontière vaut
+  mieux qu'une consigne ») appliqué entre pistes.
+- **Ce qui est commun vit dans le dépôt et dans le kit**, identique pour toutes les pistes.
+  Seules les règles propres au projet de la référence (§§ 1, 2, 3 et 6 de son `CONTEXTE.md`) se
+  transportent, et seulement au niveau complet, par un script : **jamais son état** (§§ 4, 5, 7).
+- **[[ humain ]] est le seul canal entre les deux A.** Un relais est un fichier ; il dit la réponse
+  attendue ; une demande d'accord joint le diff exact des fichiers communs et une fusion d'essai.
+- **La PR qui fusionne en second fusionne `main` dans sa branche**, sans rebase d'une branche
+  déjà relue, et garde les deux côtés des conflits.
+
+```mermaid
+flowchart TB
+  subgraph REF["Piste de référence"]
+    AR(["A de référence"])
+[% if 'relectures' in modules -%]
+    BCR(["B et C de référence"])
+[% endif -%]
+    CR["conception<br/>(A seule)"]
+    VR["v_for_cowork<br/>(miroir 1)"]
+    AR --- CR
+    AR --- VR
+[% if 'relectures' in modules -%]
+    BCR --- VR
+[% endif -%]
+  end
+  H(("[[ humain ]]"))
+  OUT["outils (jamais connecté)<br/>extraire_piste.py"]
+  GH[("GitHub : main")]
+  subgraph PN["Nouvelle piste"]
+    AN(["A de la piste"])
+[% if 'relectures' in modules -%]
+    BCN(["B et C de la piste"])
+[% endif -%]
+    CN["conception_piste<br/>(dont depuis_principale et relais)"]
+    VN["v_for_cowork_piste<br/>(miroir 2)"]
+    AN --- CN
+    AN --- VN
+[% if 'relectures' in modules -%]
+    BCN --- VN
+[% endif -%]
+  end
+  AR <-->|relais et réponses| H
+  H <-->|relais et réponses| AN
+  H ==>|lance| OUT
+  OUT -.->|lit les §§ 1, 2, 3, 6| CR
+  OUT ==>|réécrit les extraits| CN
+  GH -.->|git pull par [[ humain ]]| VR
+  GH -.->|git pull par [[ humain ]]| VN
+```
+
+*Lecture.* Un trait plein relie une conversation au dossier qui lui est connecté ; aucune
+conversation d'une piste n'est reliée aux dossiers de l'autre. Un pointillé est une lecture,
+un trait épais une écriture.
+
+---
+
+## 1. Quand ouvrir une piste, et quand s'en passer
+
+**Le signal** : deux sujets qui vont avancer en même temps, chacun assez gros pour sa propre
+suite de jalons, et qui toucheront les mêmes fichiers communs pendant plus d'une ou deux PR.
+
+**Trois conditions** à faire dire par [[ humain ]] avant tout montage : le même dépôt, la même méthode
+(seule l'échelle s'ajuste au risque), le travail en parallèle. Le reste se propose.
+
+**L'autre option** est que l'A de référence prenne le second sujet. Elle vaut pour un sujet
+court, ou quand la référence est entre deux jalons. Elle se déconseille au milieu d'un cycle,
+quand le contexte de la référence est déjà lourd : elle va contre « une conversation A par
+jalon » (`kit/METHODE.md`, § 10).
+
+**Le premier jalon d'une piste est un cadrage, pas du code** (`«préfixe»0`) : l'inventaire de ce
+qu'elle va traiter, ses documents de méthode s'il lui en faut, la classification de ses
+dépendances, une PR de documentation, le brief de son premier jalon de code. **L'organisation
+se rediscute à sa fin** : garder le niveau choisi, monter, ou descendre.
+
+---
+
+## 2. Deux niveaux : léger et complet
+
+| Niveau | Montage | Pour quand | Ce qu'on perd |
+|---|---|---|---|
+| **Léger, une A** | une seule A par jalon ; dans son `CONTEXTE.md`, une sous-section par piste aux §§ 4, 5 et 7 ; un préfixe de jalons par piste si l'on veut | un second sujet court, ou qui touche sans cesse les mêmes fichiers que le premier | un contexte plus lourd pour l'A ; « une A par jalon » devient « une A pour deux jalons » |
+| **Léger, deux A sans extraction** | une piste créée par `copier` (dossiers, kit, CONTEXTE propres) ; les règles communes sont dans le kit et dans le dépôt ; l'A de la piste demande à [[ humain ]] une section précise de l'autre CONTEXTE quand elle en a besoin ; des relais courts, collés par [[ humain ]], consignés seulement s'ils portent un accord | deux sujets qui se croisent peu ; une référence dont les règles propres au projet tiennent en peu de lignes | la mise à jour automatique des règles locales de la référence |
+| **Complet** | deux A, l'extraction des règles propres au projet de la référence (§ 4.1), des relais numérotés en fichiers, avec diff exact et fusion d'essai | deux sujets lourds, longtemps parallèles, qui partagent des fichiers communs et des modules ; une référence aux règles locales nombreuses et vivantes | rien, sinon le coût du montage |
+
+Le kit rend le niveau léger « deux A » sûr : la méthode, les leçons, la politique de modèle[% if 'relectures' in modules %] et
+les briefs 06 et 07[% endif %] vivent dans le `kit/` de **chaque** piste, identiques. Ce qui reste à transporter, ce sont les
+seules règles propres au projet. **Passer d'un niveau à l'autre ne casse rien** : l'extraction
+s'ajoute par une commande, les relais en fichiers par une habitude.
+
+---
+
+## 3. Dossiers et connexions
+
+Une piste supplémentaire se crée par `copier` (§ 10) ; elle obtient ses propres dossiers,
+**frères** de ceux de la référence (un dossier se connecte avec tout son sous-arbre :
+`kit/METHODE.md`, § 3).
+
+| Dossier | Contenu | Connecté à |
+|---|---|---|
+| `conception_«piste»/` | `CONTEXTE.md` (plan fixe, ci-dessous), `kit/` (copie du kit), `passations/`, **`relais/`** (les relais de la piste, et les copies de ce que l'autre piste lui envoie), **`depuis_«référence»/`** (les extraits, niveau complet ; réécrit par le script, jamais à la main), un dossier de travail par jalon | l'A de la piste seule |
+| `v_for_cowork_«piste»/` | le miroir `[[ slug ]]/` de la piste, [% if 'relectures' in modules %]les briefs 06 et 07 et leurs annexes, [% endif %]les diffs, le sous-dossier du jalon pour Code | l'A[% if 'relectures' in modules %], les B et les C[% endif %] de la piste |
+| `archives_conception_«piste»/` (module `archives`) | ce qui ne sert plus à la piste | personne, jamais par défaut |
+| `[[ racine ]]/relecture/c-pr«n»_«piste»/` (module `relectures`) | le poste d'une C de la piste : un clone neuf et son paquet | la session de cette C |
+| la copie de travail de la piste | un clone (ou un arbre `git worktree`) **distinct** de celui de la référence[% if 'donnees-privees' in modules %], avec son `.env`[% endif %] | la session Code de la piste, ouverte à sa racine |
+| `[[ racine ]]/outils/` | les scripts [[ de_humain ]], **communs à toutes les pistes** (option `--piste`) | personne |
+
+**Règles** :
+
+- **Aucune conversation d'une piste ne connecte un dossier d'une autre piste.** Ce qu'il lui
+  faut de l'autre lui arrive par l'extraction, ou par un relais copié par [[ humain ]] dans `relais/`.
+- **Deux sessions Code ne travaillent jamais dans le même dossier** : un dossier git n'a qu'une
+  branche extraite à la fois. D'où une copie de travail par piste, créée avant la première
+  session Code de la piste.
+[% if 'donnees-privees' in modules -%]
+- **Le hook du dépôt ne garde que la session ouverte à la racine d'un clone** : l'agent de code
+  (Claude Code : réglages lus dans le dossier de lancement) n'en voit pas d'autre. La session Code de
+  la piste s'ouvre donc à la racine de sa copie[% if 'relectures' in modules %] ; une C, ouverte au-dessus de son clone, ne l'a
+  pas (son démarrage nomme les commandes à ne pas lancer)[% endif %].
+[% endif -%]
+- **Ne pas connecter un dossier [[ que_humain ]] devra supprimer**[% if 'relectures' in modules %] (un clone de C)[% endif %] : sous Windows, une
+  conversation qui l'a connecté le tient ouvert. [[ humain ]] copie plutôt le rapport en conception.
+
+**Le plan du `CONTEXTE.md` est fixe** dans toutes les pistes : c'est ce qui permet l'extraction.
+
+| § | Titre | Nature |
+|---|---|---|
+| 1 | `## 1. Où sont les choses` | règle locale |
+| 2 | `## 2. Qui fait quoi — propre au projet` | règle locale |
+| 3 | `## 3. Leçons propres au projet` | règle locale |
+| 4 | `## 4. État d'avancement` | état |
+| 5 | `## 5. Points ouverts, avec leur déclencheur` | état |
+| 6 | `## 6. Particularités de la machine propres au projet` | règle locale |
+| 7 | `## 7. Prochaine séance` | état |
+
+Un passage de plus se range sous un titre `###` de la section qui le porte ; un titre de
+niveau 2 renommé ou ajouté arrête l'extraction (§ 4.1).
+
+---
+
+## 4. Partagé, dérivé, propre — et l'extraction
+
+**Partagé** (un seul exemplaire, régi par le § 5) :
+
+- dans le dépôt : `CLAUDE.md`, la ROADMAP, le `JOURNAL`, le `BACKLOG`, le README,
+  `pyproject.toml` et `uv.lock`, le `justfile`, la CI, [% if 'donnees-privees' in modules %]le hook et ses réglages,
+  [% endif %]`tests/conftest.py`, la suite des numéros de `docs/decisions/`, les listes d'exports et de
+  types documentés, les modules rendus communs (§ 8) ;
+- hors du dépôt : `outils/`, [% if 'relectures' in modules %]le dossier `relecture/`, [% endif %][% if 'donnees-privees' in modules %]le dossier de données et la valeur de sa
+  variable dans le `.env`, [% endif %][[ humain ]], et les limites d'usage, si les pistes partagent un compte
+  (`kit/MODELES_ET_EFFORTS.md`, § 3).
+
+**Partagé par copie identique** (le kit) : le `kit/` de chaque piste (méthode, leçons,
+pièges d'outillage, modèles et efforts, ce fichier, les gabarits)[% if 'relectures' in modules %] et les briefs 06 et 07[% endif %]. Jamais modifié
+dans un projet ; une amélioration trouvée par une piste va dans son `REMONTEES_KIT.md`, et
+profite à l'autre à la mise à jour suivante.
+
+**Dérivé** (régénéré, jamais modifié à la main) : `conception_«piste»/depuis_«référence»/`, les
+règles propres au projet de la référence (niveau complet, § 4.1).
+
+**Propre** (créé et tenu par la piste) : ses conversations, avec leurs modèles et leurs efforts ;
+son `CONTEXTE.md` ; `relais/`, `passations/`, ses messages d'ouverture ; [% if 'relectures' in modules %]les annexes de ses
+briefs 06 et 07 ; [% endif %]son miroir, sa copie de travail[% if 'relectures' in modules %], ses postes de C[% endif %][% if 'archives' in modules %], ses archives[% endif %] ; ses jalons
+`«préfixe»«n»`, ses branches, ses titres de PR ; ses documents de méthode propres (par exemple
+une charte et une liste de questions pour une piste d'analyse de données) ; les fiches de
+décision qu'elle écrit, dans le dépôt commun.
+
+**Règle** : ce qui est propre ne devient partagé que par une PR qui le dit (§ 8) ; ce qui est
+dérivé ne se modifie pas : on demande la source à [[ humain ]].
+
+### 4.1 L'extraction (niveau complet)
+
+```bash
+cd [[ racine ]]
+uv run outils/extraire_piste.py --vers «piste»                       # depuis la piste principale
+uv run outils/extraire_piste.py --vers «piste» --depuis «référence»  # depuis une autre piste
+```
+
+**Ce qu'il fait.** Il lit le `CONTEXTE.md` de la référence et écrit dans
+`conception_«piste»/depuis_«référence»/` un fichier par section de règles locales
+(`REGLES_«RÉFÉRENCE»_1_OU_SONT_LES_CHOSES.md`, `…_2_QUI_FAIT_QUOI.md`, `…_3_LECONS.md`,
+`…_6_MACHINE.md`), puis un `LISEZ_MOI.md`, **écrit en dernier**. Celui-ci donne, pour chaque
+fichier : le contenu, quand le lire, la taille, l'empreinte du contenu (sans l'en-tête), celle
+de la source et sa date.
+
+**Ses garanties.**
+
+- **Tout ou rien.** Il s'arrête **sans rien écrire** si un titre du plan manque, est en double ou
+  est renommé, si un titre de niveau 1 ou 2 sort du plan, si un bloc de code n'est jamais fermé,
+  ou si la source n'est pas en UTF-8. Le message nomme le titre attendu et le titre voisin le
+  plus proche.
+- **Jamais l'état.** Les §§ 4, 5 et 7 ne sont jamais recopiés ni affichés.
+- **Rien n'est supprimé.** Un fichier du dossier de sortie qu'il n'a pas écrit est signalé, à
+  l'écran et dans le `LISEZ_MOI`, jamais supprimé.
+- **Des fichiers stables.** UTF-8 sans BOM, fins de ligne LF, quelle que soit la source.
+- **Deux empreintes.** Relancé sur une source inchangée, il redonne les mêmes. Une modification
+  du seul état de la référence change l'empreinte de la source, pas celles du contenu.
+
+*Pourquoi deux empreintes* : celle de la source change à chaque modification du CONTEXTE de
+référence, état compris ; celle du contenu ne change que si la section extraite change. C'est
+elle que l'A note, pour ne relire que ce qui a changé.
+
+**Quand [[ humain ]] le relance** : avant d'ouvrir chaque A de la piste, et après chaque clôture d'une A
+de la référence. Le message d'ouverture le dit à l'A.
+
+**Ce que l'A de la piste en fait.**
+
+1. Vérifier que `depuis_«référence»/LISEZ_MOI.md` existe ; sinon, s'arrêter et le dire à [[ humain ]].
+2. Comparer les empreintes du contenu à celles qu'elle a notées au § 1 de son CONTEXTE, et ne
+   relire que les fichiers changés.
+3. Lire chaque fichier au moment que dit le `LISEZ_MOI` : §§ 1 et 2 à l'ouverture, § 3 avant le
+   premier brief, § 6 avant de donner une commande à [[ humain ]].
+4. Transposer : les règles nomment les dossiers de la référence ; ce qui suppose un accès à ces
+   dossiers ne s'applique pas tel quel, et se signale à [[ humain ]].
+5. Ne jamais rien écrire dans `depuis_«référence»/`. Un fichier de l'autre piste trouvé là se
+   copie à l'identique dans `relais/`, et se signale à [[ humain ]].
+
+**Le reste de la référence** (son état, ses passations, ses briefs) n'est jamais extrait.
+L'A le demande à [[ humain ]] : **la section ou le fichier précis, et pourquoi**. [[ humain ]] le colle dans la
+conversation, ou le copie dans `relais/`, jamais dans `depuis_«référence»/`.
+
+**Une copie vieillit** : c'est le prix de la barrière, et le script le paie. Si un titre de la
+référence change, le script s'arrête : [[ humain ]] le voit, et l'A de la référence remet le titre fixe.
+
+---
+
+## 5. Les points de contact et leurs régimes
+
+Trois régimes. *Pourquoi* : sans eux, on a des conflits de fusion, ou une A qui change la
+règle de l'autre sans qu'elle le sache.
+
+| Point de contact | Régime | Règle |
+|---|---|---|
+| ROADMAP, `JOURNAL`, `BACKLOG`, README | **information** | [[ humain ]] signale à l'autre A toute PR qui y touche. Conflit de texte : on garde les deux côtés, dans l'ordre convenu au relais (en général, la ligne de la PR déjà fusionnée d'abord). Le README suit `main` PR par PR : chaque brief dit ce qu'il y change |
+| `pyproject.toml`, `uv.lock` | **information** ; **accord** pour une dépendance qui touche le cœur de l'autre piste | `uv lock` sans `--upgrade`, refait depuis le verrou de la branche et comparé paquet par paquet ; une borne de version posée par un extra de l'autre piste se relaie |
+| `CLAUDE.md`, `justfile`, CI, [% if 'donnees-privees' in modules %]hook, [% endif %]`tests/conftest.py` | **accord des deux A** | le brief de la PR le prévoit dans une rubrique « Points de contact » ; l'accord précède la session Code |
+| contrats et fonctions de l'autre piste | **propriété** | changer un contrat existant demande l'accord de sa piste, avant la PR ; en ajouter un est libre (par lignes ajoutées seulement) ; une fonction de l'autre s'appelle, ne se réimplémente jamais |
+| modules et fonctions rendus communs (§ 8) | **propriété partagée** | ils deviennent des points de contact ; tout changement se relaie avec son diff |
+| clôtures d'imports, interdictions de lint[% if 'donnees-privees' in modules %], motifs du hook[% endif %] | **accord** | leur portée s'écrit dans le nom ou la liste du test ; on les relit contre les plans de l'autre piste avant la fusion ; les lever demande l'accord des deux A |
+| numéros de `docs/decisions/` | **réservation** | ci-dessous |
+| ordre des fusions | **négocié** | § 7 |
+| copies de travail, miroirs | **propres** | une copie de travail par piste ; les deux miroirs à jour après chaque fusion |
+| [% if 'donnees-privees' in modules %]dossier de données, [% endif %]limites d'usage | **partagés** | [% if 'donnees-privees' in modules %]le même `.env` ; [% endif %]si les pistes partagent un compte, la politique de modèle tient compte de leurs limites d'usage |
+
+**Les points de contact naissent en route** : un module rendu commun, une fonction commune, une
+page commune. Le tableau des points de contact du projet vit au § 2 du `CONTEXTE.md` de chaque
+piste, tenu à jour par son A.
+
+**Les numéros de fiches de décision.**
+
+- **La règle éprouvée** : une seule suite de numéros pour tout le dépôt. Le numéro se
+  **réserve dans le relais** qui annonce la PR (« `00«nn»` à nous, `00«nn+1»` à vous »).
+  L'A qui réserve vérifie d'abord le dernier numéro du miroir et les PR ouvertes
+  (`ETAT_DISTANT.txt`[% if public %], ou `git ls-remote origin 'refs/pull/*/head'`[% endif %]) ; l'autre le confirme dans sa réponse ; le brief
+  le porte. Une PR qui n'a rien réservé prend le premier numéro libre, et le dit dans son
+  relais.
+- **Ce qui a échoué** : la règle prévue d'abord, « chacune prend le sien à l'ouverture de sa
+  PR », ne se vérifie qu'au dernier moment. Dans les faits, les numéros se sont réservés dans
+  les relais.
+- **L'alternative, non éprouvée** : un préfixe par piste (`docs/decisions/«préfixe»-0001-….md`).
+  Elle supprime toute collision sans coordination, mais coupe l'ordre chronologique en deux
+  suites, et sort de la convention `NNNN-titre.md` du gabarit `0000-template.md`. À n'essayer
+  que si les deux pistes ouvrent beaucoup de fiches en même temps.
+
+**Phrase à proposer pour `CLAUDE.md`** (PR de documentation de la piste, avec l'accord des deux A) :
+
+> **Plusieurs pistes, un dépôt.** Les pistes `principale` et `«piste»` avancent en parallèle.
+> `CLAUDE.md`, le `justfile`, la CI, [% if 'donnees-privees' in modules %]le hook [% endif %]et `tests/conftest.py` ne changent qu'avec l'accord
+> des deux conceptions. La PR qui fusionne en second fusionne `main` dans sa branche (jamais de
+> rebase d'une branche relue) et garde les deux côtés des conflits. Jalons : `«préfixe de la référence»«n»`
+> ou `«préfixe»«n»`, avec un sous-jalon éventuel ; branches `«préfixe en minuscules»«n»/«sujet»` ;
+> titres de PR « `«préfixe»«n» — «nom»` ».
+
+---
+
+## 6. Coordination : les relais
+
+### 6.1 Le canal
+
+- **[[ humain ]] est le seul canal.** Les deux A ne se voient pas. [[ humain ]] transporte, et juge de ce qui
+  part : **un relais ne part que pour un point qui compte**, pas d'aller-retour de politesse.
+- **Un relais est un fichier**, écrit par l'A qui l'envoie dans **son** `relais/`, puis copié
+  à l'identique par [[ humain ]] dans le `relais/` de l'autre piste (`cp` ou `Copy-Item`, § 10.2). Gabarits :
+  `kit/gabarits/RELAIS.md`, `REPONSE_RELAIS.md`, `MESSAGE_FUSION_PISTE.md`.
+- **Dans le `CONTEXTE.md`**, les relais tiennent en trois endroits :
+  - le § 2 porte les accords durables (les conditions de l'autre A, le tableau des points de
+    contact) ;
+  - le § 5 porte les relais qui attendent une réponse, et les accords à obtenir avant une
+    étape ;
+  - le § 4 dit, en une ligne, le dernier relais parti et la dernière réponse reçue.
+
+  Le texte entier reste dans `relais/`.
+- **Une conversation transverse**, chargée d'un fichier commun (le README, par exemple), peut
+  aussi écrire aux deux A, par le même canal.
+
+### 6.2 Nommage
+
+| Pièce | Nom | Écrite par |
+|---|---|---|
+| relais | `RELAIS_«émetteur»_«nn».md` (`nn` sur deux chiffres, compté par la piste qui écrit) | l'A qui envoie |
+| version non partie | `RELAIS_«émetteur»_«nn»_v«k».md` | l'A qui envoie (la version partie garde le nom sans `_v`) |
+| diff des fichiers communs | `RELAIS_«émetteur»_«nn»_diff_communs.diff` ; entre deux révisions d'un paquet : `…_diff_r«a»_r«b».diff` | l'A qui envoie |
+| réponse | `REPONSE_RELAIS_«émetteur»_«nn».md` (le nom du relais auquel elle répond) | l'A qui répond |
+| message spontané (fusion, information) | `MESSAGE_«émetteur»_«objet».md`, par exemple `MESSAGE_principale_FUSION_PR-«n».md` | l'A qui informe |
+
+*Pourquoi l'émetteur dans le nom* : chaque `relais/` contient les pièces des deux pistes ; sans
+lui, `RELAIS_03.md` de l'une écraserait `RELAIS_03.md` de l'autre.
+
+### 6.3 Le cycle d'un accord
+
+```mermaid
+sequenceDiagram
+  participant AN as A de la piste
+  participant H as [[ humain ]]
+  participant AR as A de référence
+  participant CODE as Code (piste)
+  AN->>AN: brief ou paquet prêt, fusion d'essai, diff des fichiers communs
+  AN->>H: RELAIS avec diff et empreinte, réponse attendue
+  H->>AR: copie le relais et ses pièces dans son relais
+  AR->>AR: applique sur une copie, suite complète, fusion d'essai
+  AR->>H: REPONSE_RELAIS (accord, conditions ou objection)
+  H->>AN: copie la réponse dans relais
+  AN->>AN: arbitre, conditions reportées au brief[% if 'relectures' in modules %] et aux annexes de B et de C[% endif %]
+  AN->>CODE: brief accordé, par [[ humain ]]
+  CODE-->>AN: PR ouverte
+  AN->>H: relais sur la PR, pour ce qui touche la référence
+  H->>AR: relais
+  AR->>H: accord de fusion, ou écart
+  Note over AN,AR: fusion par [[ humain ]], MESSAGE de fusion, git pull dans les deux miroirs
+```
+
+### 6.4 Les règles d'un relais
+
+1. **Un point qui compte.** Prévoir un relais par sous-jalon, après les décisions [[ de_humain ]]. N'en
+   ajouter un hors calendrier que si l'autre piste risque de figer une règle avant lui.
+2. **La réponse attendue se dit en tête** : « sur les points x et y, avant «étape» », ou « pas de
+   réponse attendue, sauf objection ».
+3. **L'accord se demande sur pièces** : le diff exact des fichiers communs, et une fusion
+   d'essai faite des deux côtés ; pour un paquet, son empreinte, copié par [[ humain ]] là où l'autre A
+   lit. *Pourquoi* : refaire la fusion d'essai chez l'autre montre les conflits qu'on ne voit
+   pas de chez soi.
+4. **Avant de relayer une conclusion, vérifier chaque grandeur que l'autre piste utilisera,
+   avec sa chaîne de calcul à elle.** Une équivalence vérifiée sur une grandeur ne vaut pas pour
+   une autre ; une conclusion déjà relayée coûte un relais de correction.
+5. **Aucune donnée privée ni aucun chiffre tiré des données réelles** dans un relais
+   (module `donnees-privees`), ce que l'A vérifie avant le départ (par un script du projet, s'il
+   en a un).
+6. **Des points numérotés**, et une dernière ligne « Fin du relais «nn» : «k» points ». L'autre
+   A accuse le dernier point qu'elle a reçu. *Pourquoi* : un relais tronqué en route a déjà
+   perdu son dernier point sans que personne le voie.
+7. **[[ humain ]] confirme chaque transmission** ; l'A note « transmis le … » ou « à confirmer ».
+8. **Un seul message à [[ humain ]] quand une information arrive avant toute action [[ de_humain ]]** : un
+   message complet, qui remplace les précédents et le dit.
+9. **Avant de dire « pas encore reçu »**, lister `relais/` (et `depuis_«référence»/`) par date :
+   une réponse peut y être déposée sans être collée dans la conversation.
+10. **L'autre A donne un avis et des conditions sur ce qui la touche ; elle ne pilote ni la
+    revue ni la fusion.** Ses conditions deviennent des références écrites : dans le brief
+    (rubrique « Ce qui touche «référence» »)[% if 'relectures' in modules %], dans l'annexe de B (décisions prises), dans
+    l'annexe de C (ce que l'autre A a vérifié)[% endif %].
+11. **L'autre A relit deux fois ce qui la touche** : le brief, [% if 'relectures' in modules %]en même temps que la B, [% endif %]puis la
+    PR avant sa fusion. Si un constat [% if 'relectures' in modules %]de C[% else %]de relecture[% endif %] change un fichier commun après son accord, son diff
+    lui revient avant la fusion.
+12. **Lire les garde-fous de l'autre piste contre ses propres plans avant leur fusion.** Une
+    clôture d'imports, une interdiction de lint[% if 'donnees-privees' in modules %], un motif de hook[% endif %] : posé « pour cette PR », un tel
+    garde-fou ferme tout un dossier partagé. On le lit sur la tête de la PR de l'autre, contre chaque
+    import et chaque commande que ses plans prévoient.
+
+---
+
+## 7. L'ordre des fusions
+
+1. **L'ordre se décide dans les relais**, au plus tard avant la session Code de la seconde PR ;
+   chaque relais qui porte un paquet a sa rubrique « Calendrier ».
+2. **La seconde fusionne `main` dans sa branche**, jamais de rebase d'une branche déjà relue :
+   les commits relus gardent leurs empreintes, le conflit se règle une fois, et *Squash and
+   merge* donne quand même un seul commit sur `main`.
+3. **Conflits de texte** (listes, `BACKLOG`, `JOURNAL`, « Structure » de `CLAUDE.md`) : garder les
+   deux côtés, dans l'ordre convenu au relais.
+4. **La fusion se prépare d'avance** (`kit/LECONS.md`, PIS-1).
+   - La conception de la seconde PR fait la fusion de `main` dans une copie de sa tête, et
+     vérifie qu'elle n'ajoute que le diff de l'autre PR, et que la suite passe.
+   - **Par défaut**, elle en tire une consigne pour Code : conflit par conflit, quoi garder, et
+     l'arbre attendu ; Code fait la fusion d'après elle (gabarit `CORRECTIFS`, variante 2).
+   - **Sous dérogation** (CONTEXTE, § 1), elle donne à Code les fichiers résolus, leurs
+     empreintes et l'arbre attendu, et Code les recopie.
+   - Dans les deux cas, **un conflit que la consigne ne prévoit pas arrête Code**
+     (`git merge --abort`).
+[% if 'donnees-privees' in modules -%]
+5. **Un conflit dans `pyproject.toml` ou dans le script du hook** se prépare avec la recopie,
+   par [[ humain ]], des fichiers résolus juste après le `git merge` — sans dérogation, faute d'autre
+   moyen. *Pourquoi* : un marqueur de conflit fait échouer le hook, qui refuse alors tous les
+   outils de Code, `git merge --abort` compris.
+[% endif -%]
+6. **Si l'autre piste fusionne entre l'accord et le lancement de Code, le paquet se régénère.**
+   - La révision n+1 est la source de la révision n, `main` fusionné, les deux côtés gardés.
+   - Elle part avec deux diffs : de n à n+1, et les fichiers communs contre `main`.
+   - Un nouvel accord sur sa nouvelle empreinte précède Code.
+[% if 'relectures' in modules -%]
+   - La B la vérifie mécaniquement : chaque fichier changé est la fusion à trois voies de
+     l'ancienne révision et des deux `main`.
+[% endif -%]
+7. **Un paquet de recopie vérifie l'arbre de sa base** et l'empreinte de chaque fichier qu'il
+   remplace : il refuse un `main` changé, au lieu d'effacer la PR de l'autre piste.
+8. **Après chaque fusion, quelle que soit la piste**, [[ humain ]] met à jour les deux miroirs et les
+   copies de travail (§ 10.2), et dit la nouvelle tête aux deux A ; chaque A compare la tête de
+   son miroir à celle [[ que_humain ]] annonce.
+
+---
+
+## 8. Le code de l'autre piste
+
+- **On appelle, on ne réimplémente jamais.** *Pourquoi* : deux copies d'un calcul divergent.
+- **Le déplacement.** La piste qui a besoin d'un module de l'autre écrit une petite PR qui le
+  rend commun :
+  - les anciens noms restent, par des réexports, avec un test d'identité (`is`) ;
+  - le comportement ne change pas.
+
+  La propriétaire pose ses conditions, relit le brief et la PR, et contrôle sur une copie ce que
+  le module produit chez elle, avant la fusion.
+- **La fonction commune, proposée avec le diff exact.** L'autre piste fait relire le diff par un
+  agent neuf, vérifie que ses tests passent sans modification et que ses sorties restent
+  identiques, et pose ses demandes. L'accord se consigne dans le brief du demandeur. À
+  l'ouverture de la PR, le demandeur compare les fichiers communs écrits par Code au diff
+  accordé, et relaie tout écart de fond : un test de l'autre piste modifié en est un.
+- **Une borne d'interface commune** (un instant « au plus tard », une inclusion, une unité) se
+  décide avec la convention de chacun de ses lecteurs, et l'égalité exacte s'écrit en test.
+- **Dans tous les cas**, le module ou la fonction devient un point de contact (§ 5).
+
+---
+
+## 9. Quand il faut [[ humain ]]
+
+- **Une règle qui touche les deux pistes** (ce qu'on publie du réel, une convention de nommage,
+  une dépendance) : la piste qui la voit pose les options à [[ humain ]], avec leur coût et sa
+  recommandation ; **[[ humain ]] tranche** ; l'application dans les fichiers de l'autre piste revient à
+  l'autre A (son correctif, que la PR de la première peut porter, entré à part et vérifié par
+  empreinte).
+- **Un désaccord entre les deux A** sur un point de contact ou sur l'ordre des fusions : chacune
+  écrit sa position dans un relais ; [[ humain ]] tranche, et les deux A le consignent au § 2.
+- **Une règle [[ que_humain ]] pose pour une piste** : l'autre A la reprend par une note datée de son § 2
+  si elle vaut aussi pour elle. *Pourquoi* : une pratique peut dériver dans une seule piste
+  sans que personne le voie.
+- **Un geste coûteux** (un long export, un accès aux données, une suppression) se demande dans
+  un message à part, avec sa raison en une phrase et ce qu'on perd sans lui.
+
+---
+
+## 10. Ouvrir une piste : qui fait quoi
+
+### 10.1 Dans l'ordre
+
+| # | Qui | Quoi | Quand |
+|---|---|---|---|
+| **Décider** | | | |
+| 1 | [[ humain ]] | dit l'objectif et ce qui est acquis (même dépôt, même méthode, en parallèle) à une A de la référence | avant tout |
+| 2 | A de référence | écrit la note d'ouverture, en lecture seule (`kit/gabarits/NOTE_PISTE.md`) : ce [[ que_humain ]] veut, l'acquis et le proposé, ce qu'elle a vérifié, les points ouverts de la référence qui touchent la piste, le niveau proposé, les points de contact | le jour même |
+| 3 | [[ humain ]] | tranche le niveau (§ 2), au moins pour `«préfixe»0` | avant le montage |
+| **Monter** | | | |
+| 4 | [[ humain ]] | crée la piste par `copier` (§ 10.2, bloc 1) ; copie la note dans `conception_«piste»/` | avant la première A de la piste |
+| 5 | [[ humain ]] | clone le second miroir (bloc 2) | idem |
+| 6 | [[ humain ]] | niveau complet : lance l'extraction (bloc 3) ; vérifie que `depuis_«référence»/LISEZ_MOI.md` existe | idem |
+| **Première A de la piste** | | | |
+| 7 | [[ humain ]] | ouvre la première A de la piste, avec ses deux dossiers seulement, et le message du § 10.3 | — |
+| 8 | A de la piste | remplit son `CONTEXTE.md` ; liste ce qui, dans les règles reçues, suppose un accès à la référence, et le signale à [[ humain ]] ; écrit l'annonce de la piste à l'A de référence (son premier relais) | à l'ouverture |
+| 9 | [[ humain ]] | transmet l'annonce, quand le cycle en cours de la référence le permet | — |
+| 10 | A de la piste | mène le cadrage `«préfixe»0` ; relais 01 : ce que ses décisions changent chez la référence | — |
+| **Première PR, de documentation** | | | |
+| 11 | A de la piste | écrit son brief : la ROADMAP (la piste ajoutée ; ce qu'elle retire du hors-périmètre), la phrase « Plusieurs pistes » et le nommage des jalons dans `CLAUDE.md` (§ 5), les fiches de décision de la piste ; accord de l'autre A sur `CLAUDE.md` | — |
+| **Avant la première session Code de la piste** | | | |
+| 12 | [[ humain ]] | crée la copie de travail de la piste (bloc 4, ou 4 bis) | — |
+[% if 'donnees-privees' in modules -%]
+| 13 | A de la piste | vérifie que le hook protège une session ouverte à la racine de cette copie | — |
+[% endif -%]
+[% if 'relectures' in modules -%]
+| **Avant la première B et la première C de la piste** | | | |
+| 14 | A de la piste | écrit les annexes de ses briefs 06 et 07, avec les conditions de l'autre A | — |
+| 15 | [[ humain ]] | prépare chaque poste de C de la piste (bloc 6) | à chaque C |
+[% endif -%]
+| **En régime courant** | | | |
+| 16 | [[ humain ]] | met à jour les deux miroirs et les copies de travail, et dit la tête aux deux A | après chaque fusion, quelle que soit la piste (bloc 5) |
+| 17 | [[ humain ]] | relance l'extraction, et le dit à l'A de la piste | avant chaque ouverture d'une A de la piste ; après chaque clôture d'une A de la référence |
+| 18 | [[ humain ]] | copie chaque relais et chaque réponse d'un `relais/` à l'autre (bloc 7) | à chaque relais |
+| 19 | les deux A | la rubrique « Points de contact » de chaque brief ; les relais (§ 6) | à chaque PR |
+| **Fin de `«préfixe»0`** | | | |
+| 20 | [[ humain ]] | rediscute l'organisation : garder le niveau, monter, ou descendre | — |
+
+### 10.2 Les commandes [[ de_humain ]]
+
+```bash
+# 1. Créer la piste (une fois). Répondre aux questions comme pour la piste principale
+#    (projet, nom du dépôt, GitHub, racine, préréglage), sauf : le préfixe des jalons de la
+#    piste, et sa copie de travail (bloc 4). Le kit de la piste se met à jour ensuite par :
+#    uvx copier recopy --defaults --overwrite -a .copier-answers.espace_«piste».yml
+#    --data-file : «le fichier de réponses du projet, ex. [[ slug ]].yml» (les mêmes réponses que la piste principale)
+#    «chemin du kit» : le dossier du kit, ou son URL git
+cd [[ racine ]]
+uvx copier copy --data-file «fichier de réponses» --data couche=espace --data piste=«piste» «chemin du kit» [[ racine ]]
+```
+
+`copier` crée `conception_«piste»/` (avec son `kit/`), `v_for_cowork_«piste»/` et, avec le module
+`archives`, `archives_conception_«piste»/`, plus `.copier-answers.espace_«piste».yml`. Il ne touche
+ni `outils/`[% if 'relectures' in modules %], ni `relecture/`[% endif %], ni les dossiers de la référence : ils n'existent qu'une fois.
+
+```bash
+# 2. Le second miroir (une fois ; ensuite, il se met à jour par la même commande)
+cd [[ racine ]]
+uv run outils/miroir.py --piste «piste»
+```
+
+```bash
+# 3. L'extraction (niveau complet) : avant chaque ouverture d'une A de la piste,
+#    et après chaque clôture d'une A de la référence
+cd [[ racine ]]
+uv run outils/extraire_piste.py --vers «piste»
+```
+
+```bash
+# 4. La copie de travail de la piste : un second clone, au chemin de la réponse « depot_travail »
+#    de la piste (par défaut [[ racine ]]/[[ slug ]]_«piste»), aussi court que possible
+#    (sous Windows, un chemin court évite la limite de 260 caractères)
+cd [[ racine ]]
+git clone https://github.com/[[ github ]].git [[ slug ]]_«piste»
+cd [[ racine ]]/[[ slug ]]_«piste»
+cp «copie de travail de la référence»/.env .env   # si le projet a un .env (ou Copy-Item sous PowerShell)
+uv sync --locked
+just check
+```
+
+```bash
+# 4 bis. Ou un arbre git worktree, tiré de la copie de travail de la référence (non éprouvé
+#        dans un projet ; essayé à blanc). main ne peut être extraite que dans un seul arbre :
+#        celui de la piste travaille détaché sur origin/main entre deux PR, et Code y crée sa
+#        branche. On le supprime par « git worktree remove », jamais en effaçant le dossier.
+cd «copie de travail de la référence»
+git fetch origin
+git worktree add --detach [[ racine ]]/[[ slug ]]_«piste» origin/main
+cd [[ racine ]]/[[ slug ]]_«piste»
+cp «copie de travail de la référence»/.env .env   # si le projet a un .env (ou Copy-Item sous PowerShell)
+uv sync --locked
+just check
+```
+
+```bash
+# 5. Après chaque fusion, quelle que soit la piste
+cd [[ racine ]]
+uv run outils/miroir.py
+uv run outils/miroir.py --piste «piste»
+cd «copie de travail de la référence»
+git switch main
+git pull
+uv sync --locked
+cd [[ racine ]]/[[ slug ]]_«piste»
+git switch main          # second clone ; pour un arbre worktree : git fetch origin, puis git switch --detach origin/main
+git pull
+uv sync --locked
+```
+
+[% if 'relectures' in modules -%]
+```bash
+# 6. Le poste d'une C de la piste, puis la récupération de ses rapports
+cd [[ racine ]]
+uv run outils/clone_c.py «n» --paquet «paquet» --piste «piste»
+uv run outils/clone_c.py «n» --recuperer --piste «piste»
+```
+
+[% endif -%]
+```bash
+# 7. Transporter un relais (et sa réponse, dans l'autre sens) : une copie à l'identique
+#    macOS, Linux, Git Bash
+cd [[ racine ]]
+mkdir -p conception/relais conception_«piste»/relais
+cp conception_«piste»/relais/RELAIS_«piste»_«nn»*.* conception/relais/
+cp conception/relais/REPONSE_RELAIS_«piste»_«nn».md conception_«piste»/relais/
+```
+
+```powershell
+# 7. La même chose sous PowerShell
+cd [[ racine ]]
+New-Item -ItemType Directory -Force conception/relais, conception_«piste»/relais | Out-Null
+Copy-Item conception_«piste»/relais/RELAIS_«piste»_«nn»*.* conception/relais/
+Copy-Item conception/relais/REPONSE_RELAIS_«piste»_«nn».md conception_«piste»/relais/
+```
+
+Les autres scripts prennent aussi `--piste «piste»` : `diff_pr.py`, `compte_rendu_pr.py`,
+`revue_pr.py`[% if 'archives' in modules %], `archiver.py`[% endif %]. Tout bloc commence par `cd` sur un chemin absolu.
+
+### 10.3 Le message d'ouverture de la première A de la piste
+
+[[ humain ]] le colle dans une conversation neuve, avec `conception_«piste»` et `v_for_cowork_«piste»`
+connectés, et rien d'autre ; modèle et effort : ceux de la note d'ouverture
+(`kit/MODELES_ET_EFFORTS.md`).
+
+> Projet [[ projet ]]. Tu es la **première conversation A de la piste « «piste» »**, qui avance
+> en parallèle de la piste « «référence» », dans le même dépôt et avec la même méthode.
+>
+> Lis en entier, dans l'ordre : `conception_«piste»/kit/METHODE.md` ; le § 0 de
+> `kit/MODELES_ET_EFFORTS.md` ; `kit/PISTES.md` ; `NOTE_PISTE_«PISTE».md` ;
+> `conception_«piste»/CONTEXTE.md` ; au niveau complet, `depuis_«référence»/LISEZ_MOI.md`, puis
+> les fichiers qu'il dit de lire à l'ouverture. Dans le miroir `v_for_cowork_«piste»/[[ slug ]]/` :
+> `CLAUDE.md`, `README.md`, `docs/ROADMAP.md`.
+>
+> Ta mission : le cadrage de la piste (`«préfixe»0`), sans code, d'après la note. Tu ne connectes
+> jamais les dossiers de l'autre piste ; ce qu'il te faut d'elle, tu me le demandes (la section
+> ou le fichier précis, et pourquoi). Ce que l'autre A doit savoir s'écrit en relais
+> (`kit/gabarits/RELAIS.md`). Termine chaque réponse qui implique une action par : qui agit,
+> quoi exactement, quand.
+
+### 10.4 Les A suivantes de la piste
+
+Au message d'ouverture habituel (`kit/gabarits/OUVERTURES_A.md`), [[ humain ]] ajoute, au niveau complet :
+
+> Extraction relancée le «date» : «sans erreur | erreur : …». Miroir de la piste à «sha».
+> Relais «nn» transmis : «oui | non» ; réponse : «dans relais/ | pas encore».
+
+L'A qui ouvre :
+
+1. vérifie que `depuis_«référence»/LISEZ_MOI.md` existe ; sinon, elle s'arrête ;
+2. compare les empreintes du contenu à celles de son § 1, et ne relit que ce qui a changé ;
+3. compare la tête de son miroir à celle [[ que_humain ]] annonce ;
+4. liste `relais/` par date ;
+5. note dans son § 1 les empreintes lues.

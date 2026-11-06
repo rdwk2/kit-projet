@@ -1,0 +1,89 @@
+[project]
+name = "[[ slug ]]"
+version = "0.0.1"
+description = "[[ description ]]"
+readme = "README.md"
+requires-python = ">=[[ python_version ]]"
+# Aucune dépendance de runtime au départ. Règle 5 de CLAUDE.md : une dépendance
+# s'ajoute avec l'accord [% if 'groupe' in modules %]de l'équipe[% else %][[ de_humain ]][% endif %], la raison, et ce que coûterait de s'en passer.
+dependencies = []
+
+# Les bibliothèques lourdes ou propres à un usage vont dans un « extra », importées
+# dans un seul module (voir la clôture d'imports plus bas). Exemple :
+# [project.optional-dependencies]
+# analyse = ["pyarrow>=21"]
+
+# Une commande en ligne, quand il y en aura une :
+# [project.scripts]
+# [[ sigle | lower ]] = "[[ paquet ]].cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/[[ paquet ]]"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6",
+    "ruff>=0.12",
+    "mypy>=1.16",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py[[ python_version | replace('.', '') ]]"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle — erreurs
+    "W",   # pycodestyle — avertissements
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "RUF", # règles propres à ruff
+    "PT",  # flake8-pytest-style
+    "TID251", # banned-api : clôture d'imports (une bibliothèque n'entre que par un module)
+    "TID252", # imports relatifs : les noms absolus se lisent et se cherchent mieux
+]
+# La notation mathématique est permise : N803 et N806 refuseraient A ou X en argument
+# ou en variable, E741 refuserait l.
+ignore = ["N803", "N806", "E741"]
+# RUF001-003 restent actives : elles attrapent les homoglyphes (un « а » cyrillique
+# dans un identifiant, une espace insécable dans une chaîne). On n'exempte que la
+# typographie française et mathématique voulue dans les docstrings et commentaires,
+# dont les lettres grecques usuelles (ruff ne signale que celles-ci, pas β, θ ou λ).
+allowed-confusables = ["×", "−", "’", "…", "–", "α", "γ", "ι", "ν", "ρ", "σ", "υ"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+# Clôture d'imports : une bibliothèque d'un extra ne s'importe que dans son module.
+# Exemple (à décommenter avec l'extra correspondant) :
+# [tool.ruff.lint.flake8-tidy-imports.banned-api]
+# "pyarrow".msg = "pyarrow ne s'importe que dans src/[[ paquet ]]/parquet.py."
+# [tool.ruff.lint.per-file-ignores]
+# "src/[[ paquet ]]/parquet.py" = ["TID251"]
+
+[tool.mypy]
+# Strict partout : ça attrape les coquilles de fixtures. Seule exception, import-untyped :
+# importer une bibliothèque sans types (scipy, pandas…) ne bloque pas `just check`, sans
+# `# type: ignore`. Ses objets sont de type Any : une fonction annotée les convertit
+# pour les renvoyer (float(…)).
+files = ["src", "tests"[% if 'donnees-privees' in modules %], "scripts"[% endif %]]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src,$MYPY_CONFIG_FILE_DIR/tests"
+explicit_package_bases = true
+python_version = "[[ python_version ]]"
+strict = true
+warn_unreachable = true
+disable_error_code = ["import-untyped"]

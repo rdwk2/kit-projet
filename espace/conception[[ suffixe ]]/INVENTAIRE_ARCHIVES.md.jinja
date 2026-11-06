@@ -1,0 +1,73 @@
+# Inventaire des archives de la conception — [[ projet ]][% if piste != 'principale' %], piste [[ piste ]][% endif %]
+
+> **Fichier vivant** de [[ projet ]] : créé par kit-projet [[ version_kit ]], tenu ensuite
+> par les conversations A (règle de clôture, `kit/METHODE.md`).
+
+**Dossier** : `[[ racine ]]/archives_conception[[ suffixe ]]/`, frère de `conception[[ suffixe ]]/`,
+**jamais connecté par défaut** : aucune A ne doit y lire par erreur une consigne périmée. Chaque
+élément y garde le chemin relatif qu'il avait dans `conception[[ suffixe ]]/`, si bien que les
+liens entre fichiers archivés restent valides ; les dossiers sont déplacés entiers. Rien n'est
+supprimé. Règles, procédure et niveaux : `kit/ARCHIVES.md`.
+
+- **Lire un élément** : l'A nomme à [[ humain ]] le fichier précis (sa ligne ici) et dit pourquoi ; [[ humain ]]
+  accorde l'accès pour cette conversation seulement, ou copie ce seul fichier dans
+  `conception[[ suffixe ]]/passations/` le temps de l'usage, puis le retire. L'A ne demande jamais
+  le dossier entier « pour voir ».
+- **Ajouter une ligne** : l'A qui archive écrit ici la ligne de chaque élément **avant** [[ que_humain ]]
+  ne lance le déplacement, puis la liste `passations/A_ARCHIVER_«étape».txt` (un chemin par ligne,
+  relatif à `conception[[ suffixe ]]/`).
+- **Écrire chaque chemin en entier, avec des `/`, tel qu'il est dans la liste** : `outils/archiver.py`
+  refuse un élément dont il ne trouve pas le chemin, caractère pour caractère **et entre accents
+  graves** (`` `«NN»_OUTILS_[[ prefixe_jalon ]]2` ``), dans la section « Archivages ».
+  Jamais de `…` dans un chemin ; plusieurs chemins dans une même cellule, chacun entre ses accents graves,
+  se séparent par des virgules.
+- **La ligne va dans la section de son archivage**, sous « Archivages » : le script ne cherche le
+  chemin que dans cette section (un chemin listé seulement dans « Restés en conception » est
+  refusé). À chaque archivage, retirer de « Restés en conception » ce qui part.
+- **Après le déplacement**, l'A suivante vérifie que les éléments ont quitté la conception, et
+  complète le titre de la section : « déplacés par [[ humain ]] le «date» ; vérifié par l'A«n» : absents de
+  la conception ».
+
+## Quand en avoir besoin : les douze formules
+
+La colonne « Quand en avoir besoin » prend une de ces formules (ou deux, séparées par « ; »), pas
+une phrase libre : un lecteur doit décider en une seconde s'il a besoin de la pièce.
+
+| Formule | Pour quoi |
+|---|---|
+| **Aucun usage actif** | ce qui ne servira plus : messages faits, plans remplacés, comptes rendus |
+| **Aucun (doublon)** | la copie identique d'une pièce restée ou archivée ailleurs |
+| **Question sur «sujet» au-delà de `«fiche»`** | un brief ou une spécification dont le dépôt a fixé l'essentiel : le dépôt fait foi |
+| **Pourquoi une décision de `«fiche»`** | les échanges qui ont produit une décision (réponse d'expert, arbitrage) |
+| **Retrouver l'état d'une décision à une date ; texte d'origine d'une ligne changée** | les copies d'avant du CONTEXTE |
+| **Rejouer un calcul de «jalon»** | prototypes, oracles, campagnes, scripts de mesure |
+| **Comparer «les relectures, les balayages» d'une PR à l'autre** | rapports de relecture et de mutation |
+| **Modèle de «pièce»** | une pièce remplacée comme modèle, mais exemplaire |
+| **Un litige sur un point de contact** | accords et messages entre pistes |
+| **«Jalon futur», et pourquoi** (le jalon en gras) | une pièce qu'un jalon nommé de la roadmap demandera |
+| **Vérifier ou refaire l'archivage** | la liste `A_ARCHIVER_«étape».txt`, que le script range avec le reste |
+| **Jamais pour lire ; [[ humain ]] peut le supprimer** | caches et copies entièrement régénérables |
+
+Dans la colonne « Contenu », marquer en gras ce qui ne doit jamais sortir de la conception : par
+exemple des **chiffres tirés de données réelles** (jamais dans le dépôt ni dans
+`v_for_cowork[[ suffixe ]]/`).
+
+## Correspondances à connaître
+
+*Aucune pour l'instant.* Une puce par document archivé que des pièces restantes citent encore avec
+sa propre numérotation (« le § n de `«document»` correspond à la section Dn de `«fiche»` »), ou
+dont le texte a été repris ailleurs.
+
+## Archivages
+
+*Aucun pour l'instant.* Une section par archivage, la plus récente en dernier, juste au-dessus de
+« Restés en conception » ; modèle dans `kit/ARCHIVES.md`, § 4, « Écrire une section ».
+
+## Restés en conception, à archiver plus tard
+
+*Réécrit à chaque clôture par l'A qui clôt, d'après le dossier et non d'après sa mémoire. Une ligne
+par pièce gardée : l'étape qui la nomme, et un déclencheur qu'on peut vérifier.*
+
+| Chemin | Sert encore à | Quand l'archiver |
+|---|---|---|
+| `«chemin»` | «l'étape suivante qui le nomme : modèle du prochain brief, vérification d'une exécution, rejeu d'un calcul…» | «un déclencheur vérifiable : quand le prochain brief est écrit, quand la PR #«n» est fusionnée, à la clôture de l'A«n+1», tant que «la routine» sert» |

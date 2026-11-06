@@ -1,0 +1,18 @@
+# Réponses communes aux deux couches d'un projet : à copier sous le nom du projet
+# (ex. mon-projet.yml), remplir, puis passer à copier par --data-file.
+# Ce qui n'est pas ici sera demandé.
+projet: "Mon projet"
+slug: mon-projet
+description: "Une phrase sur le but du projet."
+humain: Alice              # ton prénom ou ton pseudo
+github: alice/mon-projet   # compte/nom
+# solo-leger | groupe-scolaire | perso-standard | perso-complet | personnalise
+# (perso-standard est le préréglage « Standard », perso-complet le préréglage « Complet »)
+preset: solo-leger
+# avec preset: personnalise, la liste des modules :
+# modules_choisis: [relectures, archives]
+langage: python            # python | autre
+racine: ~/dev/mon-projet   # le dossier de l'espace (couche espace seulement)
+public: false              # true si le dépôt est (ou sera) public
+# module groupe : les pseudos GitHub de ceux qui fusionnent
+# responsables: "@alice @bob"

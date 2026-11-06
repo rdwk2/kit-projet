@@ -1,0 +1,202 @@
+# Gabarit — annexe du brief de relecture d'artefact (`07_ANNEXE_«jalon»_PASSE«x».md`)
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Gabarit** — copier dans `v_for_cowork[[ suffixe ]]/` sous le nom
+> `07_ANNEXE_«jalon»_PASSE«x».md`, remplir les `«…»`, retirer ce bloc.
+>
+> - L'annexe se réécrit **à chaque passe** : passe 1, chaque passe bis, passe 2 («x» : `1`,
+>   `1BIS`, `1TER`… ou `2`). Une fois la passe close, déplacer son annexe dans
+>   `conception[[ suffixe ]]/passations/` : l'annexe d'une passe précédente ne reste pas à côté
+>   du brief.
+> - Garder **une** des deux versions : la **courte** (un jalon ordinaire) ou la **complète**
+>   (un jalon qui porte une décision, ou un gros brief) ; supprimer l'autre, les consignes
+>   « **A :** » et les variantes des autres passes.
+> - Une rubrique sans objet se supprime, sauf quand son absence est une information.
+>
+> Champs : «jalon» · «titre» · «x» (la passe) · «r» (révision du brief) · «chemin» (d'une
+> pièce dans `v_for_cowork[[ suffixe ]]/`) · «empreinte» (son SHA-256) · «date» · «heure» ·
+> «A» (quelle conversation de conception) · «sha» (tête du miroir, ou de `main`) · «k» (numéro
+> d'un constat).
+>
+> Ce qui change d'une passe à l'autre :
+>
+> | | Passe 1 | Passe 1 bis (ter…) | Passe 2 |
+> |---|---|---|---|
+> | Objet | le brief, révision «r» (ou les textes) | la révision suivante : le diff du texte, et le sort des constats | le plan de l'agent de code |
+> | Référence | ROADMAP, fiches de décision, `CLAUDE.md`, documents validés, annexe | les constats de B, l'arbitrage résumé dans l'annexe, le diff | le brief et l'annexe |
+> | Méthode | les classes du § 3 du brief de B | § 3 bis : chaque correction ferme-t-elle son constat sans en ouvrir un autre ? puis les classes, sur le texte changé | les quatre questions du § 4, les classes, puis le tri révision / message |
+> | Verdict | prêt à partir · prêt après correction · à retravailler | idem | validable · validable avec un message · à réviser |
+> | Rapport | `RELECTURE_BRIEF-«jalon».md` | à la suite, dans le même fichier | `RELECTURE_PLAN-«jalon».md` |
+> | Conversation | neuve, ouverte au début du jalon | la même | la même, ou une neuve, qui n'ouvre pas le rapport des passes 1 |
+> | Quand | le brief est écrit et relu en interne | la révision porte des choix de la conception (à proposer d'office) | l'agent de code a présenté son plan |
+
+---
+
+# Version courte
+
+# 7. Annexe — «jalon», passe «x»
+
+> Écrite le «date» par «A», pour la passe «x». L'annexe d'une passe précédente ne s'applique
+> plus.
+
+## Tes pièces
+
+1. ce brief de relecture, `07_BRIEF_RELECTURE_ARTEFACT.md` ; ta passe est au § «3 | 3 bis | 4» ;
+2. le brief, `«chemin»`, révision «r» : vérifie d'abord son empreinte, `«empreinte»` ;
+3. *(passe bis)* le diff du texte, de la révision que tu as lue à celle-ci : `«chemin»` ;
+4. *(passe 2)* le plan de l'agent de code, `«chemin»`, tel [[ que_humain ]] l'a copié de la session ;
+5. le miroir `[[ slug ]]/`, à `«sha»`.
+
+## Décidé après la ROADMAP — ne le signale pas comme un écart
+
+- «une ligne par décision : celles du § 3 du brief, celles [[ de_humain ]] hors du brief»
+
+## Déjà tranché — ne le remonte pas
+
+- «les constats des passes précédentes, et leur sort»
+- *(passe bis)* «ce que tu juges en premier : la correction du constat «k» le ferme-t-elle sans
+  en ouvrir un autre ?»
+
+## Où regarder d'abord
+
+1. «…»
+2. «…»
+3. «…»
+
+> **A :** trois à cinq points, non limitatifs, chacun avec son renvoi au brief.
+
+Rapport : `RELECTURE_BRIEF-«jalon».md` (passe 1 ; une passe bis à la suite) ou
+`RELECTURE_PLAN-«jalon».md` (passe 2), dans `v_for_cowork[[ suffixe ]]/`, au format du § 6.
+Verdict en une ligne ; en passe 2, le tri révision / message.
+
+---
+
+# Version complète
+
+# 7. Annexe — «jalon» — passe «x»
+
+> **Section réécrite avant chaque passe par la conversation de conception** — elle seule sait
+> ce qui a été décidé après l'écriture du brief et ce qui est déjà tranché.
+>
+> _Jalon **«jalon» — «titre»**. Brief : `«chemin»`, **révision «r»**, empreinte SHA-256
+> `«empreinte complète»`. Annexe écrite le «date» («heure») par «A», pour la **passe «x»**._
+
+## Ce qu'est ce jalon (ou cette PR)
+
+> **A :** trois à six lignes : ce que la PR fait, sa place dans le jalon, ce qu'elle laisse à
+> la suivante ; qui écrit le code (« la session de l'agent de code écrit tout le code et tous
+> les tests, d'après le brief » ; un prototype de la conception, hors du dépôt, que ni B ni la
+> session ne voient) ; la taille attendue ; qui d'autre relit (l'A d'une autre piste, au brief
+> et à la PR).
+
+## Où en est la relecture — passe «x», maintenant
+
+> **A :** selon la passe.
+>
+> *Passe 1* : « Le brief, révision «r», n'a pas encore été relu par une B. » Ce qu'il a déjà
+> traversé (relecture interne par des agents, accord d'une autre piste), sans leurs rapports.
+>
+> *Passe 1 bis (ter…)* : le sort de chaque constat de la passe précédente (retenu, retenu avec
+> une autre correction, écarté — et pourquoi, en une ligne) ; la révision qui les porte ; ce
+> que la conception a rejoué de ce que B affirmait ; **ce que B doit juger en premier** — texte
+> type : « C'est à toi de dire, **en premier**, si cette phrase ferme ton constat «k» sans en
+> ouvrir un autre. » Quand la conception a changé la correction proposée par B, dire pourquoi,
+> avec le cas : une correction proposée par B peut ouvrir une seconde contradiction, qu'un mot
+> changé évite.
+>
+> *Passe 2* : l'état de la session de l'agent de code (modèle, mode plan s'il en a un, effort ; « a fait
+> l'état des lieux du brief, en lecture seule, et présenté son plan ») ; « **Le plan n'est pas
+> validé** : il attend ta passe 2. » ; ce qui va se passer pendant la session, déjà décidé
+> (par exemple `main` qui bouge : fusion, jamais de rebase, et les conflits attendus) — texte
+> type : « L'ordre n'est pas un constat ; ce que le plan en fait, si. » Si la B est neuve :
+> « Tu es une conversation neuve, pour la passe 2 seulement : tu n'as pas besoin de ces passes,
+> et tu n'ouvres pas leur rapport. »
+
+## Tes pièces
+
+1. ce brief de relecture, `07_BRIEF_RELECTURE_ARTEFACT.md` — §§ 1 à 6 ; ta passe est au
+   § «3 | 3 bis | 4» ;
+2. **`«chemin»`**, révision «r» : **vérifie d'abord son empreinte** ; «ses annexes, chacune
+   avec son empreinte» ;
+3. *(passe bis)* **`«chemin»`** : le diff du texte, de la révision que tu as lue à celle-ci ;
+4. *(passe 2)* **`«chemin»`** (SHA-256 `«…»`) : le plan de l'agent de code, tel [[ que_humain ]] l'a
+   copié de la session ;
+5. *(passe bis, ou passe 2 dans la même conversation)* ton rapport et tes outils, dans
+   `«chemin»` ;
+6. le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/`, à `«sha»` — ou plus loin si une autre PR
+   a fusionné : [[ humain ]] te le dira — lu par `git --no-optional-locks`, **jamais `git status` ni
+   `git fetch`**, sans y rien écrire.
+
+> **A :** ce qui se lit en entier, et ce qui se lit seulement là où le plan s'y réfère ou s'en
+> écarte (une annexe longue du brief : son en-tête, les contrats que le plan nomme, la table des
+> contre-épreuves).
+
+## Tes références pour ce jalon
+
+> **A :** en plus de celles du § 2 : les fiches de décision de `docs/decisions/` et leurs
+> sections précises ; les documents de la piste ; les sections de `docs/ROADMAP.md` ; dans
+> `CLAUDE.md`, la règle 3 et la méthode de travail. En passe 2 : « Le brief, révision «r»,
+> d'abord : c'est ta référence. »
+
+## Où regarder d'abord
+
+> **A :** une liste numérotée, **non close** (« en particulier, sans que la liste soit
+> close »), chaque point avec son renvoi au brief.
+>
+> *Passe 1* : les parties du brief qui portent les choix de la conception (relus nulle part
+> ailleurs) ; les sections éloignées l'une de l'autre qui parlent de la même chose (B-a) ; les
+> valeurs littérales et leurs tolérances ; les seuils et leurs bornes ; la campagne de
+> contre-épreuves.
+>
+> *Passe 2* — les points qui ont servi :
+> 1. ce que la session écrit, et d'après quoi seulement (le brief et le dépôt) ;
+> 2. les commits, dans l'ordre, et ce que chacun contient ;
+> 3. les garde-fous : les commandes que la session ne tape jamais, et comment elle s'en passe[% if 'donnees-privees' in modules %]
+>    (recherche par l'outil, messages de commit par fichier) ; « un plan qui prévoit
+>    d'“essayer” la commande, même `--help`, est hors du brief »[% endif %] ;
+> 4. les fichiers communs avec une autre piste : ce qui y change, et rien d'autre ;
+> 5. **les décisions qu'un plan pourrait prendre en silence** — les nommer une à une (un ordre
+>    de calcul, un arrondi, un format d'écriture, l'ordre d'écriture de deux fichiers, l'ordre
+>    de deux contrôles) ;
+> 6. les tests : chaque fichier neuf et ses cas, les tolérances, les seuls tests existants qui
+>    changent ;
+> 7. les contre-épreuves : la table jouée, ce que l'exécuteur compte comme rouge (un échec dans
+>    le corps d'un test, pas à la collecte), la restauration, le témoin, ce que fait le plan
+>    quand une ligne reste verte ;
+> 8. le hors-périmètre : les fichiers qu'on ne touche pas ; ce qui déborde part au
+>    `BACKLOG.md` ;
+> 9. si `main` bouge : à quel moment, et ce que cela change pour les vérifications ;
+> 10. les « points soumis » (ou « signalés ») à la fin du plan : chacun conforme au brief, ou une
+>     décision prise en silence ?
+> 11. les comptes que le plan annonce (lignes de backlog, arguments, tests modifiés, tailles de
+>     commits) contre ceux du brief ;
+> 12. ce que le plan ajoute au brief (aides privées, réglages, scripts hors du dépôt) : demandé,
+>     permis par le brief, ou en trop (règle 3) ?
+
+## Décisions prises — à ne pas signaler comme des écarts
+
+> **A :** les décisions du brief (§ 3), avec leurs sources ; les décisions [[ de_humain ]] hors du
+> brief ; l'accord d'une autre piste et ses demandes ; les arbitrages des constats des passes
+> précédentes (dont les hypothèses de B réfutées, et par quoi) ; ce que le « Fini quand »
+> devient dans ce jalon, s'il se termine après la PR ; ce qui est fait hors de la PR, et où.
+
+## Ce qui a été vérifié par la conception — tu n'as pas à le refaire
+
+> **A :** sur le prototype, s'il y en a un (lint, typage, comptes de tests, contre-épreuves
+> jouées une à une et leur résultat, imports) ; les pièces elles-mêmes (le dossier contient
+> exactement la révision «r», aux empreintes données ; `main` est à `«sha»`, vérifié au
+> serveur ; le plan est, à l'octet, le texte [[ que_humain ]] a collé). Finir par la phrase qui borne la
+> passe — texte type : « Ce qui n'est pas vérifié, et qui est ta question : que le plan fasse
+> ce que le brief demande, rien de plus, sans décision prise en silence. »
+
+## Format de sortie de cette passe
+
+> **A :** le fichier — `RELECTURE_BRIEF-«jalon».md` (passe 1 ; une passe bis à la suite, sans
+> réécrire la précédente) ou `RELECTURE_PLAN-«jalon».md` (passe 2) ; le titre de la section
+> (« Passe «x» — «objet» ») ; ce qui vient en premier (en passe bis : une ligne par constat,
+> fermé ou non, et sinon pourquoi, avec un cas) ; la numérotation (P«x»-1, P«x»-2…) ; classes
+> B-a et B-b d'abord ; en passe 2, le tri **révision de plan** / **message en cours de
+> session** ; les lignes « pour le backlog » à part ; le verdict en une ligne.

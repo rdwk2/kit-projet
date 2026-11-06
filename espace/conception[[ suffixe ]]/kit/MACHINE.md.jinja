@@ -1,0 +1,503 @@
+[% set opt_piste = '' if piste == 'principale' else ' --piste ' ~ piste -%]
+# Pièges d'outillage
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Ce fichier rassemble les pièges fréquents** des outils du kit (uv, just, git, gh, les agents
+> de code), surtout sous Windows, avec leur parade. Une découverte propre à ta machine se note au
+> § 6 de `CONTEXTE.md`. Si `kit/perso/` existe, lis-le aussi : il complète ce fichier et il prime.
+>
+> **Quand le lire** : au moment du besoin, et avant de donner une commande à [[ humain ]].
+
+## Table des matières
+
+- Comment lire ce fichier
+- Partie I — Les outils, surtout sous Windows
+  - 1. Système (SYS) · 2. Verrous de fichiers et de dossiers (VER) · 3. Antivirus (AV)
+  - 4. PowerShell 5.1 (PS) · 5. `cmd /c` (CMD) · 6. Python sous Windows (PY)
+  - 7. uv et environnements (UV) · 8. just et `.env` (JU) · 9. git (GIT) · 10. gh et GitHub (GH)
+  - 12. Tableurs et affichage (AFF) · 13. Agents et bac à sable (WSL) · 14. Claude Code (CL)
+- Partie II — macOS et Linux (ML)
+- Partie III — Recettes prêtes à copier (R1 à R12[% if 'archives' in modules %], R15[% endif %])
+
+---
+
+## Comment lire ce fichier
+
+Chaque entrée a un identifiant stable (`PS-1`, `UV-3`…), pour qu'un brief ou un CONTEXTE puisse
+écrire « voir PS-1 ». Un identifiant n'est jamais réutilisé : un numéro absent est une entrée retirée.
+
+Les outils évoluent vite : revérifie une entrée dans ta session avant de t'y appuyer. Quand un
+script d'`outils/` existe, c'est lui la recette ; l'ancienne recette reste citée, car elle explique
+le piège.
+
+Une commande marquée **(proposée)** n'a pas été observée telle quelle : à essayer avant de s'y fier.
+Les champs `«…»` se remplissent à l'usage ; un `<…>` décrit la forme d'un chemin du système.
+
+---
+
+# Partie I — Les outils, surtout sous Windows
+
+## 1. Système (SYS)
+
+- **SYS-1 — Chemins longs**
+  - Symptôme : échecs d'outils ou de chargement de DLL sous un chemin profond.
+  - Cause : plafond Windows de 260 caractères ; `LongPathsEnabled` ne couvre pas le chargement des
+    DLL.
+  - Parade : des chemins courts, seule parade fiable : l'espace d'un projet directement sous
+    `~/dev/`, le dépôt directement dans l'espace (`[[ depot_travail ]]`).
+- **SYS-3 — Veille, fermeture du capot**
+  - Symptôme : une session de l'agent de code s'arrête. Un calcul lancé dans un terminal reprend au
+    rallumage.
+  - Parade : avant de relancer, relire la sortie et l'état. Reprendre la session (Claude Code :
+    `claude --continue`, CL-2).
+- **SYS-4 — Fins de ligne et sorties texte** : voir PY-3.
+- **SYS-5 — Durées sous Windows**
+  - Symptôme : les durées annoncées à [[ humain ]] sont fausses (« une demi-heure » pour une heure).
+  - Cause : un `just check` complet peut prendre longtemps selon les extras et la taille de la suite ;
+    l'agent de code en lance un par commit.
+  - Parade : mesurer, noter la durée au § 6 du CONTEXTE du projet, et annoncer une durée mesurée,
+    à raison d'un `just check` par commit.
+
+## 2. Verrous de fichiers et de dossiers (VER)
+
+- **VER-1 — `Remove-Item` lancé de l'intérieur du dossier**
+  - Symptôme : « en cours d'utilisation » ; la suite des commandes joue sur l'ancien clone.
+  - Cause : un terminal ou une session Claude Code ouverte dans le dossier le tient.
+  - Parade : ne jamais réutiliser un poste de relecture : `outils/clone_c.py` en crée un neuf par PR
+    (`[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/`) et ne supprime jamais rien (R7). Le ménage se fait
+    à la main, toutes les sessions fermées, depuis le dossier parent.
+    ```powershell
+    cd [[ racine ]]/relecture
+    Remove-Item -Recurse -Force [[ racine ]]/relecture/c-pr«n»[[ suffixe ]]
+    ```
+- **VER-2 — Dossier tenu ouvert après connexion à une conversation**
+  - Symptôme : un clone de relecture ne se supprime ni ne se renomme plus, tout étant fermé.
+  - Cause : un dossier connecté à une conversation reste tenu par Windows (constaté sur un
+    clone connecté pour copier un rapport ; même cause probable pour un autre clone, dit
+    « verrou d'origine inconnue » à l'époque).
+  - Parade : **ne jamais connecter un poste de relecture à une conversation** ; le rapport passe par
+    `uv run outils/clone_c.py «n» --recuperer[[ opt_piste ]]` (R8). S'il est pris : le vider et le garder ;
+    la relecture suivante prend de toute façon un poste neuf.
+- **VER-3 — Verrous git laissés dans un miroir**
+  - Symptôme : `git status` lancé du shell d'une conversation crée `.git/index.lock`, que ce shell ne peut pas
+    supprimer ; un `git fetch` y a laissé `.git/objects/maintenance.lock`. Les commandes [[ de_humain ]] sont
+    ensuite bloquées.
+  - Parade : un miroir ne s'écrit jamais, même pour le mettre à jour : lecture par
+    `git --no-optional-locks` (`log`, `show`, `diff`, `ls-files`, `cat-file`), PR par
+    `ETAT_DISTANT.txt`[% if public %] ou `git ls-remote`[% endif %] ; seul [[ humain ]] le fait avancer (`uv run outils/miroir.py[[ opt_piste ]]`, R12). Un verrou
+    resté : [[ humain ]] le supprime, aucune commande git en cours.
+  - *Note : un expert a lancé une fois `git status` dans le miroir (cache de l'index
+    rafraîchi, rien d'autre). Tout démarrage d'une session qui voit un miroir donne la commande de
+    lecture, pas seulement l'interdiction.*
+
+## 3. Antivirus (AV)
+
+Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces entrées ne valent que si tu vois ces symptômes.
+
+- **AV-1 — HTTPS intercepté**
+  - Symptôme : `invalid peer certificate: UnknownIssuer` à chaque téléchargement de `uv`.
+  - Cause : l'antivirus re-signe les certificats avec sa propre racine, présente dans le magasin de
+    Windows mais pas dans les racines embarquées de `uv`.
+  - Parade : `UV_SYSTEM_CERTS=1` au niveau utilisateur (équivalent `--system-certs`, qui a remplacé
+    `--native-tls` en uv 0.11), puis quitter Claude Desktop par la barre système (CL-3). Même
+    diagnostic pour pip, npm, git en HTTPS (AV-2).
+    ```powershell
+    [Environment]::SetEnvironmentVariable("UV_SYSTEM_CERTS", "1", "User")   # (proposée)
+    ```
+- **AV-2 — git en HTTPS dans un clone neuf**
+  - Symptôme : `git fetch` échoue sur le certificat.
+  - Parade, sous Windows seulement : `git -c http.sslBackend=schannel fetch origin` ; cloner de même.
+    Les scripts d'`outils/` le font si la variable d'environnement `KIT_SCHANNEL` vaut `1`.
+    ```bash
+    git -c http.sslBackend=schannel clone https://github.com/[[ github ]].git «dossier»
+    git config --global http.sslBackend schannel   # (proposée : réglage permanent)
+    ```
+- **AV-3 — Interpréteur neuf bloqué**
+  - Symptôme : le `python.exe` créé par `uv sync` dans une copie de travail (contre-épreuves) est
+    bloqué.
+  - Parade : l'interpréteur du `.venv` du dépôt, `PYTHONPATH=«copie»/src` dans le même appel, lancé
+    depuis la racine de la copie, et `«paquet».__file__` vérifié avant la série (UV-4).
+    ```powershell
+    cd «copie»
+    $env:PYTHONPATH = "«copie»/src"
+    & [[ depot_travail ]]/.venv/Scripts/python.exe -c "import «paquet»; print(«paquet».__file__)"   # (proposée)
+    ```
+## 4. PowerShell 5.1 (PS)
+
+- **PS-1 — Les redirections abîment les octets**
+  - Symptôme : un diff en double encodage, mojibake (`é` → `├®`), BOM, CRLF.
+  - Cause : `>` écrit en UTF-16 ; un tube vers `Set-Content` fait décoder la sortie par la console
+    en CP850 **avant** tout choix d'encodage ; `Set-Content -Encoding utf8` ajoute un BOM et
+    convertit en CRLF.
+  - Parade : les scripts d'`outils/`, qui capturent la sortie en octets sans jamais la décoder
+    (R1, R2) ; à défaut, `cmd /c "… > fichier"` (CMD-1).
+- **PS-2 — `Tee-Object` écrit en UTF-16** : une sortie gardée par `2>&1 | Tee-Object -FilePath …`
+  est en UTF-16 ; la relire comme telle.
+- **PS-3 — Ni `sha256sum` ni `cygpath`**
+  - Symptôme : [[ humain ]] lance sous PowerShell un bloc écrit pour le bash de Claude Code ; il échoue, ou une
+    vérification est sautée.
+  - Parade : `(Get-FileHash «fichier»).Hash` (SHA-256, en majuscules) ; vérifier aussi par l'arbre git
+    (R11), qui ne dépend d'aucun outil d'empreinte. Dire en tête de chaque bloc s'il est pour
+    PowerShell ou pour bash.
+- **PS-4 — Les variables du `.env` n'existent pas dans le terminal**
+  - Symptôme : `$env:«VARIABLE»` est vide ; une sauvegarde donnée par la variable n'a pas été faite.
+  - Cause : seul `just` charge le `.env`.
+  - Parade : écrire le chemin en clair ; un script lance les commandes du dépôt par leurs recettes
+    `just`, ou pose la variable lui-même (UV-6).
+- **PS-5 — Sortie de Python vers un fichier** : avant la commande (R4),
+  ```powershell
+  $env:PYTHONIOENCODING = "utf-8"
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+  ```
+- **PS-6 — `NativeCommandError` en tête de sortie**
+  - Symptôme : un `just …` sous PowerShell commence par une `NativeCommandError`.
+  - Cause : `uv` écrit « Building … Installed 1 package » sur sa sortie d'erreur, que `2>&1` habille en
+    erreur. Cosmétique.
+  - Parade : l'ignorer, ou `cmd /c "… 2>&1"`.
+- **PS-7 — `$ErrorActionPreference = 'Stop'` et programmes natifs**
+  - Symptôme : un script s'arrête sur une simple ligne de stderr de `just` ou `uv`.
+  - Parade : `Continue` autour de l'appel natif, et lire le code dans `$LASTEXITCODE`.
+- **PS-8 — Variables insensibles à la casse**
+  - Symptôme : `$branche` (la branche lue) écrasait `$Branche` (l'attendue) ; le contrôle comparait une
+    valeur à elle-même.
+  - Parade : des noms qui disent le rôle : `$BrancheAttendue`, `$brancheLue`.
+- **PS-9 — Écrire un fichier à l'octet**
+  - Symptôme : un fichier attendu octet pour octet porte un BOM ou une fin de ligne en trop
+    (PowerShell ajoute l'un ou l'autre selon la commande).
+  - Parade : le script écrit les octets, refuse d'écraser un fichier existant, vérifie l'empreinte.
+    ```powershell
+    [System.IO.File]::WriteAllBytes("«fichier»", [System.Text.Encoding]::UTF8.GetBytes($texte))   # (proposée ; sans BOM)
+    ```
+- **PS-10 — Arguments d'une application native** : PowerShell ne coupe pas
+  `--types a,b` en deux arguments pour un exécutable natif (`about_Parsing`). Une hypothèse sur
+  PowerShell se vérifie à la documentation avant d'entrer dans un brief.
+- **PS-11 — Lancer un script `.ps1`** : `powershell -NoProfile -ExecutionPolicy Bypass -File «chemin»/«script».ps1`
+  (R10).
+- **PS-12 — Où tourne la commande**
+  - Symptôme : `git pull` a tourné dans le dernier dossier ouvert (un clone de relecture) ;
+    `gh pr comment` lancé dans le dossier parent du dépôt a échoué.
+  - Parade : chaque bloc donné à [[ humain ]] commence par `cd [[ racine ]]` (ou un autre chemin absolu) ; `git`
+    et `gh` tournent dans le dépôt lui-même, pas dans son parent — les scripts d'`outils/` le font
+    pour lui. Une commande écrite pour Claude Code doit aussi marcher sous PowerShell.
+- **PS-14 — Accents dans un script `.ps1`** · *comportement connu de Windows PowerShell 5.1, pas encore
+  observé* · à vérifier
+  - Symptôme attendu : les messages accentués d'un script s'affichent abîmés, ou une chaîne accentuée
+    ne correspond plus à un nom de fichier.
+  - Cause : PowerShell 5.1 lit un `.ps1` sans BOM dans l'encodage ANSI du système.
+  - Parade : écrire les `.ps1` remis à [[ humain ]] en ASCII (messages sans accents), ou en UTF-8 avec BOM ;
+    mieux, un script Python d'`outils/`. Le dépôt veut les `.ps1` en CRLF (GIT-3).
+
+## 5. `cmd /c` (CMD)
+
+- **CMD-1 — Redirection à l'octet** : `cmd /c` laisse passer les octets sans les décoder : ni mojibake,
+  ni BOM, ni conversion. C'était la seule recette sûre pour écrire la sortie de `gh` dans un fichier
+  (« passer par `cmd /c`, et rien d'autre ») ; les scripts d'`outils/` la remplacent (R1, R2).
+- **CMD-2 — Essai sans les variables d'encodage**
+  - Symptôme : un défaut d'encodage ne se voit pas dans le shell de Claude Code.
+  - Cause : ce shell (et peut-être celui [[ de_humain ]]) hérite de `PYTHONIOENCODING=utf-8:surrogateescape`.
+  - Parade : R5, d'abord sur `main` (témoin), puis sur la branche.
+
+## 6. Python sous Windows : les outils remis aux agents (PY)
+
+- **PY-1 — `subprocess` en `text=True` lit en cp1252** : passer `encoding="utf-8"`.
+- **PY-2 — `write_text` sans arguments**
+  - Symptôme : un fichier en CRLF ; ou `UnicodeEncodeError` sur « β » **après avoir vidé le fichier**.
+  - Parade : `write_text(texte, encoding="utf-8", newline="")`, ou `write_bytes(texte.encode("utf-8"))`.
+- **PY-3 — Sorties texte en CRLF**
+  - Symptôme : une sortie de commande promise « à l'octet » diffère sous Windows.
+  - Parade : écrire « aux fins de ligne près », ou comparer les octets sous Windows ; un fichier que le
+    programme écrit lui-même s'écrit en octets.
+- **PY-4 — Chemins formatés dans un texte**
+  - Symptôme : un test joint, vert sous Linux, arrête la session de code sous Windows (`rapports/…`
+    contre `rapports/…`).
+  - Parade : avant de publier des tests, chercher tout `f"…{chemin}"` et `str(chemin)` comparé à une
+    chaîne littérale ; comparer à `chemin.as_posix()`.
+- **PY-5 — Interpréteur donné en chemin relatif** : le rendre absolu par `os.path.abspath`, pas
+  `resolve`, qui sortirait du `.venv`.
+- **PY-6 — Un nom de fichier avec `:` est un lecteur** : deux tests écrivaient
+  `a:b.zip`, chemin de lecteur sous Windows ; à chercher dans les tests neufs.
+- **PY-7 — Version de Python non épinglée**
+  - Symptôme : un test vert en local rougit en CI, ou l'inverse ; une version plus récente que celle de
+    la CI a fait échouer un test.
+  - Cause : `requires-python = ">=3.x"` laisse uv prendre plus haut.
+  - Parade : `.python-version` = la version de la CI ; les essais de A dans cette version.
+- **PY-8 — Hypothesis sous Windows** : un `FailedHealthCheck` sous Windows sur un
+  test vert sous Linux. Parade à trancher par projet (une ligne de `BACKLOG.md`, en attendant).
+
+## 7. uv et environnements (UV)
+
+- **UV-1 — Certificats** : AV-1.
+- **UV-2 — Déplacer le dossier du projet casse le `.venv`** : lanceurs à chemins absolus.
+  `uv sync --locked --reinstall`.
+- **UV-3 — Un `.venv` recopié garde les chemins de l'ancienne copie**
+  - Symptôme : les tests tournent, sans erreur, sur le `src/` de l'ancienne copie (en-têtes `#!` de
+    `pytest` et des commandes du projet).
+  - Parade : `uv sync` dans chaque copie, ou `PYTHONPATH=«copie»/src` et `__file__` vérifié.
+- **UV-4 — Installation éditable** : un `.venv` emprunté pointe vers sa propre
+  copie (`_editable_impl_….pth`) ; une mutation faite dans une autre copie passe inaperçue. Parade :
+  AV-3.
+- **UV-5 — Liens durs vers le cache** : retoucher un paquet installé le retouche
+  dans tous les environnements. Ne jamais retoucher `site-packages`.
+- **UV-6 — `uv run` hors de `just` n'a pas le `.env`** : « La variable
+  d'environnement … n'est pas définie », code 1. Passer par la recette `just`, ou poser la variable
+  dans le script.
+- **UV-7 — Refaire `uv.lock`** : `uv lock` sans `--upgrade` garde les versions du
+  verrou de départ et prend les plus récentes pour le reste. Le refaire depuis le verrou **de la
+  branche**, le comparer paquet par paquet, le donner tout fait à l'agent de code, que
+  `uv sync --locked` vérifie.
+- **UV-8 — `uv.lock` ou `pyproject.toml` en conflit** : un `uv.lock` en conflit ne gêne pas
+  `uv run --no-sync` ; un `pyproject.toml` à marqueurs de conflit fait échouer tout
+  `uv run --project` : voir CL-7.
+- **UV-9 — `UV_PYTHON_DOWNLOADS=never`** : ne marche que si la version est déjà installée ; sinon
+  `uv python install «version»` d'abord.
+
+## 8. just et `.env` (JU)
+
+- **JU-1 — `.env` et antislashs** : le parseur dotenv de `just` rejette les antislashs non cités : écrire
+  `«VARIABLE»=C:/Users/…`, avec des barres obliques.
+- **JU-2 — Réglages du `justfile` sous Windows** : `set dotenv-load := true` (sans échec si le `.env`
+  manque, pour la CI) et `set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]` ; une
+  commande par ligne, jamais enchaînées par `;` (un échec serait masqué).
+- **JU-3 — Le `.env` n'est lu que par `just`** : PS-4, UV-6.
+
+## 9. git (GIT)
+
+- **GIT-1 — Certificats** : AV-2.
+- **GIT-2 — Miroir en lecture seule** : VER-3. S'il est modifié par accident, [[ humain ]] le remet à neuf :
+  `git reset --hard origin/main`.
+- **GIT-3 — Fins de ligne** : dans le dépôt, `* text=auto eol=lf` partout, `*.ps1`, `*.bat`, `*.cmd` en
+  `eol=crlf`, les binaires déclarés (`*.png binary`, …) dans `.gitattributes`.
+- **GIT-4 — `git worktree add` refuse une branche déjà prise** : cloner à part,
+  ou `git worktree add --detach`.
+- **GIT-5 — Lire une PR sans l'API** : `git ls-remote origin 'refs/pull/*/head'`,
+  `git fetch origin pull/«n»/head`, `refs/pull/«n»/merge` (la fusion d'essai calculée par GitHub).
+- **GIT-6 — Prouver un état par l'arbre** : deux copies au même arbre ont le même
+  `git rev-parse "HEAD^{tree}"` ; l'arbre d'une fusion se calcule d'avance (`git read-tree` de la tête
+  dans un index jetable, `git hash-object -w`, `git update-index --cacheinfo`, `git write-tree`).
+  Contrôle qui tient quand une commande d'empreinte manque (R11).
+
+## 10. gh et GitHub (GH)
+
+- **GH-1 — `gh` absent du `PATH`** : installé dans `C:\Program Files\GitHub CLI`, il manque aux
+  terminaux ouverts avant son installation ; rouvrir le terminal.
+- **GH-2 — Diff, description, revue** : R1, R2, R3. `gh pr review --body-file` lit le fichier tel quel,
+  accents compris ; GitHub interdit d'approuver sa propre PR, d'où l'option `--comment`.
+- **GH-3 — Retirer une donnée d'une description** : `gh pr edit «n»
+  --body-file «fichier»` remet un texte propre, mais les révisions anciennes restent dans le menu
+  « edited » de GitHub : les supprimer à la main.
+- **GH-4 — GitHub vu depuis une conversation**
+  - Symptôme : selon l'outil, `gh` et l'API sont refusés depuis une conversation ; la page d'une
+    PR lue par le web peut montrer un état périmé.
+  - Parade : `v_for_cowork[[ suffixe ]]/ETAT_DISTANT.txt`, que `outils/miroir.py` réécrit à chaque passage
+    (R12) : les têtes de `main` et de chaque PR, avec l'heure ; [[ humain ]] le relance quand l'état distant
+    compte.[% if public %]
+    Le dépôt étant public, aussi : `git ls-remote` et `git fetch` (GIT-5) ;
+    l'API publique répond sans jeton (60 requêtes par heure) :
+    `https://api.github.com/repos/[[ github ]]/pulls?state=open`, `…/pulls/«n»` (champ `body`),
+    `…/branches/main`, `…/commits/«sha»/check-runs`.[% else %]
+    Le dépôt est privé : aucune lecture sans identifiants — ni `git ls-remote`, ni `git fetch`, ni
+    API sans jeton ; ne pas les tenter depuis une conversation.[% endif %]
+    L'état de la CI vient [[ de_humain ]] ; une description se relit dans le fichier écrit par
+    `outils/compte_rendu_pr.py` (R2), comparée sans tenir compte des fins de ligne.
+
+## 12. Tableurs et affichage (AFF)
+
+- **AFF-1 — Excel en français et CSV** : un CSV à virgules sans marque d'en-tête
+  s'ouvre dans une seule colonne, accents abîmés. Le format voulu se décide par projet.
+- **AFF-2 — Thème sombre** : Streamlit suit le thème sombre du système ; Vega
+  dessine en noir une règle ou un texte sans couleur, illisible : toujours donner une couleur.
+
+## 13. Agents et bac à sable (WSL)
+
+- **WSL-1 — Un agent de code peut voir toute la machine par défaut**
+  - Parade : le borner au dépôt par un bac à sable (sous Windows, WSL 2 avec bubblewrap pour
+    Codex), et le vérifier avant toute session de code ou de relecture.
+## 14. Claude Code : application, CLI, hooks (CL)
+
+- **CL-1 — Ajouter un dossier à une session** : `/add-dir` est une commande du CLI ; dans l'application,
+  bouton `+` → ajouter un dossier, en ne donnant **que** le sous-dossier utile. À défaut, `git apply`
+  d'un chemin absolu hors dépôt, depuis le terminal.
+- **CL-2 — Reprendre une session fermée** : dans PowerShell, dans le dossier de la session :
+  `claude --continue`.
+- **CL-3 — Variables d'environnement** : l'application reste en tâche de fond après fermeture de la
+  fenêtre ; pour qu'elle hérite d'une variable neuve, la quitter depuis la barre système.
+- **CL-4 — Le shell de Claude Code est Git Bash** : il avale les `\` ; écrire les chemins avec des `/`,
+  valables sous les deux shells. Claude Code lit `/c/x` et `/mnt/c/x` comme `C:/x`.
+- **CL-5 — Il hérite de `PYTHONIOENCODING=utf-8:surrogateescape`** : CMD-2.
+- **CL-6 — Seul le `.claude/settings.json` du dossier de lancement est lu** : une session ouverte
+  au-dessus du clone — c'est le cas d'une C, lancée dans son poste — n'est pas gardée par le hook du
+  dépôt ; son démarrage lui nomme les commandes interdites, et son clone n'a pas de `.env`.
+- **CL-7 — Hook en échec = tous les outils refusés**
+  - Symptôme : après un `git merge` en conflit, l'agent de code ne peut plus rien lancer, pas même
+    `git merge --abort`.
+  - Cause : le hook se lance par `uv run --no-sync --project …`, qui lit `pyproject.toml` ; avec
+    `"onFailure": "block"` (Claude Code 2.1.295 ou plus), un marqueur de conflit dans
+    `pyproject.toml` ou dans le script du hook refuse chaque outil.
+  - Parade : [[ humain ]] recopie les deux fichiers résolus (PowerShell, empreintes vérifiées) juste après le
+    `git merge` ; en panne, `{"disableAllHooks": true}` dans `.claude/settings.local.json`
+    (personnel, ignoré par git).
+- **CL-8 — Le hook lit toute la commande** : un hook `PreToolUse` voit la commande shell entière,
+  `heredoc` et message `-m` compris ; `Write` et `Edit` ne sont contrôlés que par leur chemin. Textes
+  qui citent une chaîne refusée : par `Write` ou `Edit` ; messages de commit par `git commit -F` ;
+  recherches par l'outil Grep. Sous Windows, le hook doit couvrir l'outil `PowerShell` aussi
+  (matcher `Bash|PowerShell|Monitor|…`).
+- **CL-9 — Un script de hook attend son entrée standard** : lancé sans elle, il attend sans fin.
+  L'éprouver avec une requête JSON sur l'entrée standard, comme le font ses tests ; une copie mutée du
+  hook se joue dans une copie du dépôt, jamais dans le clone où tourne la session (un hook cassé y
+  refuserait tous ses outils).
+- **CL-10 — Fermer le capot arrête la session** : SYS-3.
+- **CL-11 — Mode plan ou mode normal** : l'agent de code d'un jalon part en mode plan ; une C part en mode
+  normal (le mode plan l'empêcherait d'écrire son rapport), dans son poste, aucun dossier ajouté
+  (R7).
+
+---
+
+# Partie II — macOS et Linux (ML)
+
+Ces entrées viennent de la documentation, pas d'une observation : à vérifier sur ta machine.
+
+- **ML-1 — `~` dans un `.env`** : ni `just` ni Python ne le développent. Écrire le chemin complet
+  (`/Users/«nom»/…` ou `/home/«nom»/…`).
+- **ML-2 — Interpréteur du `.venv`** : `.venv/bin/python`, là où Windows a
+  `.venv/Scripts/python.exe`.
+- **ML-3 — Empreinte d'un fichier** : `shasum -a 256 «fichier»` sous macOS, `sha256sum «fichier»`
+  sous Linux.
+- **ML-4 — Casse des noms** : le disque d'un Mac ignore en général la casse, celui de Linux non. Un
+  chemin mal écrit marche sur l'un et échoue sur l'autre.
+
+---
+
+# Partie III — Recettes prêtes à copier
+
+Lancées par [[ humain ]]. Un bloc `bash` marche aussi sous PowerShell ; un bloc `powershell` est
+propre à Windows. Chaque bloc commence par `cd` vers un chemin absolu (PS-12). Quand un script
+d'`outils/` existe, c'est lui la recette ; l'ancienne recette reste citée pour expliquer le piège.
+
+**R1 — Diff d'une PR** → `v_for_cowork[[ suffixe ]]/pr-«n».diff`
+```bash
+cd [[ racine ]]
+uv run outils/diff_pr.py «n»[[ opt_piste ]]
+```
+*Ce que le script remplace* : `cmd /c "gh pr diff «n» > ../pr-«n».diff"` lancé dans le miroir — la seule
+redirection sûre sous PowerShell 5.1 (PS-1, CMD-1). Le script capture les octets de `gh` sans les
+décoder et refuse un fichier vide.
+
+**R2 — Description d'une PR (compte rendu de l'agent de code, pour A seulement)**
+```bash
+cd [[ racine ]]
+uv run outils/compte_rendu_pr.py «n»[[ opt_piste ]]
+```
+→ `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md`. *Remplace* :
+`cmd /c "gh pr view «n» --json body -q .body > …"`.
+
+**R3 — Commentaire de revue, puis fusion**
+```bash
+cd [[ racine ]]
+uv run outils/revue_pr.py «n»[[ opt_piste ]]
+```
+Le script publie `conception[[ suffixe ]]/passations/REVUE_PR-«n».md` avec `gh pr review «n» --comment
+--body-file …` (lu tel quel, accents compris). Puis, sur GitHub, *Squash and merge* ; puis R12.
+
+**R4 — Sortie de Python vers un fichier** : PS-5.
+
+**R5 — Essai d'une sortie redirigée, sans les variables d'encodage** — d'abord sur `main`, puis sur la
+branche :
+```powershell
+cd [[ depot_travail ]]
+cmd /c "set PYTHONIOENCODING=& set PYTHONUTF8=& uv run «cli» «commande» > %TEMP%\sortie.txt"
+echo $LASTEXITCODE
+Get-Content -Encoding UTF8 $env:TEMP/sortie.txt
+```
+
+**R6 — Commande sur les données réelles : sauvegarde d'abord, sortie gardée**
+```powershell
+cd [[ depot_travail ]]
+git switch main
+git pull
+git rev-parse HEAD                 # comparer au main attendu
+git status                         # arbre propre
+Copy-Item -Recurse «dossier_données»/«sous-dossier» «dossier_sauvegardes»/«sous-dossier»_avant_«objet»
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+just «recette» «arguments» 2>&1 | Tee-Object -FilePath [[ racine ]]/conception[[ suffixe ]]/passations/SORTIE_«recette»_«date»_«objet».txt
+```
+La sortie est en UTF-16 (PS-2). L'A vérifie ensuite le résultat, avec un accès en lecture accordé.
+Les chemins des données s'écrivent en clair (PS-4).
+
+**R7 — Poste de relecture C**
+```bash
+cd [[ racine ]]
+uv run outils/clone_c.py «n» --paquet C_PR-«n»[[ opt_piste ]]
+```
+Le script crée `[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/` (refuse s'il existe déjà ; une C bornée ou seconde :
+`--variante «variante»`, poste `c-pr«n»-«variante»[[ suffixe ]]/`), y clone le dépôt sur la tête de la PR et
+copie le paquet `conception[[ suffixe ]]/passations/C_PR-«n»/` dans `paquet/` — le tout préparé dans
+`….preparation`, renommé une fois prêt —, puis lance `uv sync --locked` et `just check` dans le poste
+à sa place définitive (UV-2 : un `.venv` déplacé ne marche plus). Puis l'agent **dans ce poste**, sans mode plan,
+aucun dossier ajouté : « Lis paquet/DEMARRAGE.md et exécute-le. » (modèle et effort : ceux du
+`DEMARRAGE.md`).
+*Ce que le script remplace* : fermer la session de la C précédente, `cd` dans le parent, `Remove-Item`
+de l'ancien clone (VER-1), `git -c http.sslBackend=schannel clone …` (AV-2), `uv sync --locked`,
+`just check`, `Copy-Item -Recurse` du paquet — une recette qui a joué sur un ancien clone quand la
+suppression échouait, et qui a buté sur un dossier tenu ouvert (VER-2).
+
+**R8 — Rapport de la C vers A**
+```bash
+cd [[ racine ]]
+uv run outils/clone_c.py «n» --recuperer[[ opt_piste ]]
+```
+Copie `RELECTURE_PR-«n»*.md` du poste vers `conception[[ suffixe ]]/passations/`, sans rien écraser ; avec
+`--variante «variante»` (C bornée ou seconde), la copie s'appelle `RELECTURE_PR-«n»_«variante».md`. *Remplace* :
+un `Copy-Item` à la main, ou la connexion du clone à la conversation A (VER-2).
+
+**R9 — Empreinte d'un fichier**
+```powershell
+cd «dossier»
+(Get-FileHash «fichier» -Algorithm SHA256).Hash.ToLower()
+```
+```bash
+cd «dossier»
+sha256sum «fichier»            # une liste : sha256sum -c «liste».sha
+```
+
+**R10 — Lancer un script `.ps1` remis par A**
+```powershell
+cd «dossier»
+powershell -NoProfile -ExecutionPolicy Bypass -File «dossier»/«script».ps1
+```
+
+**R11 — Arbre d'un commit**
+```bash
+cd [[ depot_travail ]]
+git rev-parse "HEAD^{tree}"
+```
+
+**R12 — Le miroir : le mettre à jour ([[ humain ]]), le lire (une conversation)**
+```bash
+cd [[ racine ]]
+uv run outils/miroir.py[[ opt_piste ]]
+```
+```bash
+git --no-optional-locks -C «miroir» log -1 --format='%H %T %s'
+cat «v_for_cowork»/ETAT_DISTANT.txt
+```
+Le script fait un `git pull --ff-only` (ou le premier clone), puis réécrit `ETAT_DISTANT.txt` : la
+sortie de `git ls-remote origin`, avec l'heure[% if public %] (dépôt public : `git -C «miroir» ls-remote
+origin 'refs/pull/*/head'` répond aussi)[% endif %]. Une conversation ne lance jamais
+`git status` ni `git fetch` dans le miroir (VER-3).
+[% if 'archives' in modules %]
+
+**R15 — Archivage**
+```bash
+cd [[ racine ]]
+uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_A«n».txt[[ opt_piste ]]
+uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_A«n».txt[[ opt_piste ]] --executer
+```
+La première commande est un essai à blanc ; la seconde déplace. Le script ne fait que déplacer, vérifie
+tout avant le premier déplacement (une ligne d'inventaire par élément, aucun fichier vivant, aucune
+destination occupée) et range la liste elle-même dans les archives (`kit/ARCHIVES.md`). *Remplace* : un
+script PowerShell d'archivage écrit à chaque clôture, avec ses accents (PS-14).
+[% endif %]

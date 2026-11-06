@@ -1,0 +1,175 @@
+# Passes expertes et sessions à part
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Quand le lire** : avant de figer une décision de mathématiques, de modélisation,
+> d'algorithmique ou de science ; avant de confier à une session à part une sous-tâche dont seul
+> le résultat compte. Gabarits : `kit/gabarits/PASSE_EXPERTE.md`, `kit/gabarits/SESSION_A_PART.md`.
+
+## Table des matières
+
+- 1. Pourquoi
+- 2. La passe experte
+- 3. Les sessions à part
+
+---
+
+## 1. Pourquoi
+
+**La conversation de conception est le maillon le moins protégé** : ses décisions n'ont aucun filet
+en aval — la relecture de PR ne vérifie que la conformité, les tests que le code (`kit/METHODE.md`,
+§ 7). Une règle de modèle fausse traverse le brief, le plan, la PR et la CI sans qu'aucun de ces
+contrôles ne la voie ; seule la vérité terrain la montre, et tard. La passe experte en est la
+parade la moins chère : une **contre-expertise** de la règle, avant le brief, par une conversation
+qui ne l'a pas écrite.
+
+C'est le même principe que B et C, appliqué plus tôt : **une conversation ne peut pas relire ce
+qu'elle vient d'écrire**, et le rôle prime sur le moteur — ce qui fait l'expert, c'est de ne pas avoir
+écrit ce qu'il relit ; un autre moteur que celui de A y ajoute un second regard. Il vaut par son
+désaccord, pas par sa force (`kit/MODELES_ET_EFFORTS.md`, § 3).
+
+**La session à part** répond à un autre besoin : une sous-tâche dont seul le résultat compte (un
+inventaire, une recherche, une collecte, une note de méthode) se fait mieux dans une session dédiée,
+avec un prompt et un fichier de sortie, que dans la conversation A, qui s'y disperserait et en
+paierait l'historique à chaque tour (`kit/METHODE.md`, § 9).
+
+---
+
+## 2. La passe experte
+
+### 2.1 Quand
+
+**Lorsqu'une décision importante de mathématiques, de modélisation, d'algorithmique ou de science
+doit être figée, A se demande si une contre-expertise apporterait de la valeur.** Si oui, elle prépare
+la question, les fichiers minimaux à lire, et recommande le modèle et l'effort (ligne « Passe
+experte » du § 0 de `kit/MODELES_ET_EFFORTS.md` ; un cran plus bas si la question est étroite).
+
+**Le nombre de passes expertes n'est pas limité à une par jalon** : si une question neuve le mérite,
+on en ouvre une autre.
+
+C'est une **consultation**, pas une étape de plus du cycle : l'expert ne décide pas à la place de A.
+Elle se place avant le brief, sur une note, ou **avant B**, sur un brief écrit : le raisonnement, les
+mathématiques, et la couverture de tous les points du jalon.
+
+**Avant la passe, mesurer.** Une règle jamais chiffrée se mesure sur les données réelles avant
+d'écrire la note : la mesure trouve des cas que le texte laissait ouverts (une cellule vide, un
+effectif nul, une borne ambiguë), [[ que_humain ]] tranche avant la passe. Et mesurer une limite sur chaque
+référence candidate avant de proposer une règle neuve : la bonne référence rend parfois la règle
+sans objet.
+
+### 2.2 Le montage
+
+**Note autoportante + paquet en lecture seule. L'expert ne modifie aucun fichier existant ; il
+dépose sa réponse dans un unique fichier neuf, que A range ensuite dans la conception. L'expert
+critique et chiffre ; A arbitre.**
+
+```mermaid
+sequenceDiagram
+    actor R as [[ humain ]]
+    participant A as A — conception
+    participant E as Expert (conversation neuve)
+    A->>A: mesure sur les données, note autoportante, paquet EXPERT_«sujet»
+    A-->>R: paquet, commandes, réglages
+    R->>E: poste neuf, paquet en lecture seule, « Lis paquet/DEMARRAGE.md »
+    A->>A: prototype de la règle, pendant la passe
+    E-->>R: REPONSE_EXPERT_«sujet».md (un seul fichier neuf)
+    R->>A: réponse copiée dans passations
+    A-->>R: arbitrage chiffré, décisions à trancher
+    R->>A: décisions
+    A->>A: brief du jalon, puis sa relecture
+```
+
+| Étape | Qui | Quoi | Où |
+|---|---|---|---|
+| 1 | A | mesurer ; écrire la note, le démarrage, la liste des pièces ; joindre scripts, sorties et construction des tables | `conception[[ suffixe ]]/passations/EXPERT_«sujet»/` (gabarit `PASSE_EXPERTE.md`) |
+| 2 | [[ humain ]] | créer le poste, y copier le paquet, ouvrir la conversation de l'expert | `[[ racine ]]/relecture/expert-«sujet»[[ suffixe ]]/` ; le paquet dans `paquet/` |
+| 3 | A | prototyper la règle pendant que l'expert travaille | sa copie de travail, en conception |
+| 4 | l'expert | critiquer et chiffrer chaque précision ; un seul fichier neuf | `…/expert-«sujet»[[ suffixe ]]/REPONSE_EXPERT_«sujet».md` |
+| 5 | [[ humain ]] | copier la réponse vers A | `conception[[ suffixe ]]/passations/` |
+| 6 | A | arbitrer chaque amendement, mesuré sur le prototype ou les données ; poser à [[ humain ]] ce qui lui appartient | `passations/ARBITRAGE_EXPERT_«sujet».md` (gabarit `ARBITRAGE.md`) |
+| 7 | A | écrire le brief sur la règle arbitrée | `kit/gabarits/BRIEF_JALON.md` |
+
+**Le poste de l'expert** est un dossier neuf, comme celui d'une C : il n'est jamais connecté à une
+conversation A (sous Windows, un dossier connecté reste tenu ouvert : `kit/MACHINE.md`, VER-2), et il ne vit
+ni dans le dépôt ni dans `v_for_cowork[[ suffixe ]]`, que voient d'autres relecteurs. L'expert voit son
+poste et, s'il doit lire le code, le seul miroir (`v_for_cowork[[ suffixe ]]/[[ slug ]]/`), en lecture.
+
+### 2.3 Ce qui fait une bonne passe
+
+- **Le démarrage donne la commande de lecture du miroir** (`git --no-optional-locks …`), pas
+  seulement l'interdiction : un expert sans la commande a lancé `git status` dans le miroir.
+- **La note est autoportante** : l'expert ne lit rien d'autre que le paquet ; elle dit le contexte en
+  clair, ce qui est déjà tranché, et chaque règle avec ses bornes.
+- **Prototyper pendant la passe** : une réponse d'expert s'arbitre sur un prototype qui tourne, pas
+  seulement sur une note ; à l'arrivée de la réponse, les amendements s'y appliquent, se testent et
+  se mesurent en une demi-heure.
+- **Deux implémentations indépendantes, mêmes nombres** : demander à l'expert les agrégats de ses
+  formules, et les comparer à ceux du prototype — c'est le contrôle le moins cher d'un estimateur.
+- **Une table dérivée transmet les défauts de sa construction** : l'expert qui n'a que la table ne
+  peut pas les voir. Joindre la construction (`construction/`), et éprouver la dérivation
+  elle-même, surtout aux bornes.
+- **Les tests d'un prototype trouvent ce que la note ne voit pas** ; l'expert, par ses cas construits,
+  trouve le reste. Les deux se complètent.
+- **Lister les fichiers d'un diff avant de le livrer** (`grep '^diff --git'`) : un diff donné à un
+  expert a emporté un lien vers un environnement local.
+- **Une table tirée des données réelles** ne va ni dans le dépôt ni dans `v_for_cowork[[ suffixe ]]` : elle
+  reste en conception et dans le poste de l'expert.
+- **Un « je valide » se lit et s'écrit** : la décision [[ de_humain ]] sur l'arbitrage s'écrit avec sa phrase
+  et sa date, pour que l'A suivante la reprenne, ou la redemande si la lecture était fausse.
+
+---
+
+## 3. Les sessions à part
+
+### 3.1 Quand
+
+Une sous-tâche dont seul le résultat compte — une exploration, une mesure longue, un défrichage :
+inventorier des données, chercher et comparer des sources, collecter des jeux publics, écrire une
+note de méthode sur une question posée par un cadrage. A prépare pour [[ humain ]] un prompt **autoportant** —
+le rôle et ses limites, ce que le projet en attend, les règles (données non fiables, téléchargements,
+dossier), ce qu'il faut mesurer, le format du rapport —, avec le dossier à brancher, l'outil, le
+modèle, l'effort et le mode, plutôt que de s'y disperser (`kit/METHODE.md`, § 9).
+
+**Sous-agent ou session à part.** Un sous-agent de A a sa propre fenêtre de contexte, neuve, et ne
+rend que son compte rendu ; mais [[ humain ]] ne le voit pas travailler, il meurt avec la conversation et ne
+peut pas lui demander d'action. A le garde pour une vérification courte et bornée (relire un texte
+sans le contexte de l'écriture), et le dit ; une tâche longue, qui a besoin [[ de_humain ]] ou de ses dossiers,
+ou dont le résultat doit rester, passe par une session à part.
+
+**L'outil.** Selon l'outil, le shell d'une conversation peut être borné (durée, processus, disque) ;
+l'agent de code, ouvert sur le dossier, a le terminal de la machine, son réseau et
+uv : c'est l'outil d'une session qui télécharge ou lit des fichiers de plusieurs Go.
+
+### 3.2 Le montage
+
+| Pièce | Où | Qui |
+|---|---|---|
+| le prompt | `conception[[ suffixe ]]/passations/PROMPT_SESSION_«nom».md` (gabarit `SESSION_A_PART.md`) | A l'écrit ; [[ humain ]] le colle |
+| le dossier de la session | `[[ racine ]]/sessions/«nom»[[ suffixe ]]/` : un par sujet, frère de la conception ; une session qui reprend les données d'une autre travaille dans le même | [[ humain ]] le crée |
+| ses entrées | `…/entrees/` : les copies que A lui donne (un cadrage, une liste de questions) | [[ humain ]] les copie |
+| son rapport | `…/rapports/«RAPPORT»_«k».md`, et ses annexes | la session l'écrit |
+| la copie pour A | `conception[[ suffixe ]]/passations/«RAPPORT»_«k».md` | [[ humain ]] la copie |
+
+**Règles.** La session ne touche ni au dépôt ni à la conception : elle n'a que son dossier, connecté
+seul. S'il lui faut le code, elle en lit un clone dans son dossier, sans le modifier, et n'écrit aucun
+code pour le dépôt : le réemploi vaut mieux qu'une réécriture. Son rapport et ses annexes restent
+dans son dossier, jamais dans la conception, `v_for_cowork[[ suffixe ]]` ni le kit (un fichier, un rédacteur).
+Son dossier n'est jamais connecté à une A : le rapport passe par une copie [[ de_humain ]]. Les données
+qu'elle ramène restent dans son dossier : **jamais dans le dépôt ni dans un dossier synchronisé
+(Dropbox, iCloud…)**. Son rapport dit
+la source et la date de chaque chiffre, distingue le mesuré de l'estimé, et s'écrit au fil de l'eau.
+A lit le rapport et arbitre ce qui en entre dans le cadrage ou le brief ; une décision qui en découle
+s'écrit avec sa source (le rapport et son empreinte).
+
+**Réglages** : ligne « Session à part » du § 0 de `kit/MODELES_ET_EFFORTS.md`, en mode normal : c'est
+une exploration, il n'y a pas de plan à valider ; mode multi-agents (ultracode dans Claude Code)
+seulement pour un balayage très large de fichiers ou de sources, le seul cas où la largeur
+d'exploration le paie.
+
+### 3.3 Rangement
+
+Le dossier de la session reste tel quel, comme trace, jusqu'à ce [[ que_humain ]] le retire. La copie du
+rapport dans `passations/` vit avec le jalon qu'elle a servi[% if 'archives' in modules %], et s'archive avec lui (`kit/ARCHIVES.md`)[% endif %].
+Le § 1 du CONTEXTE nomme le dossier tant qu'il sert.

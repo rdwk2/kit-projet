@@ -1,0 +1,88 @@
+# Passe experte — «sujet» («jalon»)
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/EXPERT_«sujet»/` : la partie 1 sous le nom
+> `DEMARRAGE.md`, la partie 2 sous le nom `NOTE_«sujet».md`, la partie 3 sous le nom
+> `LIRE_DABORD.md` ; remplir les `«…»`, retirer ce bloc et la section « Pour [[ humain ]] » des fichiers
+> remplis (elle va dans le message à [[ humain ]]). Le dossier `EXPERT_«sujet»/` est le **paquet**, en lecture
+> seule pour l'expert.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrit par** A, avant de figer une décision de mathématiques, de modélisation, d'algorithmique ou de
+> science, et après avoir mesuré sur les données ce qui peut l'être (`kit/EXPERT.md`, § 2).
+> **Lancé par** [[ humain ]] (section « Pour [[ humain ]] »). **Arbitré par** A, dans
+> `passations/ARBITRAGE_EXPERT_«sujet».md` (gabarit `ARBITRAGE.md`) : l'expert critique et chiffre ;
+> A arbitre ; [[ humain ]] tranche ce qui lui appartient.
+> **Champs** : `«sujet»` (court, sans espace), `«jalon»`, `«k»` (l'A qui écrit), `«date»`, `«P1»`…
+> (les précisions), les pièces et leurs empreintes, `«modèle»`, `«effort»`, `«alternative»`,
+> `«raison»`.
+
+## Pour [[ humain ]] — préparer le poste et lancer
+
+1. Créer le poste de l'expert et y copier le paquet :
+   ```bash
+   cd [[ racine ]]
+   mkdir -p relecture/expert-«sujet»[[ suffixe ]]
+   cp -r conception[[ suffixe ]]/passations/EXPERT_«sujet» relecture/expert-«sujet»[[ suffixe ]]/paquet
+   ```
+1. Ouvrir une **conversation neuve** (ou une session d'agent lancée dans ce dossier, sans mode plan),
+   dossier connecté (celui auquel elle a accès) : `[[ racine ]]/relecture/expert-«sujet»[[ suffixe ]]` «et, si l'expert doit lire le code, le seul
+   miroir `[[ racine ]]/v_for_cowork[[ suffixe ]]/[[ slug ]]`» — jamais la conception ; coller : « Lis
+   paquet/DEMARRAGE.md et exécute-le. »
+   **Réglages** : **«modèle», `«effort»`** — recommandé : la ligne « Passe experte » du § 0 de
+   `kit/MODELES_ET_EFFORTS.md` (question étroite : un cran plus bas), en conversation neuve : l'expert
+   ne voit jamais la conversation de A ; un autre moteur est un plus, c'est un second regard ;
+   alternative : «alternative» ; raison : «raison».
+1. Quand l'expert a fini, donner sa réponse à A :
+   ```bash
+   cd [[ racine ]]
+   cp relecture/expert-«sujet»[[ suffixe ]]/REPONSE_EXPERT_«sujet».md conception[[ suffixe ]]/passations/
+   ```
+
+## Partie 1 — `DEMARRAGE.md`
+
+Tu es l'expert d'une passe de contre-expertise sur «sujet», pour le projet [[ projet ]]. Tu n'as
+pas vu la conversation qui a écrit ces règles : c'est voulu.
+
+- **Lis** `paquet/LIRE_DABORD.md`, puis `paquet/NOTE_«sujet».md` en entier, puis ce qu'ils désignent.
+- **Ton travail** : pour chaque précision de la note (P1, P2…), dis si elle est **acceptée**, **à
+  amender** (avec le texte que tu proposes) ou **rejetée**, et **chiffre** : refais les calculs,
+  rejoue les scripts (`paquet/scripts/`), construis des cas, surtout aux bornes. Donne les agrégats
+  de tes formules (totaux, moyennes, effectifs), pour qu'on les compare à ceux d'une implémentation
+  indépendante.
+- **Tu ne modifies aucun fichier existant.** Ta réponse va dans **un seul fichier neuf** :
+  `REPONSE_EXPERT_«sujet».md`, à la racine de ton dossier.
+- **Le code**, s'il t'est donné : le miroir se lit seulement — `git --no-optional-locks log`, `show`,
+  `diff`, `ls-files`, `cat-file` ; jamais `git status` ni `git fetch`, qui écrivent dans `.git`.
+- **Ta réponse** : une section par précision — verdict, raison, chiffres, texte proposé ; puis ce que
+  la note ne dit pas et qui changerait la décision ; puis tes limites (ce que tu n'as pas pu
+  vérifier, et pourquoi). Écris-la au fil de l'eau, pour qu'une coupure ne perde rien.
+
+## Partie 2 — `NOTE_«sujet».md`, la note autoportante
+
+*Autoportante : l'expert ne lit rien d'autre que le paquet. La note dit le contexte en clair, sans
+renvoi à une conversation ni à un fichier qu'il n'a pas.*
+
+1. **La question** : «la décision à figer, en deux phrases».
+2. **Le contexte** : «ce que fait le projet ; ce que la décision change ; ce qui est déjà tranché par
+   [[ humain ]], et n'est pas en question».
+3. **Les précisions à examiner** : P1 — «la règle exacte, ses bornes (comprises ou non), ses cas
+   limites» ; P2 — «…».
+4. **Les données** : «ce que contiennent `scripts/` et `sorties/` ; comment chaque table dérivée a été
+   construite (`construction/`), pour que ses défauts de construction se voient ; aucune donnée
+   personnelle au-delà du nécessaire».
+5. **Ce qu'on attend** : «verdicts chiffrés ; agrégats à comparer : … ; critères de réponse : …».
+6. **Hors sujet** : «…».
+7. **Ce qui reste à arbitrer par A après la réponse** : «…».
+
+## Partie 3 — `LIRE_DABORD.md`, les pièces
+
+| Pièce | Rôle | SHA-256 |
+|---|---|---|
+| `NOTE_«sujet».md` | la note | `«…»` |
+| `scripts/«script»` | «ce qu'il calcule ; `scripts/rejouer.«sh ou py»` le relance de bout en bout» | `«…»` |
+| `sorties/«fichier»` | «ce que le script a produit» | `«…»` |
+| `construction/«fichier»` | «comment la table a été dérivée» | `«…»` |
+
+*Avant de publier le paquet* : lister ce qu'il contient vraiment (un diff joint peut emporter un
+lien vers un environnement local), et vérifier qu'aucune table tirée des données ne part ailleurs
+que dans le poste de l'expert — ni dans le dépôt, ni dans `v_for_cowork[[ suffixe ]]`.

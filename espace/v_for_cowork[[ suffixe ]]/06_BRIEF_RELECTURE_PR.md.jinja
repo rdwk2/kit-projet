@@ -1,0 +1,399 @@
+[#- Brief de relecture de PR (conversation C). Les valeurs ci-dessous dépendent du langage
+    et servent plus bas dans le texte : une seule condition pour tout le fichier. -#]
+[%- if langage == 'python' -%]
+[%- set verif = "`just check`" -%]
+[%- set tests_seuls = "`uv run pytest` seul" -%]
+[%- set statiques = "`ruff`, `mypy --strict`" -%]
+[%- set contenu_verif = "lint, format, `mypy --strict`, tests" -%]
+[%- set outil_mutation = "mutmut" -%]
+[%- else -%]
+[%- set verif = "la commande de vérification de `CLAUDE.md`" -%]
+[%- set tests_seuls = "la suite de tests seule" -%]
+[%- set statiques = "un linter, un vérificateur de types" -%]
+[%- set contenu_verif = "lint, format, typage, tests" -%]
+[%- set outil_mutation = "celui du langage" -%]
+[%- endif -%]
+# Brief de relecture — PR structurante
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+
+> À lire dans une **session de relecture neuve**, avec le brief du jalon, le plan validé et
+> le diff de la PR. Le modèle et l'effort sont ceux que donne la conception à l'ouverture
+> (`conception[[ suffixe ]]/kit/MODELES_ET_EFFORTS.md`).
+>
+> Ce fichier est réutilisable d'une PR à l'autre. La partie spécifique à la PR en cours est
+> son **annexe** — le « § 7 » de ce brief —, dans un fichier à part : `06_ANNEXE_PR-«n».md`
+> («n» : le numéro de la PR), à côté de celui-ci, réécrite à chaque PR par la conversation
+> de conception.
+
+---
+
+## 1. Ce que cette relecture est, et ce qu'elle n'est pas
+
+Le projet a **trois filets, qui attrapent trois choses différentes** :
+
+| L'échec | Ce qui l'attrape |
+|---|---|
+| La **décision** est mauvaise | la vérité terrain — une mesure, un backtest, un usage réel —, bien plus tard |
+| Le **code ne correspond pas** à la décision | **cette relecture** |
+| Le **code ne fait pas ce qu'il prétend** | les tests et la CI |
+
+**Tu es le deuxième.** Tu ne rejuges pas les décisions : elles ont été prises, écrites et
+justifiées dans `docs/decisions/`, et dans l'annexe § 7 pour les plus récentes. Tu vérifies
+que le code les respecte, que la PR ne se contredit pas et ne dit rien de faux sur le dépôt,
+et surtout qu'elle n'a pas **refermé une porte** qu'elles laissaient délibérément ouverte.
+
+Tu as un avantage que ni l'auteur du code ni le relecteur habituel n'ont : **tu n'as pas
+participé aux décisions.** Tu lis le brief comme une spécification, pas comme ta propre
+conclusion. C'est précisément pour ça qu'on t'ouvre une session à part.
+
+Tu n'es pas un relecteur de style. Le dépôt a [[ statiques ]] et une CI verte ; ne redis
+pas ce qu'ils disent déjà.
+
+---
+
+## 2. Les pièces, et celles qu'il ne faut pas ouvrir
+
+**Ce que tu lis :**
+
+1. **le brief du jalon** — la spécification : périmètre, types, invariants,
+   non-promesses. C'est ta référence principale ;
+2. **le plan validé** — ce que l'auteur s'est engagé à faire ; et le message qui l'a
+   validé, s'il y en a un : il prime sur le plan ;
+3. **le diff de la PR** — voir ci-dessous pour sa provenance ;
+4. **l'annexe, `06_ANNEXE_PR-«n».md` (§ 7)** — ce qui a été décidé *après* l'écriture du
+   brief, et ce qui a déjà été tranché sur cette PR ;
+5. **le dépôt lui-même**, à la tête de la PR : `docs/decisions/`, `CLAUDE.md`,
+   `docs/PIEGES.md`, les contrats des jalons précédents.
+
+Ces pièces sont dans ton poste, `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/` (nom exact : ton
+`DEMARRAGE.md`) : le clone
+du dépôt, sur la tête de la PR, et `paquet/`, préparé par la conception (l'annexe dit ce
+qu'il contient, avec les empreintes).
+
+**Ce que tu n'ouvres pas, et c'est le mécanisme même de ce montage :**
+
+- **le compte-rendu de l'auteur** — un fichier de relecture, un dossier de sorties de
+  revue, un résumé de fin de session, **la description de la PR** et ses commentaires : c'est
+  *son* récit de ce qu'il a fait. Le lire, c'est adopter sa lecture du diff au lieu de lire le
+  diff. Ce qu'il y déclare te parvient par l'annexe, comme une affirmation à vérifier, jamais
+  comme une source de vérité. Le plan, lui, écrit avant le code et relu, reste une référence ;
+- **les rapports des autres relecteurs** — ceux de la relecture d'artefact
+  (`RELECTURE_BRIEF-*.md`, `RELECTURE_PLAN-*.md`), ceux des autres C : ce qu'ils ont trouvé
+  et qui te concerne est déjà dans l'annexe, filtré ;
+- **`CONTEXTE.md`** et les fichiers de `conception[[ suffixe ]]/` — c'est le raisonnement de
+  la conception mis par écrit ;
+- la copie de travail [[ de_humain ]] (`[[ depot_travail ]]`).
+[%- if 'donnees-privees' in modules %]
+- les données réelles (le dossier que pointe `[[ var_donnees ]]`).
+[%- endif %]
+
+Ton poste ne contient que ton clone et ton paquet : c'est voulu. Une frontière vaut mieux
+qu'une consigne ; ces interdits ne sont que la ceinture.
+
+**Provenance du diff.** Le diff ne doit pas être celui que l'auteur a préparé : un
+relecteur ne prend pas son énoncé des mains de celui qu'il relit. Dans l'ordre de
+préférence :
+
+1. **tu le calcules toi-même** depuis la base de fusion, dans ton clone (il est sur la tête
+   de la PR) : `git fetch origin`, puis `git diff origin/main...HEAD` ;
+2. sinon, `pr-«n».diff`, [[ que_humain ]] produit avec `uv run outils/diff_pr.py «n»`, et qui est le
+   diff exact de GitHub.
+
+---
+
+## 3. Ce qui est déjà vérifié — ne le refais pas
+
+- [[ verif ]] passe en local et la CI est verte : [[ contenu_verif ]].
+- Le nombre de tests et leur passage ne sont pas en question.
+- Les vérifications mécaniques annoncées dans le plan ont été exécutées par l'auteur.
+- Ce que l'annexe § 7 dit vérifié.
+
+Signale ces choses **seulement** si le diff te donne une raison concrète de douter qu'elles
+disent ce qu'elles prétendent.
+
+**En revanche, « les tests passent » ne dit rien de ce qu'ils testent**, ni de ce que les
+textes affirment — c'est tout l'objet du § 4, C-a.
+
+---
+
+## 4. Ce qu'il faut chercher, par ordre de valeur
+
+### C-a. Un test qui ne teste pas ce qu'il prétend, ou une affirmation fausse
+
+**C'est le point le plus rentable de toute la relecture**, et le plus difficile à voir pour
+qui a écrit le code. La valeur d'un jalon *est* dans ses invariants ; un invariant dont le
+test passe à vide ne protège rien, et personne ne s'en apercevra.
+
+**Exécute les mutations, ne les imagine pas.** C'est la consigne la plus importante de ce
+brief : pars d'une base verte, puis, invariant par invariant, **retire-le du code et regarde
+quel test rougit.** Un raisonnement sur le papier conclut souvent qu'un test est bon quand il
+passe grâce à un autre invariant.
+
+**Comment travailler, selon ce dont tu disposes :**
+
+- **si tu as le dépôt et peux exécuter** : travaille sur une **copie** de la branche, et ne
+  touche jamais à l'arbre de travail [[ de_humain ]]. Aucun `git commit`, aucun `git push`, aucune
+  écriture dans `src/` ou `tests/` de la copie de travail d'origine. Joue [[ verif ]] (ou
+  [[ tests_seuls ]], plus rapide, quand seul le résultat des tests t'intéresse) pour établir
+  la base verte, puis mute ;
+- **si tu n'as que le diff** : reconstitue les fichiers depuis le diff, recoupe-les avec le
+  dépôt si tu l'as en lecture, et dis explicitement dans ton rapport quelles mutations tu as
+  **exécutées** et lesquelles tu as seulement **raisonnées**. La distinction compte plus que
+  le nombre.
+
+**Borne la campagne.** Sur un jalon à quarante invariants, « retire chacun et regarde » fait
+quarante lancements et double le temps de la relecture. Sont **obligatoires** : les mutations
+que l'annexe § 7 désigne, et tout invariant que le diff introduit sans test qui le nomme. Sur
+le reste, un échantillon suffit — et un invariant redondant avec un autre (un contrôle de
+finitude là où un contrôle de bornes finies refuse déjà NaN et ±inf par lui-même) n'a pas
+besoin d'être muté : il suffit de le dire.
+
+Pour chaque invariant, la question est donc : **si on le retire du code, la suite reste-t-elle
+verte ?** Si oui, le test qui prétend le protéger est à vide. Cherche en particulier :
+
+- un générateur de cas d'un test de propriété dont le domaine est si étroit qu'il ne produit
+  jamais le cas limite visé (bornes qui excluent la valeur intéressante, taille minimale trop
+  grande), ou qui **ne produit pas du tout l'objet dont la propriété parle** ;
+- un test qui attend une exception que le code lèverait de toute façon pour une autre raison
+  — l'objet est refusé, mais pas par l'invariant qu'on croit tester ; quand les exceptions du
+  projet héritent d'une exception standard, un test sérieux exige le type exact et le
+  message ;
+- une propriété tautologique : elle recalcule la valeur avec la même expression que
+  l'implémentation, donc elle passera même si l'expression est fausse ;
+- une **valeur attendue recalculée par le test** au lieu d'être écrite en dur : elle suit
+  l'implémentation dans son erreur ;
+- un cas dégénéré non couvert : suite vide, deux éléments, valeurs égales, borne exacte.
+[%- if langage == 'python' %]
+
+En Python : une stratégie Hypothesis (`min_size`, bornes de `floats()`) ; `pytest.raises`
+avec le type exact et `match=…`, puisqu'une erreur de contrat qui hérite de `ValueError`
+passerait un `pytest.raises(ValueError)` levé par autre chose.
+[%- endif %]
+
+**Dans un texte** (docstring, fiche de décision, journal, déclaration de l'auteur reprise par
+l'annexe) : une affirmation sur le dépôt que le dépôt ne tient pas. **Exécute plutôt que d'imaginer** : une
+commande, un test, une recherche dans le dépôt.
+
+### C-b. Une contradiction avec une décision écrite
+
+Le code ou un test contredit le brief, le plan, ou une fiche de décision ; ou deux textes de la
+PR se contredisent. Cite la ligne de la décision **et** la ligne du code (ou les deux lignes).
+
+**Cas particulier à vérifier systématiquement : les consignes passées en cours de session.**
+L'annexe § 7 les liste. Elles arrivent après le plan, donc l'auteur les intègre dans du code
+déjà écrit — c'est le moment où une prescription se perd, ou s'applique à moitié. Pour
+chacune : est-elle dans le code, dans le test qui la protège, **et** dans la fiche de décision
+quand l'annexe le demande ?
+
+### C-c. Une porte refermée
+
+Plus subtil, et c'est la raison d'être de cette lecture. Le code promet plus que le contrat
+ne demandait, ou l'inverse :
+
+- une **non-promesse devenue une promesse** de fait — un consommateur pourra s'appuyer
+  dessus, et on ne pourra plus changer l'implémentation ;
+- une rubrique **« Non promis » décorative** : elle existe mais ne dit rien, ou elle répète
+  les invariants au lieu de nommer ce sur quoi le consommateur n'a pas le droit de compter ;
+- un invariant **plus strict que nécessaire**, qui rejettera un cas légitime plus tard ;
+- un choix figé que la décision laissait au brief suivant ;
+- une valeur codée en dur là où le contrat annonçait un paramètre.
+
+### C-d. Un défaut de correction
+
+Décalage d'un cran sur une longueur de tableau, erreur de signe sur un cumul, division par
+une quantité qu'un invariant ne protège pas, comparaison flottante sans tolérance, `NaN` qui
+traverse un contrôle écrit avec des comparaisons (toute comparaison d'ordre, et `==`, avec
+`NaN` est fausse ; `!=` est vraie — un contrôle de monotonie n'est pas un filet fiable contre
+lui).
+
+Dans un texte : renvoi mort, chemin ou nom faux, tableau ou liste Markdown cassé, numéro de
+section faux, phrase que le contexte rend fausse après un retrait.
+
+### C-e. Hygiène
+
+Un réglage de configuration sans justification écrite, un nom qui ment, une docstring qui
+décrit autre chose que le code. Faible priorité — ne remonte que ce qui coûtera cher à
+quelqu'un dans six mois.
+
+### C-f. Le README
+
+(`CLAUDE.md` : « Le README décrit `main` ».) Une phrase du README de la branche que la PR
+rend fausse ou incomplète, par exemple une commande, une sous-commande ou une option ; une
+dépendance ou un extra ; la CI ; la version du langage ; les variables d'environnement qu'il
+documente ; le statut d'une fiche de décision ; ce qui est livré. Lis le README entier à la tête
+de la PR, contre le diff. Cherche aussi, dans tout le dépôt, les phrases qui énumèrent ce que
+la PR étend (commandes, tables, extras, tests sautés).
+[%- if 'donnees-privees' in modules %]
+
+### C-g. La règle des données
+
+(`CLAUDE.md`, la règle des données personnelles.) Rien, tiré des données réelles, qui date,
+situe ou identifie les personnes dont elles viennent — ni date tirée des données, ni lieu, ni
+valeur individuelle (une mesure, un enregistrement, un relevé), ni donnée sensible, ni identifiant : dans le code, les textes, les
+docstrings et les messages de commit ; la description de la PR, que tu n'ouvres pas, c'est la
+conversation de conception qui la vérifie. Dans ton rapport, ne recopie
+pas une valeur réelle que tu trouverais : cite le fichier et la ligne.
+[%- endif %]
+
+---
+
+## 5. Ce qu'il ne faut pas faire
+
+- **Ne propose pas d'améliorations.** Une idée d'amélioration va dans `BACKLOG.md`, pas dans
+  une relecture de conformité. Si tu en as une, dis-le en une ligne à part, sous un titre
+  « pour le backlog », et n'en fais pas un défaut.
+- **Ne rejuge pas une décision** écrite dans `docs/decisions/`. Si tu la crois fausse,
+  dis-le séparément, en une ligne, sans la mélanger aux écarts.
+- **Ne remonte pas ce que l'annexe § 7 dit déjà tranché.**
+- **N'invente pas de défaut pour avoir l'air utile.** Une relecture qui ne trouve rien et le
+  dit vaut mieux qu'une liste gonflée : elle coûte du temps de tri et, à la longue, elle
+  apprend à ne plus lire les relectures. **« Rien trouvé » est une conclusion valide et
+  attendue.**
+- **Ne relis pas le style** : la CI l'a vérifié ([[ statiques ]]).
+- **N'écris rien dans le dépôt, ne pousse rien, ne commente pas la PR sur GitHub.** Tu
+  produis un rapport, et au plus un patch proposé, à part. L'application est arbitrée
+  ailleurs.
+
+---
+
+## 6. Format de sortie
+
+Un seul fichier, `RELECTURE_PR-«n».md` — ce nom-là même pour une C bornée ou une seconde C :
+le rapatriement vers la conversation de conception le renomme —, **écrit hors du dépôt**, à la racine de ton poste,
+`[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/` — l'annexe `06_ANNEXE_PR-«n».md` le confirme.
+Rien d'autre : le reste du kit appartient à la conversation de conception.
+
+Par constat, numéroté (1, 2, …) :
+
+[% if 'donnees-privees' in modules -%]
+- **classe** — C-a test à vide ou affirmation fausse · C-b contradiction · C-c porte
+  refermée · C-d défaut · C-e hygiène · C-f README · C-g règle des données ;
+[% else -%]
+- **classe** — C-a test à vide ou affirmation fausse · C-b contradiction · C-c porte
+  refermée · C-d défaut · C-e hygiène · C-f README ;
+[% endif -%]
+- **où** — fichier et, si possible, la ligne du diff ;
+- **quoi** — une phrase ;
+- **contre quoi** — la ligne du brief, du plan ou de la fiche de décision contredite, quand la
+  classe est C-b ou C-c ;
+- **comment ça casse** — le cas concret qui produit le mauvais résultat. Si tu ne peux pas
+  en écrire un, dis-le : c'est une hypothèse, pas un constat.
+
+Pour les mutations, dis **exécutée** ou **raisonnée**, et pour chaque mutation exécutée,
+**quel test a rougi** — ou qu'aucun n'a rougi, ce qui est le constat.
+
+[% if 'donnees-privees' in modules -%]
+Classes C-a, C-b et C-g d'abord.
+[% else -%]
+Classes C-a et C-b d'abord.
+[% endif -%]
+À part, à la fin : les lignes « pour le backlog », et les décisions que tu crois fausses
+(§ 5). Termine par un verdict en une ligne : **fusionnable en l'état**, **fusionnable après
+correction de tel point**, ou **à ne pas fusionner**.
+
+---
+
+## 6 bis. Si ta session est coupée en cours de route
+
+Une relecture profonde est longue, et une limite d'usage peut t'arrêter n'importe quand.
+Trois règles pour que ça ne coûte rien de plus qu'un délai :
+
+1. **Restaure chaque mutation avant de passer à la suivante**, pas à la fin de la campagne.
+   Une session coupée ne doit jamais laisser un arbre de travail muté. Vérifie la
+   restauration par empreinte, pas de mémoire.
+2. **Écris ton rapport au fil de l'eau** : crée le fichier dès la première section et
+   complète-le. Il doit rester lisible et cohérent à tout moment, même sans verdict.
+3. **Tiens un journal de progression court en tête de rapport** — ce qui est reconstruit, ce
+   qui est rejoué, quelles mutations sont faites et lesquelles restent. C'est ce qui permet à
+   une reprise de continuer au lieu de tout recommencer.
+
+Si ta session est coupée, la reprise de session de ton agent (Claude Code : `claude --continue`,
+lancé dans ton poste) retrouve ta conversation ; sinon, une session neuve lit le rapport. Dans les
+deux cas, repars du journal de progression, pas du début.
+
+## 6 ter. Exécuter les mutations sans gaspiller la fenêtre
+
+Sur une même PR, la même campagne a pris du simple au quintuple : l'écart venait presque
+entièrement de la façon de lancer les tests, pas de ce qui a été trouvé.
+
+1. **Cible d'abord.** Pour chaque mutation, lance d'abord le ou les tests qui la visent,
+   arrêt au premier échec, avec une graine aléatoire fixée, sans état gardé d'un lancement à
+   l'autre (base d'exemples, cache), un dossier temporaire dans ta copie jetable, et sans
+   cache de bytecode.
+[%- if langage == 'python' %]
+   En Python : `python -B -m pytest -x -p no:cacheprovider --hypothesis-seed=0
+   --basetemp=<copie>/.bt`, le dossier `.hypothesis/` supprimé et `__pycache__` vidé avant
+   chaque mutation : une mutation de même longueur réécrite dans la même seconde fait sinon
+   réutiliser l'ancien `.pyc`. Vérifie aussi que le module importé vient de la copie (un
+   `assert` sur `paquet.__file__` avant la série) : une installation éditable importe le
+   `src/` du dépôt, et la mutation de la copie passerait inaperçue.
+[%- endif %]
+2. **Suite complète ensuite, seulement si utile** : quand rien ne rougit sur les cibles
+   (avant de déclarer une survivante), ou quand savoir **combien** de tests la tuent éclaire
+   la robustesse d'une protection (un seul test, et par accident ?). Pas la suite complète
+   pour chacune des quarante.
+3. **Vérifie la cause du rouge** : un échec de collecte, d'import ou de mise en place n'est
+   pas un test qui rougit (§ 4, C-a).
+4. **Pour les mutations de C-a, dresse d'abord la liste des garanties écrites** — brief,
+   plan, annexe, choix mineurs acceptés, docstrings : « en lecture seule », « gelé », « sans
+   modification », « mêmes objets », types refusés, bornes exactes, ordres (dont celui des
+   contrôles), « le premier rencontré », « aucun autre module », et les facteurs qui valent 1
+   dans les fixtures (un pas unitaire, un coefficient à 1, une origine à zéro, une seule
+   catégorie) — et mute chacune au moins une fois, dans la borne de C-a. C'est souvent cette liste
+   qui trouve ce que les autres relectures ne voient pas.
+5. **Ne refais pas ce que le § 3 exclut** — [[ verif ]] commit par commit, la CI — même si
+   une déclaration de l'auteur le mentionne ; dis seulement que tu ne l'as pas refait.
+6. **Si ta limite d'usage approche**, termine la mutation en cours, restaure-la, mets le
+   journal de progression à jour et arrête-toi proprement : une reprise repart de là
+   (§ 6 bis).
+[%- if 'mutation' in modules %]
+
+---
+
+## 6 quater. Balayage mécanique fait par la conception
+
+Un outil de mutation mécanique trouve des lacunes qu'aucune relecture ne voit, et les
+relectures trouvent ce que l'outil ne voit pas : sur un premier projet, leurs constats ne se
+recoupaient presque pas. Les deux se complètent.
+
+1. **Avant d'écrire l'annexe**, la conception lance un outil de mutation ([[ outil_mutation ]]) sur les
+   modules de `src/` que la PR modifie, à la tête de la PR, et trie les survivants :
+   lacunes réelles (un test simple les tue, vérifié), équivalents (aucune sortie ne change),
+   messages d'erreur. L'annexe dit ce qui a été balayé, fichier par fichier, et donne ce
+   tri — ou dit qu'il rejoindra l'arbitrage s'il tourne encore.
+2. **Ne refais pas ce balayage.** Dans ces modules, les mutations d'opérateurs, de
+   constantes, de comparaisons, d'indices et de booléens sont faites. Les lacunes réelles
+   qu'il a trouvées sont connues : ne les remonte pas. Un constat commun avec lui n'est pas
+   une perte.
+3. **Conteste un classement si tu n'es pas d'accord.** Un mutant classé équivalent qui change
+   une sortie est un constat : donne l'entrée qui le montre.
+4. **Ta campagne vise ce que l'outil ne voit pas** :
+   - les invariants de contrat, et la différence entre « arrêté par le contrat » et « tenu
+     par la valeur » (l'outil compte une erreur de contrat comme une mise à mort) ;
+   - les préconditions d'entrée (ordre, doublons, types, bornes) ;
+   - la cohérence entre deux sorties ;
+   - les constantes de module, les arguments de décorateurs et l'immuabilité des structures ;
+   - les messages qui divulguent (chemin absolu, donnée personnelle) ;
+   - les imports, réexports et identités d'objets ;
+   - les fichiers de `src/` et de `tests/` hors des modules balayés ;
+   - les mutations obligatoires de l'annexe et la liste des garanties écrites du § 6 ter,
+     point 4.
+[%- if langage == 'python' %]
+
+   En Python : `frozen=True` retiré, un champ de tuple rendu liste, `math.fsum` remplacé par
+   `sum` quand les valeurs des tests ne les séparent pas.
+[%- endif %]
+[%- endif %]
+
+---
+
+## 7. Annexe — dans `06_ANNEXE_PR-«n».md`
+
+L'annexe de la PR en cours est le fichier `06_ANNEXE_PR-«n».md`, à côté de ce brief. La
+conversation de conception la réécrit avant chaque PR — elle seule sait ce qui a été décidé
+après l'écriture du brief et ce qui est déjà tranché. L'annexe d'une PR précédente ne
+s'applique plus : tu ne l'ouvres pas. Quand ce brief dit « l'annexe » ou « le § 7 », c'est
+de ce fichier qu'il parle.

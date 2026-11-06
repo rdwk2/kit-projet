@@ -1,0 +1,66 @@
+# 0001 — Séparation stricte données / code
+
+- **Date** : «AAAA-MM-JJ»
+- **Statut** : acceptée
+
+*Décision fournie par kit-projet (module `donnees-privees`), reprise d'un projet où elle a
+tenu ; à relire et à dater à la création du projet.*
+
+## Contexte
+
+Le projet manipule des données privées («lesquelles, et à qui : les tiennes (mesures, fichiers
+exportés, identifiants d'accès…) ou celles d'un tiers, avec ses conditions d'usage»). Le dépôt a
+plusieurs destinations possibles («usage personnel, rendu de cours, publication, réutilisation
+par d'autres sur leurs propres données…»).
+
+Mélanger code, données brutes, sorties intermédiaires et livrables dans une même arborescence
+est utilisable seul, mais rend le dépôt impubliable sans un tri long et risqué.
+
+## Options envisagées
+
+**A. Tout dans le dépôt, avec un `.gitignore` sur les dossiers de données.**
+Simple au départ. Mais un `.gitignore` ne protège que ce qu'on a pensé à y mettre, et les
+données finissent par se retrouver dans des fixtures de test « juste pour essayer ». C'est ce
+qui rend un dépôt impubliable sans audit.
+
+**B. Données hors du dépôt, chemin configuré par variable d'environnement, fixtures
+synthétiques commitées pour les tests.**
+Une frontière physique plutôt qu'une règle de discipline. Coûte une configuration initiale et
+oblige à fabriquer des fixtures.
+
+**C. Deux dépôts séparés, code et données.**
+La séparation la plus stricte, mais un dépôt git n'est pas un bon stockage pour des
+gigaoctets de données, et ça double le travail de synchronisation.
+
+## Décision
+
+Option B. Les données réelles vivent dans un dossier externe pointé par `[[ var_donnees ]]`.
+Le dépôt ne contient que du code et des fixtures synthétiques minuscules. Un hook
+(`scripts/hooks/proteger_donnees.py`) refuse à Claude Code toute lecture ou écriture sous ce
+dossier ; un autre agent n'a que la règle 1 de `CLAUDE.md`.
+
+## Pourquoi
+
+- Le dépôt est publiable **à tout moment, sans nettoyage** — donc il le sera vraiment.
+[% if langage == 'python' -%]
+- La CI tourne sur une machine vierge, sans accès aux données : elle ne peut être verte que si
+  le code ne dépend d'aucun fichier privé. La contrainte est vérifiée mécaniquement, pas
+  laissée à la vigilance.
+[% endif -%]
+- Les tests deviennent rapides et déterministes : des fixtures de quelques kilooctets.
+- Un usage par plusieurs personnes devient une question de configuration (un
+  `[[ var_donnees ]]` par personne) plutôt qu'une réécriture.
+- L'option A a été écartée parce qu'elle repose sur la discipline, et que le coût d'un seul
+  oubli est une fuite de données privées dans un historique git — difficile à rattraper.
+
+## Conséquences
+
+**Facile** : publier, [% if langage == 'python' %]faire tourner la CI, [% endif %]partager le code, tester vite.
+
+**Contraignant** : aucun chemin en dur vers un dossier personnel, nulle part. Toute lecture de
+données passe par la configuration. Il faut fabriquer et maintenir des fixtures synthétiques
+représentatives ; les commandes sur les données réelles sont lancées par l'humain.
+
+**À revisiter** : si l'usage par d'autres personnes devient réel, le stockage devra être
+repensé (qui possède quoi, durée de conservation, suppression). Cette décision ne tranche pas
+ce sujet, elle le rend abordable.

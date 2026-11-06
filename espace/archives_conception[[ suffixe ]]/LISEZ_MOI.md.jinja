@@ -1,0 +1,17 @@
+# archives_conception[[ suffixe ]] — les archives de la conception
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+
+Ce dossier garde ce qui ne sert plus au travail courant de `conception[[ suffixe ]]/`. Il n'est
+**jamais connecté** à une conversation par défaut : aucune A ne doit y lire par erreur une consigne
+périmée. Chaque élément y garde le chemin relatif qu'il avait dans `conception[[ suffixe ]]/` ;
+rien n'y est supprimé.
+
+- **La liste de ce qu'il contient**, avec quand en avoir besoin : `conception[[ suffixe ]]/INVENTAIRE_ARCHIVES.md`.
+- **Qui y écrit** : `uv run outils/archiver.py`, lancé par [[ humain ]] sur une liste écrite par A.
+- **Lire un élément** : l'A nomme le fichier et la raison ; [[ humain ]] accorde l'accès pour cette
+  conversation seulement, ou copie ce seul fichier dans `conception[[ suffixe ]]/passations/`, puis
+  le retire.
+- **Les règles** : `conception[[ suffixe ]]/kit/ARCHIVES.md`.

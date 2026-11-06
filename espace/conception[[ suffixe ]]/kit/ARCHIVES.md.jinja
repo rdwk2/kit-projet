@@ -1,0 +1,177 @@
+# Archives — ce qui ne sert plus, hors de la vue
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **À lire à chaque clôture** (`kit/METHODE.md`, § 11), et avant d'écrire une liste
+> d'archivage. L'inventaire lui-même, fichier vivant, est `INVENTAIRE_ARCHIVES.md`, à côté de
+> `CONTEXTE.md`.
+
+## 1. Le dossier d'archives
+
+Ce qui ne sert plus au travail courant est dans `[[ racine ]]/archives_conception[[ suffixe ]]/`,
+dossier frère de `conception[[ suffixe ]]/`, **jamais connecté par défaut** : aucune A ne doit y
+lire par erreur une consigne périmée. Chaque élément y garde le chemin relatif qu'il avait dans
+`conception[[ suffixe ]]/`, si bien que les liens entre fichiers archivés restent valides. Rien
+n'est supprimé.
+
+- **Ce qui s'y trouve** : `INVENTAIRE_ARCHIVES.md`, une ligne par élément — contenu, et quand en
+  avoir besoin ; puis ce qui reste en conception, et quand l'archiver.
+- **Pourquoi un dossier frère** : un dossier se connecte avec tout son sous-arbre ; des archives
+  rangées sous `conception[[ suffixe ]]/` seraient lues par chaque A (`kit/METHODE.md`, § 3).
+
+## 2. Les règles
+
+- **Lire un fichier archivé** : l'A nomme à [[ humain ]] le fichier précis (sa ligne d'inventaire) et dit
+  pourquoi. [[ humain ]] accorde l'accès pour cette conversation seulement (demande d'accès à un dossier,
+  si la session le propose), ou copie ce seul fichier dans `conception[[ suffixe ]]/passations/`
+  le temps de l'usage, puis le retire. L'A ne demande jamais le dossier entier « pour voir ».
+- **Archiver** : l'A vérifie que rien de ce qu'elle archive n'est cité comme à lire par un brief en
+  cours ou un outil de calcul en service, écrit la ligne d'inventaire et une liste qui ne fait que
+  déplacer ; [[ humain ]] la relit, puis la lance (§ 4). Rien n'est supprimé.
+- **Ranger n'est pas archiver** : ranger un rapport ou une copie dans `conception[[ suffixe ]]/`
+  (tout rapport de relecture y finit, `kit/METHODE.md` § 3 ; la copie d'avant du CONTEXTE, § 3
+  ci-dessous) reste le geste courant ; archiver, c'est ensuite le déplacer vers
+  `archives_conception[[ suffixe ]]/`, avec sa ligne d'inventaire.
+- **Ce qui ne s'archive jamais** : les fichiers vivants de la racine (`CONTEXTE.md`,
+  `00_LISEZ_MOI.md`, `INVENTAIRE_ARCHIVES.md`, `REMONTEES_KIT.md`) et `kit/`, que le script
+  refuse ; ni `passations/` en entier, seulement les pièces qu'il contient (le script ne le refuse
+  pas : c'est à l'A de ne pas le lister).
+- **Le ménage de fin de jalon garde ce qu'une étape suivante nommée utilise, pas un cycle
+  entier.** Garder tout un cycle « comme modèle » a rempli un premier projet de pièces que
+  personne n'ouvrait plus. Pour chaque pièce gardée, écrire à quelle étape elle sert et quand elle
+  part (`INVENTAIRE_ARCHIVES.md`, « Restés en conception ») ; un changement de plan d'archivage se
+  dit à [[ humain ]] avec sa raison.
+- **Le modèle glissant** : le dernier cycle complet reste en conception comme modèle du suivant (son
+  brief, son arbitrage, sa revue, son paquet de C) ; quand le cycle suivant a les siens, l'ancien
+  modèle s'archive.
+- **Sans droit de suppression**, un fichier en trop dans `conception[[ suffixe ]]/` se range dans un
+  sous-dossier `_a_retirer/`, archivé ensuite.
+- **Deux A ouvertes en même temps** : tant que l'A précédente est ouverte, la nouvelle revérifie les
+  empreintes des fichiers vivants (CONTEXTE, inventaire, index) avant chaque écriture ; l'A
+  précédente n'écrit plus dans `conception[[ suffixe ]]/` sans le dire à [[ humain ]].
+- **`v_for_cowork[[ suffixe ]]/` n'est pas traité par le script.** Ce qui doit en partir (le
+  sous-dossier d'un jalon fusionné, un rapport resté) est d'abord rangé par A dans
+  `conception[[ suffixe ]]/«outils du jalon»/archives_v_for_cowork_«jalon»/`, puis archivé avec le
+  reste ; A liste à part, pour [[ humain ]], les originaux à retirer de `v_for_cowork[[ suffixe ]]/`.
+- **Ce qui ne doit jamais sortir de la conception** se dit en gras dans la ligne d'inventaire
+  (« **chiffres tirés de données réelles** : jamais dans le dépôt ni dans
+  `v_for_cowork[[ suffixe ]]/` »).
+
+## 3. La copie d'avant, et l'option git
+
+**Une seule copie d'avant par clôture** : avant sa première modification de `CONTEXTE.md`, l'A le
+copie tel quel dans `passations/CONTEXTE_avant_A«n».md` (`kit/METHODE.md`, § 10). Elle sert à
+retrouver l'état d'une décision à une date, et le texte d'origine d'une ligne changée : rien ne se
+retire du CONTEXTE sans accord, et une règle devenue fausse se corrige par une note datée. L'index
+et l'inventaire ne se copient pas : l'index se réécrit d'après le dossier, et l'inventaire ne fait
+que s'allonger (seul « Restés en conception » se réécrit, d'après le dossier). Les copies d'avant
+d'un jalon partent à son archivage, en une ligne.
+
+*Pourquoi une seule* : un premier projet copiait trois fichiers deux fois par conversation (à
+l'ouverture, puis avant la clôture) ; les deux copies étaient le plus souvent identiques, et
+alourdissaient chaque archivage.
+
+**Option, non éprouvée : un dépôt git local de `conception[[ suffixe ]]/`, commité par [[ humain ]] à chaque
+clôture.** Il garderait chaque version de chaque fichier vivant sans copie à la main.
+
+```bash
+cd [[ racine ]]/conception[[ suffixe ]]
+git init                                  # une fois
+git add -A
+git commit -m "Clôture de l'A«n»"         # à chaque clôture, conversations fermées
+```
+
+- Seul [[ humain ]] lance `git` dans ce dossier : une commande `git` lancée par une conversation dans un
+  dossier connecté peut y laisser un verrou (c'est arrivé dans un miroir).
+- Commiter quand aucune conversation n'écrit, et après l'archivage : le commit enregistre alors les
+  départs, et l'historique garde tout.
+- Tant que l'option n'a pas fait ses preuves sur un projet, la copie d'avant reste due.
+
+## 4. Archiver avec `outils/archiver.py`
+
+1. **Choisir** ce qui part (§ 2), d'après le dossier et non d'après la mémoire de la conversation ;
+   vérifier que rien n'est cité comme à lire par un brief en cours ou un outil en service.
+2. **Écrire la section** dans `INVENTAIRE_ARCHIVES.md` (modèle ci-dessous), puis réécrire « Restés
+   en conception » sans ce qui part. Chaque chemin en entier, avec des `/`, tel qu'il sera dans la
+   liste : le script cherche chaque chemin, caractère pour caractère, dans l'inventaire.
+3. **Écrire la liste** `conception[[ suffixe ]]/passations/A_ARCHIVER_«étape».txt` : un chemin par
+   ligne, relatif à `conception[[ suffixe ]]/`, `#` pour commenter. «étape» est le jalon
+   (`[[ prefixe_jalon ]]«n»`) pour l'archivage d'un jalon, `A«n»` pour un archivage de clôture.
+4. **Donner à [[ humain ]]** le bloc de commandes, avec ce qui reste à relire (la liste et la section) :
+
+   ```bash
+   cd [[ racine ]]
+   uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_«étape».txt[% if piste != 'principale' %] --piste [[ piste ]][% endif %]
+   uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_«étape».txt[% if piste != 'principale' %] --piste [[ piste ]][% endif %] --executer
+   ```
+
+   La première ligne est un essai à blanc : elle affiche chaque déplacement prévu, ou la liste des
+   problèmes, et ne touche à rien. [[ humain ]] ne lance la seconde que si l'essai est propre.
+5. **Vérifier**, à l'ouverture suivante, que les éléments ont quitté la conception, puis compléter
+   le titre de la section. L'A ne voit pas les archives : elle ne vérifie que l'absence.
+
+**Ce que le script garantit** : tout est vérifié avant le premier déplacement, et une seule erreur
+arrête tout (tout ou rien) : chemin absolu ou avec `..`, chemin listé deux fois, fichier vivant ou
+`kit/`, élément introuvable, destination déjà occupée (rien n'est écrasé), chemin absent de
+l'inventaire. Il ne supprime rien, garde le chemin relatif, et range la liste elle-même dans les
+archives à la fin.
+
+**Ce qu'il ne fait pas** :
+
+- il ne traite pas `v_for_cowork[[ suffixe ]]/` (§ 2) ;
+- il ne retire pas les dossiers qu'il vide : archiver le dossier entier plutôt que son contenu
+  pièce par pièce, ou signaler à [[ humain ]] le dossier vide ;
+- il ne cherche la ligne que dans la section « Archivages », le chemin **entre accents graves** et
+  tel qu'il est dans la liste (sans `/` final) : un chemin listé seulement dans « Restés en
+  conception » est refusé ;
+- il refuse une destination occupée : si un dossier du même nom est déjà dans les archives (un
+  dossier archivé en deux fois), lister ses fichiers un à un.
+
+### Écrire une section
+
+La plus récente en dernier, juste au-dessus de « Restés en conception » :
+
+```markdown
+### Archivés à la fusion de «jalon» («date», par l'A«n» ; liste `passations/A_ARCHIVER_«étape».txt`)
+
+«Une à trois phrases : ce qui vient d'être fusionné ou tranché ; ce qui reste comme modèle du cycle
+suivant ; ce qui s'archive.» «k» éléments.
+
+| Chemin | Contenu | Quand en avoir besoin |
+|---|---|---|
+| `«outils du jalon»` | Le dossier du jalon : «révisions du brief, prototype, mesures, notes de tenue» | Rejouer un calcul de «jalon» |
+| `«NN»_BRIEF_«jalon».md` | Le brief de «jalon», révision «r» | Question sur «sujet» au-delà de `«fiche»` |
+| `passations/«pièce 1»`, `passations/«pièce 2»`, `passations/«pièce 3»` | Les pièces du cycle de «jalon» : «consigne, plan, rapports, arbitrage, revue» | Aucun usage actif |
+| `passations/CONTEXTE_avant_A«x».md`, `passations/CONTEXTE_avant_A«y».md` | Les copies d'avant des A«x» à A«y» | Retrouver l'état d'une décision à une date ; texte d'origine d'une ligne changée |
+| `passations/A_ARCHIVER_«étape».txt` | La liste de cet archivage, rangée par le script | Vérifier ou refaire l'archivage |
+```
+
+Après le déplacement, l'A suivante complète le titre : « … ; déplacés par [[ humain ]] le «date» ; vérifié
+par l'A«n+1» : absents de la conception ».
+
+**Correspondances** : quand une pièce qui reste cite un document archivé par sa propre numérotation
+(« le § n du document correspond à la section Dn de la fiche de décision »), ou quand un texte
+archivé a été repris ailleurs, une puce dans « Correspondances à connaître ».
+
+## 5. Niveaux
+
+| Niveau | Quand on archive | Une ligne par… | Ce qu'on tient en plus |
+|---|---|---|---|
+| **Léger** | à la fusion d'un jalon | dossier de jalon ; les pièces du cycle, toutes nommées, en une ligne | rien : ce qui reste, c'est le jalon en cours |
+| **Standard** (par défaut) | à la fusion d'un jalon | dossier de jalon ; une ligne par pièce seulement pour ce qui a un usage (toute formule sauf « Aucun usage actif » et « Aucun (doublon) ») | « Restés en conception », réécrit à chaque clôture |
+| **Complet** | en plus, à toute clôture qui a quelque chose à archiver | pièce, avec l'empreinte (huit caractères) des pièces de référence | les correspondances ; la vérification datée dans le titre ; l'option git (§ 3) |
+
+*Pourquoi un archivage par jalon par défaut* : archiver à chaque conversation fait vite un
+inventaire que personne ne relit, dont une bonne part de lignes « Aucun usage actif ».
+
+## 6. Pièges
+
+- **Un chemin abrégé** (`…`), ou différent de celui de la liste : le script ne le trouve pas dans
+  l'inventaire, et refuse tout.
+- **« Restés en conception » réécrit de mémoire** : une pièce oubliée y reste pour toujours, ou une
+  pièce encore utile part. Le réécrire d'après le dossier.
+- **Un déclencheur invérifiable** (« plus tard ») : la pièce ne part jamais.
+- **La copie temporaire d'un archivé**, oubliée dans `passations/` après usage : elle devient à son
+  tour une pièce périmée qu'une A peut lire.

@@ -1,0 +1,87 @@
+# Consigne de la session de code — «jalon»
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom
+> `CONSIGNE_CODE_«jalon».md`, remplir les `«…»`, retirer ce bloc.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrite par** A, une fois le brief prêt[% if 'relectures' in modules %] (relu par B, constats arbitrés)[% endif %] ; **collée par** [[ humain ]] au départ de
+> la session de code. Elle ne liste pas ce que l'agent fait seul d'après `CLAUDE.md` — créer la
+> branche, ouvrir la PR, nommer les commits (`kit/METHODE.md`, § 9) : seulement ce qui est propre
+> à ce jalon.
+> **Champs** : `«jalon»`, `«titre»`, `«branche»`, `«k»` (commits), `«n»` (l'A qui écrit), `«date»`, `«sha»`
+> (tête de `main`), `«r»` (révision), `«sha256»` (empreinte du brief), `«modèle»`, `«effort»`,
+> `«alternative»`, `«raison»`, `«dérogation»`, les accords obtenus, les commandes refusées, la durée
+> attendue, les précisions.
+
+*Écrite le «date» par la «n»ᵉ A. Brief : révision «r» (`BRIEF_«jalon».md`, SHA-256 `«sha256»`).*
+
+## Pour [[ humain ]], avant de coller
+
+- **Un mot inconnu** (PR, branche, fusion…) ? `kit/VOCABULAIRE.md` ; pour git, son § 8.
+- **Où** : ton agent de code (Claude Code, Codex…), ouvert dans `[[ depot_travail ]]`, sur `main` à jour
+  (`«sha»`).
+- **Mode** : plan, si ton agent en a un. À défaut, le message lui demande la même chose : il présente
+  son plan et n'écrit rien avant validation.
+- **Dossier ajouté** : `[[ racine ]]/v_for_cowork[[ suffixe ]]/«jalon»` seulement, en donnant accès à ce seul
+  dossier (selon ton agent : ajoute ce dossier à la session, ou donne-lui le chemin du brief) ; il ne porte que le brief, rien du prototype — jamais tout `v_for_cowork[[ suffixe ]]` :
+  les rapports et les briefs voisins donnent envie d'en faire plus que prescrit (`kit/METHODE.md`, § 3).
+- **Réglages** : **«modèle», `«effort»`** (effort : le réglage de réflexion de l'agent, s'il en a un) —
+  recommandé : la ligne « Code — implémentation » du § 0 de `kit/MODELES_ET_EFFORTS.md` (un effort plus
+  élevé seulement après un échec constaté ; **jamais de mode multi-agents sur un brief prescriptif** :
+  il n'y a rien à explorer, la seule chose qu'on gagne est du hors-périmètre) ;
+  alternative : «alternative» ; raison : «raison» ; dérogation : «aucune | dérogation». Les
+  correctifs se feront dans la même session, tant que sa marge de contexte suffit.
+- **Durée** : «plusieurs heures : «k» commits, la vérification complète avant chacun, puis les
+  contre-épreuves». «Un échec connu, sans rapport avec le jalon : ce que la session en fait.»
+- **Avant d'ouvrir la session**, dans un terminal :
+  ```bash
+  cd [[ depot_travail ]]
+  git switch main     # se place sur main
+  git pull            # récupère le dernier main
+  git rev-parse HEAD  # affiche le commit où tu es
+  git status          # dit si des fichiers ont changé
+  ```
+  `git rev-parse HEAD` doit donner `«sha»`, ou la tête de `main` si une PR a fusionné depuis (le dire
+  alors à A) ; `git status` doit dire « nothing to commit » (« rien à valider » en français).
+
+## Le message
+
+> «jalon» — «titre». Lis `CLAUDE.md`, puis, en entier, le brief `«jalon»/BRIEF_«jalon».md` (révision
+> «r») : c'est la référence de la mission. Vérifie d'abord son empreinte SHA-256 : `«sha256»`. Si elle
+> diffère, arrête-toi et dis-le. Lis ensuite les pièces qu'il joint, chacune contre son empreinte.
+>
+> Tu écris tout le code et tous les tests d'après le brief : aucun code ni test ne t'est fourni.
+>
+> Pars du `main` à jour (`«sha»`) et donne son commit. Accords obtenus : «… (brief, § …)» — ou
+> « aucun accord extérieur requis ». Si `main` bouge pendant la session, suis le § 4 du brief : fusion
+> de `main` dans ta branche, jamais de rebase ; «un conflit dans … t'arrête, et la conception donne les
+> fichiers résolus».
+>
+> Propose ton plan (en mode plan, si tu en as un), et attends la validation avant d'écrire du code.[% if 'relectures' in modules %] Je le fais relire
+> avant de te répondre.[% endif %]
+>
+[% if 'donnees-privees' in modules -%]
+> Le hook du dépôt refuse les commandes qui touchent les données : «liste» ; une recherche passe par
+> ton outil de recherche, un texte qui cite l'une d'elles s'écrit par ton outil d'écriture, un message
+> de commit passe par `git commit -F`, une description de PR par `--body-file`. Tu ne lances rien sur les données
+> réelles, pas même leur aide : ce sont des commandes [[ de_humain ]].
+>
+[% endif -%]
+> Branche `«branche»`, «k» commits (brief, § 9), la vérification complète de `CLAUDE.md` verte avant
+> chacun ; «ce qui ne doit pas changer : les sorties existantes, les tests existants (§ 8.1)».
+>
+> À la fin, joue chaque contre-épreuve du § 8.3, une à une, dans ton arbre de travail[% if langage == 'python' %], sans cache de
+> bytecode (`python -B`, `__pycache__` vidé)[% endif %], et restaure après chacune (`git diff` vide). Écris leur
+> table dans ton dernier message, avec, pour chacune, le test qui a rougi ; une équivalence se joue
+> aussi, ne fait rien rougir, et se déclare avec la raison du brief. N'ouvre la PR qu'avec tout cela
+> vert ; sa description suit le § 9.
+>
+> «Précision propre à cette session — ou rien.»
+
+## Ensuite, pour [[ humain ]]
+
+- **Le plan arrive** : copier son texte tel quel (UTF-8) dans `[[ racine ]]/v_for_cowork[[ suffixe ]]/PLAN_«jalon».md`[% if 'relectures' in modules %] (pour la
+  passe 2 de B, `kit/gabarits/DEPART_B.md`)[% endif %] et dans `[[ racine ]]/conception[[ suffixe ]]/passations/PLAN_«jalon».md`, et le dire à A[% if 'relectures' in modules %], qui écrit
+  l'annexe de B[% endif %].
+- **Ne rien valider dans la session avant le message de A** (`kit/gabarits/FEU_VERT_PLAN.md`) : une
+  remarque relance un tour complet et, selon l'agent, un plan entièrement nouveau.

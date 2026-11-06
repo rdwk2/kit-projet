@@ -1,0 +1,117 @@
+# Gabarits — lequel, quand, qui, où
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> Un gabarit se **copie** à l'endroit indiqué, sous le nom indiqué, puis se remplit : on ne
+> remplit jamais le gabarit lui-même, qui serait écrasé à la mise à jour suivante du kit. Chaque
+> gabarit commence par un bloc « **Gabarit** — … » qui redit où le copier, sous quel nom, qui le
+> remplit et ses champs `«…»` ; ce bloc se retire du fichier rempli.
+
+## Par où commencer
+
+[% if piste == 'principale' %]Ouvre `kit/prompts/PREMIERE_A.md` : c'est le premier geste du projet.[% else %]Ouvre le § 10.3 de `kit/PISTES.md` : il dit comment lancer la première A de cette piste.[% endif %] Les gabarits
+arrivent ensuite : A te dit lequel. Un mot inconnu ? `kit/VOCABULAIRE.md`.
+
+Tu ne remplis pas les gabarits : tu demandes à A, par exemple « prépare la consigne de code du
+jalon [[ prefixe_jalon ]]1 ».
+
+| Mot | Ce que c'est |
+|---|---|
+| **A** | la conversation de conception : elle réfléchit avec toi et n'écrit pas de code |
+[% if 'relectures' in modules -%]
+| **B** | la conversation qui relit le brief et le plan |
+| **C** | la conversation qui relit la PR |
+[% endif -%]
+| **Code** | l'agent de code : il écrit le code et les tests |
+
+`CLAUDE.md` porte les règles de tous les agents ; `AGENTS.md` y renvoie.
+
+## Règles communes
+
+- **Tous les champs `«…»` se remplissent.** Un champ sans objet se supprime avec sa phrase, sauf
+  quand son absence est une information : on l'écrit alors en une ligne (« Aucune consigne
+  passée en cours de session. »).
+- **Un gabarit qui lance une session** ([% if 'relectures' in modules %]B, l'agent de code, C[% else %]l'agent de code[% endif %][% if 'expert' in modules %], un expert, une session à part[% endif %])
+  porte ses réglages : modèle, effort, une alternative, la raison en une phrase, toute
+  dérogation (`kit/MODELES_ET_EFFORTS.md`, § 0 ; `kit/METHODE.md`, § 8).
+- **Un message prêt à coller se colle tel quel.** Un message qui oblige [[ humain ]] à reformuler est un
+  message mal écrit (`kit/METHODE.md`, § 1).
+- **Toute commande donnée à [[ humain ]]** commence par `cd [[ racine ]]` (ou un autre chemin absolu) et passe
+  par les scripts d'`outils/` quand il y en a un.
+- **Les valeurs se recopient, elles ne se retapent pas** : le dernier commit (tête), l'identifiant
+  du contenu (arbre) et le SHA-256 d'un fichier (empreinte) se lisent dans les fichiers au moment
+  d'écrire ; les heures, par une commande, jamais de tête.
+- Le fichier rempli est un fichier vivant du projet : il reste là où le gabarit le range[% if 'archives' in modules %] jusqu'à
+  son archivage[% endif %]. Une amélioration d'un gabarit va dans `REMONTEES_KIT.md`.
+- **Un dossier connecté** est un dossier auquel la conversation a accès. Si ton outil ne connecte
+  pas de dossier, ouvre l'agent dans ce dossier.
+- **Le mode plan** est celui de ton agent, s'il en a un. À défaut, l'agent présente son plan et
+  n'écrit rien avant validation.
+
+## Où chaque gabarit sert, dans le cycle d'un jalon
+
+Un jalon est une étape livrable du projet, en général une PR. Le cycle : brief, plan, code,
+relecture, fusion.
+
+[% if 'relectures' in modules -%]
+```mermaid
+flowchart LR
+    BJ["BRIEF_JALON<br/>(A)"] --> DB1["DEPART_B + ANNEXE_B<br/>passe 1 (B)"]
+    DB1 --> AB["ARBITRAGE<br/>passe de B (A)"]
+    AB --> CC["CONSIGNE_CODE<br/>(Code, plan d'abord)"]
+    CC --> DB2["DEPART_B + ANNEXE_B<br/>passe 2, le plan (B)"]
+    DB2 --> FV["FEU_VERT_PLAN<br/>(Code)"]
+    FV --> DC["DEMARRAGE_C + ANNEXE_C<br/>(C)"]
+    DC --> AR["ARBITRAGE<br/>PR (A)"]
+    AR --> CO["CORRECTIFS<br/>(Code)"]
+    CO --> RV["REVUE_PR<br/>([[ humain ]] publie)"]
+    RV --> OU["OUVERTURES_A<br/>(A suivante)"]
+```
+[% else -%]
+```mermaid
+flowchart LR
+    BJ["BRIEF_JALON<br/>(A)"] --> CC["CONSIGNE_CODE<br/>(Code, plan d'abord)"]
+    CC --> FV["FEU_VERT_PLAN<br/>(Code)"]
+    FV --> AR["ARBITRAGE<br/>relecture neuve (A)"]
+    AR --> CO["CORRECTIFS<br/>(Code)"]
+    CO --> RV["REVUE_PR<br/>([[ humain ]] publie)"]
+    RV --> OU["OUVERTURES_A<br/>(A suivante)"]
+```
+[% endif -%]
+
+## Index
+
+| Gabarit | Quand | Qui le remplit | Où va le fichier rempli, sous quel nom | Qui le lit, ou le lance |
+|---|---|---|---|---|
+| `OUVERTURES_A.md` | quand une conversation A s'arrête (clôture, ou historique résumé automatiquement), pour que la suivante reprenne sans perte | l'A qui s'arrête | `conception[[ suffixe ]]/OUVERTURES_A«n».md`, «n» étant le numéro de l'A qu'il ouvre | [[ humain ]], qui fait les gestes d'avant puis colle le message ; l'A neuve |
+| `CONSIGNE_CODE.md` | au départ de la session de code d'un jalon | A | `conception[[ suffixe ]]/passations/CONSIGNE_CODE_«jalon».md` | [[ humain ]] la colle dans la session de code |
+| `FEU_VERT_PLAN.md` | le plan relu : feu vert ou demande de révision ; plus tard, une précision en cours de session | A | `passations/FEU_VERT_PLAN_«jalon».md` ; `passations/MESSAGE_CODE_«jalon»_«k».md` | [[ humain ]] les colle dans la session de code[% if 'relectures' in modules %] ; le feu vert part aussi dans le paquet de la C[% endif %] |
+| `ARBITRAGE.md` | après chaque rapport de relecture | A | `passations/ARBITRAGE_PR-«n».md`[% if 'relectures' in modules %] ; pour une passe de B : `passations/ARBITRAGE_B_«jalon»_PASSE«x».md`[% endif %] | [[ humain ]], qui tranche ce qui lui appartient ; il nourrit les correctifs, la révision du brief, l'annexe suivante |
+| `CORRECTIFS.md` | après l'arbitrage d'une PR ; ou pour faire fusionner `main` dans une branche déjà relue | A | `passations/CORRECTIFS_PR-«n».md` ou `passations/FUSION_MAIN_PR-«n».md` ; fichiers joints dans `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/` | [[ humain ]] la colle dans la session de code de la PR |
+| `REVUE_PR.md` | juste avant la fusion, sur l'état final | A | `passations/REVUE_PR-«n».md` | [[ humain ]] la publie : `uv run outils/revue_pr.py «n»` |
+[% if 'relectures' in modules -%]
+| `DEPART_B.md` | avant chaque passe de B | A | `passations/DEPART_B_«jalon»_PASSE«x».md` | [[ humain ]] le colle dans la conversation B |
+| `DEMARRAGE_C.md` | la PR ouverte et prête à relire | A, avec le paquet | `passations/C_PR-«n»/DEMARRAGE.md`, plus les pièces du paquet | [[ humain ]] : `uv run outils/clone_c.py «n» --paquet C_PR-«n»` ; la C le lit |
+[% endif -%]
+[% if 'expert' in modules -%]
+| `PASSE_EXPERTE.md` | avant de figer une décision de mathématiques, de modélisation, d'algorithmique ou de science | A | `passations/EXPERT_«sujet»/` (`DEMARRAGE.md`, `NOTE_«sujet».md`, `LIRE_DABORD.md`) | [[ humain ]] prépare le poste et lance ; l'expert le lit |
+| `SESSION_A_PART.md` | une sous-tâche dont seul le résultat compte (inventaire, recherche, collecte, note de méthode) | A | `passations/PROMPT_SESSION_«nom».md` | [[ humain ]] prépare le dossier et lance ; la session le lit |
+[% endif %]
+
+## Gabarits du cycle écrits à part
+
+Ils vivent dans ce dossier aussi ; leur bloc d'en-tête fait foi pour l'emplacement et le nom.
+
+| Gabarit | Quand | Qui | Où va le fichier rempli, sous quel nom | Voir |
+|---|---|---|---|---|
+| `BRIEF_JALON.md` | à l'ouverture d'un jalon, étape 1 du cycle | A | écrit d'abord en conception, en parties ; publié dans `v_for_cowork[[ suffixe ]]/«jalon»/BRIEF_«jalon».md` | `kit/METHODE.md`, § 5 |
+[% if 'relectures' in modules -%]
+| `ANNEXE_B.md` | avant chaque passe de B : l'annexe du brief de B, réécrite à chaque passe | A | `v_for_cowork[[ suffixe ]]/07_ANNEXE_«jalon»_PASSE«x».md` ; déplacée dans `passations/` une fois la passe close | `kit/METHODE.md`, § 4 |
+| `ANNEXE_C.md` | avant chaque relecture de PR | A | `v_for_cowork[[ suffixe ]]/06_ANNEXE_PR-«n».md`, copiée aussi dans le paquet de la C (`C_PR-«n»/`) | `kit/METHODE.md`, § 6 |
+[% endif -%]
+| `NOTE_PISTE.md` | avant d'ouvrir une piste parallèle (une seconde ligne de travail sur le même dépôt, avec sa propre conception) : la note d'ouverture, écrite par l'A de la piste de référence | A de référence | `conception[[ suffixe ]]/NOTE_PISTE_«piste».md` | `kit/PISTES.md` |
+| `RELAIS.md` | à chaque point de contact qui demande l'autre piste (accord, information, calendrier de fusion) | A | `conception[[ suffixe ]]/relais/RELAIS_«émetteur»_«nn».md` ; [[ humain ]] le copie dans le `relais/` de l'autre piste | `kit/PISTES.md` |
+| `REPONSE_RELAIS.md` | en réponse à un relais reçu | A | `conception[[ suffixe ]]/relais/REPONSE_RELAIS_«émetteur»_«nn».md` (l'émetteur du relais auquel elle répond) | `kit/PISTES.md` |
+| `MESSAGE_FUSION_PISTE.md` | après la fusion d'une PR qui touche un point de contact | A | `conception[[ suffixe ]]/relais/MESSAGE_«émetteur»_FUSION_PR-«m».md` | `kit/PISTES.md` |

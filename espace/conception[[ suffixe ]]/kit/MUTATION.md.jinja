@@ -1,0 +1,143 @@
+# Le balayage mécanique par A — mutation avant l'annexe de C
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+
+Le balayage demande un shell Unix : le conteneur de la conversation, Linux, macOS ou WSL. Il n'a pas
+été essayé sous Windows natif.
+
+## La règle
+
+Quand une PR est ouverte, A lance un outil de mutation (`mutmut` en Python) sur les modules
+de `src/` que la PR touche, **depuis une copie de la tête** (l'archive que produit
+`uv run outils/tete_pr.py «n»`), **avant** d'écrire
+l'annexe du brief de C. A trie les survivants en trois classes — **lacune réelle**,
+**équivalent**, **message** —, vérifie un **test tueur** pour chaque lacune réelle (vert sur la
+tête, rouge sous le mutant), et porte les lacunes dans l'annexe ou dans les correctifs.
+
+Les C ne refont pas ce balayage : le § 6 quater de leur brief le leur dit, les laisse
+contester un classement « équivalent » (par une entrée qui le distingue), et les tourne vers
+ce que l'outil ne voit pas : contrats et préconditions, relations entre deux sorties,
+décorateurs, constantes de module, messages, imports, fichiers hors de `src/`.
+
+## Pourquoi
+
+Sur un premier projet, les survivants de l'outil et les constats des C ne se sont presque pas
+recoupés. L'outil trouve les branches non
+gardées que la lecture ne voit pas ; les C trouvent les contrats et les garanties écrites que
+l'outil ne voit pas. **Les deux instruments sont complémentaires.**
+
+## Comment
+
+1. **Copie de la tête** : [[ humain ]] lance `uv run outils/tete_pr.py «n»`, qui écrit
+   `passations/TETE_PR-«n».tar` (l'arbre de la tête, par `git archive`) et sa fiche
+   `TETE_PR-«n».txt` (commit, arbre). A l'extrait dans son propre espace de travail et vérifie
+   l'arbre (`git add -A` puis `git write-tree` dans un dépôt neuf). Jamais de `git fetch` dans le
+   miroir, jamais dans la copie de travail de l'agent de code. Le dossier d'extraction est
+   jetable (un shell Unix convient ; selon l'outil, celui de la conversation limite la durée d'un
+   appel).
+2. **Configuration dans la copie** (ci-dessous) : l'outil ne mute que les fichiers touchés par la
+   PR, contre les seuls tests qui les exercent ; délai de garde réduit ; Hypothesis déterministe ;
+   premier lot **court**, qui génère et relève, et doit finir normalement avant de lancer le reste :
+   interrompu, l'outil perd le relevé et marque des mutants « sans test » sans les jouer.
+3. **Contrôle obligatoire avant de croire une campagne** : rejouer à la main un mutant
+   équivalent connu ; s'il est « tué », le montage ment ; et confronter un « 0 survivant » au compte
+   rendu de l'auteur. Exemple vécu : des identifiants de
+   tests accentués font sortir pytest en erreur d'usage, et l'outil compte « tué » — parade
+   dans la copie : `disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true`
+   dans `[tool.pytest.ini_options]`, **avant** le premier lancement.
+4. **Contre-épreuves sans cache de bytecode** (`python -B`, `__pycache__` vidé) : une mutation
+   de même longueur réécrite dans la même seconde fait réutiliser l'ancien `.pyc`, et le mutant
+   paraît survivre.
+5. **Une aide de test mise en cache** (`functools.cache`) fausse la carte tests ↔ fonctions et
+   fait survivre à tort (les mutants tournent dans des processus dont le cache est déjà
+   rempli) : **rejouer chaque survivant qui n'est pas un message dans un processus neuf**, ou
+   retirer le cache dans la copie, avant le relevé.
+6. Un fichier ajouté à la sélection après un premier lancement : supprimer sa copie dans
+   `mutants/src/` (sinon « nothing matches ») et écarter `mutants/mutmut-stats.json` (sinon sortie
+   `33`, « sans test ») ; le relevé, refait en entier, efface les résultats déjà acquis. Survivants
+   lents (un lot qui stagne sur des délais de garde) : les jouer à la main, un à un, sous un
+   `timeout`. Constantes de module et décorateurs : l'outil ne les mute pas ; les muter à la main,
+   dans une copie de `src/` en tête de `PYTHONPATH` (`python -B`), en vérifiant qu'une mutation
+   grossière rougit, pour s'assurer que la copie est bien celle qui est importée.
+7. **Nommer ce qui a été balayé**, fichier par fichier, dans l'annexe ; un « équivalent » se
+   prouve (pourquoi aucune entrée ne distingue le mutant), il ne s'affirme pas.
+8. **Relire le tri.** Un « message » qui change le type de l'exception n'est pas un message : une aide
+   d'erreur appelée avec un argument de moins lève `TypeError` ; si le mutant survit, le refus n'est
+   exercé par aucun test (de même `raise X(None)`, qui efface le message). Une constante que les
+   tests emploient pour écrire leurs attendus n'est tenue par rien : chercher dans les tests le
+   **littéral** prescrit. Une constante tuée par une erreur de collecte : relancer avec
+   `--continue-on-collection-errors`, pour voir si un test la tue par une valeur.
+
+Les C peuvent partir avant la fin du balayage ; son tri rejoint alors l'arbitrage. Quand on
+mesure le recoupement des C avec l'outil, ne pas lister les lacunes dans l'annexe. Le lancer dès la
+PR ouverte : un balayage dure longtemps, et le rejeu d'un survivant plus encore.
+
+## La configuration
+
+Dans la **copie** seulement, jamais dans le dépôt. Bloc à ajouter au `pyproject.toml` (outil
+éprouvé : `mutmut` 3.8.0) :
+
+```toml
+[tool.mutmut]
+source_paths = ["src"]
+only_mutate = ["«les fichiers de src/ que la PR touche»"]
+pytest_add_cli_args_test_selection = ["«les fichiers de tests qui les exercent»"]
+pytest_add_cli_args = ["-p", "no:cacheprovider"]
+also_copy = ["«les dossiers que les tests lisent, hors de src/ et tests/»"]
+use_git_change_detection = false
+timeout_multiplier = 3.0
+timeout_constant = 5.0
+```
+
+Le délai de garde par défaut (15 fois la durée estimée) laisse une boucle infinie bloquer le lot à
+chaque reprise : d'où les deux dernières lignes.
+
+À ajouter à la fin de `tests/conftest.py` de la copie, sans écraser ce qu'il contient, pour qu'un
+mutant ne soit jamais « tué » par un dépassement de délai :
+
+```python
+from hypothesis import settings
+settings.register_profile("mutation", deadline=None, database=None, derandomize=True)
+settings.load_profile("mutation")
+```
+
+Le montage, dans le shell de A, depuis le dossier d'extraction :
+
+```bash
+uv sync --locked
+uv pip install --python .venv/bin/python mutmut==3.8.0
+.venv/bin/mutmut run --max-children 2 "«paquet».«module».x_«fonction»__mutmut_*"
+```
+
+Puis les lots, par groupes de fonctions : même commande, sous un `timeout` si les appels du shell
+sont bornés ; `mutmut run` relancé reprend les mutants sans résultat. Rejouer un survivant dans un
+processus neuf, depuis `mutants/`, après avoir vérifié que le mutant existe (`grep` sur
+`def x_«fonction»__mutmut_«k»(` dans `src/`) :
+
+```bash
+MUTANT_UNDER_TEST="«paquet».«module».x_«fonction»__mutmut_«k»" PYTHONPATH=src timeout 160 ../.venv/bin/python -B -m pytest -x -q -p no:cacheprovider «sélection»
+```
+
+## Les pièges de l'outil
+
+- **Les codes de sortie** : `1` tué, `0` survivant, `-24` délai, `-9` tué par le système (une boucle
+  infinie qui remplit la mémoire), `33` « sans test ».
+- **Un mauvais nom de mutant fait un faux survivant** : `x_check` au lieu de `x__check` pour une
+  fonction `_check` fait tourner les tests sans mutant ; d'où la vérification d'existence.
+- **Un test qui lit les imports du module rougit sous l'outil**, qui y ajoute les siens : le relevé
+  propre échoue (`failed to collect stats`). L'écarter de la sélection, puis supprimer `mutants/`
+  avant de relancer.
+- **Une copie qui vit dans le shell de la conversation** disparaît avec elle : ne rien y laisser qui
+  doive rester. Un processus lancé en arrière-plan peut mourir avec l'appel du shell.
+
+## Niveaux
+
+| Niveau | Ce qu'on fait |
+|---|---|
+| Léger | pas de balayage par A ; la C exécute quelques mutations ciblées sur les invariants du jalon |
+| Standard | balayage ciblé sur les modules touchés, une fois par PR qui porte une décision |
+| Complet | balayage de toute PR qui touche `src/`, avec tri, tests tueurs et contre-épreuves |
+
+Leçons associées : thème « MUT — Mutations et contre-épreuves » de `kit/LECONS.md`.

@@ -1,0 +1,27 @@
+> **Gabarit** — copier dans `relais/` de ta conception sous le nom
+> `MESSAGE_«émetteur»_FUSION_PR-«n».md`, remplir les `«…»`, retirer ce bloc. [[ humain ]] le copie dans le
+> `relais/` de l'autre piste (`kit/PISTES.md`, § 10.2, bloc 7), puis lance les commandes du
+> point 4.
+>
+> Champs : `«n»` (numéro de la PR fusionnée) · `«émetteur»`, `«destinataire»` (noms des pistes)
+> · `«sha»`, `«arbre»` (tête de `main` après la fusion, et son arbre) · `«titre»` (titre de la
+> PR) · `«date»`, `«heure lue»` · les autres se lisent dans leur rubrique.
+
+# PR #«n» fusionnée — de la piste « «émetteur» » à la piste « «destinataire» »
+
+*Relayé par [[ humain ]] le «date», «heure lue». Pas de réponse attendue, sauf objection.*
+
+1. **`main` = «sha»** (« «titre» »), arbre «arbre», vérifié au serveur (`git ls-remote`, ou `ETAT_DISTANT.txt`, écrit par `outils/miroir.py`, pour un dépôt privé).
+2. **Fichiers communs touchés depuis ton dernier accord** : «liste, ou aucun».
+3. **Ce que la fusion change pour toi** : «un contrat, une commande, une version de dépendance[% if 'donnees-privees' in modules %],
+   un motif du hook[% endif %]… — ou rien».
+4. **Ce [[ que_humain ]] lance**, chaque bloc commençant par `cd` sur un chemin absolu
+   (`kit/PISTES.md`, § 10.2, bloc 5) :
+   - mettre à jour les deux miroirs : `uv run outils/miroir.py`, puis
+     `uv run outils/miroir.py --piste «piste»` ;
+   - mettre à jour chaque copie de travail ;
+   - «la commande qui régénère des données, s'il y en a une, et dans quel ordre — ou rien».
+5. **Si ta branche est ouverte** : elle fusionne `main`, jamais de rebase d'une branche relue.
+   Conflits attendus : «fichiers et lignes, ou aucun», à résoudre en gardant les deux côtés, «la
+   ligne de la PR #«n» d'abord».
+6. **Suite** : «mon prochain jalon, et ses points de contact».

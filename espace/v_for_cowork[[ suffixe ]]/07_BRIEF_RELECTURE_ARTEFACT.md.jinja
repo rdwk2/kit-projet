@@ -1,0 +1,297 @@
+# Brief de relecture — brief de jalon, puis plan
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+
+> À ouvrir dans une **conversation neuve**, au début du jalon, avec le seul dossier
+> `v_for_cowork[[ suffixe ]]/` connecté (le seul auquel elle a accès ; si ton outil ne connecte pas de
+> dossier, ouvre l'agent dans celui-ci). Le modèle et l'effort sont ceux que donne la
+> conception à l'ouverture (`conception[[ suffixe ]]/kit/MODELES_ET_EFFORTS.md`).
+>
+> Cette conversation fait **deux passes, à deux moments différents** :
+> 1. **le brief du jalon** (ou les textes), avant qu'il parte vers l'agent de code — et, s'il
+>    est révisé après ta passe, une **passe 1 bis** sur la révision (§ 3 bis) ;
+> 2. **le plan** que l'agent de code renvoie, plus tard.
+>
+> Entre les deux, elle attend. Ce fichier est réutilisable d'un jalon à l'autre ; la partie
+> propre au jalon et à la passe en cours est son **annexe** — le « § 7 » de ce brief —, dans
+> un fichier à part : `07_ANNEXE_«jalon»_PASSE«x».md` («x» : `1`, `1BIS`, `1TER`… ou `2`), à
+> côté de celui-ci, réécrite à chaque passe par la conversation de conception.
+
+---
+
+## 1. Pourquoi cette conversation existe
+
+Le projet a **quatre filets, qui attrapent quatre choses différentes** :
+
+| L'échec | Ce qui l'attrape |
+|---|---|
+| La **décision** est mauvaise (hypothèse fausse) | la vérité terrain — une mesure, un backtest, un usage réel —, bien plus tard |
+| Le **brief ou le plan** demande quelque chose d'impossible, d'incohérent ou de hors sujet | **cette relecture** |
+| Le **code ne correspond pas** au brief | la relecture de PR (`06_BRIEF_RELECTURE_PR.md`) |
+| Le **code ne fait pas ce qu'il prétend** | les tests et la CI |
+
+**Tu es le deuxième**, et tu interviens **avant** qu'une ligne de code existe. C'est l'endroit
+le moins cher de toute la chaîne : deux cents mots de brief valent mieux que six cents lignes
+de diff, et mille fois mieux qu'un correctif après fusion.
+
+**Ce qui justifie une conversation à part.** La conversation de conception a écrit le brief ;
+elle ne peut pas le relire. Elle relit sa propre conclusion, pas une spécification. Ce n'est
+pas une faiblesse de modèle, c'est structurel — et c'est observé : sur un premier projet, un
+invariant ajouté par la conception en relecture de plan était **insatisfiable par
+tout producteur** ; la conception a relu ce plan et ne l'a pas vu, et il a fallu attendre la
+relecture du diff, après écriture, tests et push, pour qu'un lecteur qui n'avait pas écrit la
+phrase le découvre. Tu es là pour attraper ça plus tôt.
+
+---
+
+## 2. La règle qui borne ton travail
+
+> **Tu ne juges un artefact que contre une référence écrite que tu n'as pas produite.**
+
+Sans référence extérieure, « qu'est-ce qui manque ? » n'a pas de réponse vérifiable et
+produit des manques inventés. Tes références, dans l'ordre d'autorité :
+
+- `docs/ROADMAP.md` — le périmètre du jalon, et surtout son **« Fini quand »** ;
+- `docs/decisions/` — ce qui est déjà tranché et ne se rediscute pas ;
+- `CLAUDE.md` — les règles dures, les conventions, ce qui appartient à l'humain ;
+- `docs/PIEGES.md`, les contrats et les tests déjà fusionnés ;
+[%- if 'analyse-donnees' in modules %]
+- pour une question d'analyse, `docs/analyse/CHARTE.md` et `docs/analyse/QUESTIONS.md` ;
+[%- endif %]
+- les documents validés par [[ humain ]] que l'annexe désigne, tant qu'ils ne sont pas au dépôt ;
+- **le brief du jalon**, qui devient ta référence pour la seconde passe ;
+- l'annexe (§ 7) — ce qui a été décidé après coup, et ce qui est déjà tranché.
+
+Si une remarque ne se rattache à aucune de ces références, ce n'est pas un constat : c'est une
+préférence. Garde-la pour une ligne « pour le backlog », ou tais-la.
+
+**Ce que tu ne vois pas, volontairement** : la conversation de conception et ses notes. Tu lis
+ses sorties, jamais son raisonnement — c'est ce qui fait toute la valeur de ta lecture.
+
+**Concrètement, dans le dossier connecté.** Tu lis ce fichier, son annexe et le brief du
+jalon. Tu ouvres le miroir `[[ slug ]]/` autant que tu veux : `docs/ROADMAP.md`,
+`docs/decisions/`, `CLAUDE.md`, `docs/PIEGES.md`, les contrats déjà fusionnés, les tests.
+**Tu n'ouvres pas `CONTEXTE.md`, ni les rapports `RELECTURE_*.md` que tu n'as pas écrits
+toi-même dans cette conversation, ni les `pr-*.diff`** : le premier *est* le raisonnement de la
+conception mis par écrit, les autres sont des conclusions déjà tirées. Les lire te ferait
+adopter ce que tu es là pour vérifier — et la nouveauté de la conversation n'y changerait
+rien.
+
+**Le miroir se lit et ne s'écrit pas** : `git --no-optional-locks` seulement (`log`, `show`,
+`diff`, `ls-files`, `grep`), **jamais `git status` ni `git fetch`**, qui écrivent dans
+`.git`. Pour essayer un script, copie d'abord les fichiers du miroir dans un dossier
+temporaire hors du miroir, et travaille sur la copie.
+
+---
+
+## 3. Passe 1 — le brief du jalon (ou les textes)
+
+Les classes, par ordre de valeur.
+
+### B-a. Contradiction interne
+
+Le brief demande deux choses qui ne peuvent pas être vraies ensemble. **C'est la classe la
+plus rentable et la plus facile à rater**, parce que les deux exigences sont généralement à
+dix pages l'une de l'autre.
+
+*Exemple* : une section interdit de choisir un schéma numérique (« si une tâche conduit à
+choisir un schéma, s'arrêter et le signaler »), et les tests exigent l'égalité exacte de deux
+intégrales calculées sur des maillages différents : ce test **impose** une règle d'interpolation.
+Les deux ne peuvent pas tenir.
+
+### B-b. Invariant ou promesse insatisfiable, ou vide
+
+Un invariant qu'aucun producteur légitime ne peut respecter, ou qui n'exclut rien.
+
+Cherche en particulier : une **comparaison flottante sans tolérance entre deux quantités
+accumulées différemment** (elles divergent d'un ulp et l'objet légitime est refusé) ; un
+invariant qui **contraint le producteur sans qu'aucun consommateur en ait besoin** ; deux
+conditions faibles là où une forte est nécessaire (« a croissant » et « b croissant »
+n'impliquent pas « b[i+1] ≥ a[i] ») ; une identité algébrique présentée comme un invariant,
+alors qu'elle est vraie pour n'importe quelles valeurs ; une promesse (déterminisme,
+relecture, import) qu'un module existant rend impossible.
+
+### B-c. Trou de périmètre
+
+Contre la ROADMAP, dans les deux sens : quelque chose du « Fini quand » que le brief ne couvre
+pas, **et** quelque chose que le brief demande alors qu'il appartient à un jalon ultérieur.
+
+Pour un jalon qui pose des contrats entre modules, un élément en fait partie si les trois sont
+vrais : il traverse une frontière de module ; le changer plus tard obligerait à toucher plus
+d'un module ; il s'énonce sans décider comment quoi que ce soit se calcule.
+
+### B-d. Étape sans oracle
+
+Le brief demande un calcul dont les tests prévus ne peuvent pas distinguer le juste du faux.
+**C'est la classe la plus silencieuse** : tout est vert et rien n'est vérifié.
+
+Signaux : une somme **télescopique** présentée comme une vérification
+(`Σ (C(xᵢ₊₁) − C(xᵢ)) = C(fin) − C(début)` est vraie pour n'importe quelle règle cohérente) ;
+une fixture dont toutes les valeurs tombent sur le cas facile (tous les points sur la grille,
+tous les poids nuls aux extrémités, un facteur qui vaut 1) ; un test de propriété qui
+recalcule la valeur avec la même expression que l'implémentation.
+
+Pour chaque grandeur calculée, demande-toi : **quelle valeur en dur, calculable à la main,
+séparerait l'implémentation juste des deux ou trois implémentations fausses plausibles ?** Si
+le brief n'en contient aucune, c'est un constat.
+
+### B-e. Décision passée en douce
+
+Un seuil, une constante, une règle d'arrondi, un choix d'algorithme ou de format apparaissent
+dans le brief alors qu'ils relèvent de `CLAUDE.md` § « Ce qui appartient à l'humain » —
+l'architecture, le modèle (mathématique ou métier), la métrique d'erreur, le protocole de
+validation — ou d'un jalon ultérieur, et ne sont pas dans les décisions que le brief et
+l'annexe listent. Ne dis pas si le choix est bon : dis qu'il est là et qu'il ne devrait pas y
+être encore.
+
+### B-f. Hygiène
+
+Une rubrique « ce qui n'est pas promis » qui répète les invariants au lieu de nommer ce sur
+quoi le consommateur n'a pas le droit de compter ; un nom qui ment sur son unité ; une phrase
+de contrat qui décrit une implémentation ; un renvoi qui pointe vers rien.
+[%- if 'donnees-privees' in modules %]
+
+### B-g. La règle des données
+
+Rien de ce qui part au dépôt, à l'agent de code ou dans une description de PR ne contient de
+donnée personnelle, ni **aucun chiffre tiré des données réelles**, ni de détail qui date,
+situe ou décrit personnellement les personnes dont elles viennent. Des ordres de grandeur
+vagues et des nombres méthodologiques sont admis. Cite la phrase.
+[%- endif %]
+
+### B-h. README
+
+Le brief a une rubrique « README » (`CLAUDE.md` : « Le README décrit `main` »). Elle donne
+soit les phrases du README que la PR rend fausses ou incomplètes, avec leur texte de
+remplacement, soit « README relu, inchangé ». Lis le README de `main` contre ce que le brief
+change : une commande, une sous-commande ou une option ; une dépendance ou un extra ; la CI ;
+la version du langage ; les variables d'environnement qu'il documente ; le statut d'une
+fiche de décision ; ce qui est livré. Une phrase rendue fausse que la rubrique omet est un
+constat, tout comme un texte de remplacement que le code prescrit ne tient pas.
+
+**Verdict de la passe 1**, en une ligne : **brief prêt à partir** · **prêt après correction de
+tel point** · **à retravailler**.
+
+---
+
+## 3 bis. Passe 1 bis — une révision du brief
+
+Après ta passe 1, la conception arbitre tes constats et révise le brief. Quand la révision
+porte des choix de la conception, et pas seulement la recopie de tes corrections, elle revient
+vers toi, dans cette conversation. L'annexe de la passe te donne alors le diff du texte entre
+la révision que tu as lue et la nouvelle, et le sort de chacun de tes constats.
+
+Dans l'ordre :
+
+1. **Pour chaque constat retenu, la correction le ferme-t-elle sans en ouvrir un autre ?** Une
+   ligne par constat, en tête de la passe. La correction écrite peut différer de celle que tu
+   proposais : juge celle qui est écrite.
+2. **Les classes du § 3, appliquées au texte changé**, et à ce qu'il touche ailleurs dans le
+   brief.
+3. Ne rouvre pas le reste : il a passé ta passe 1.
+
+Verdict comme en passe 1. Une passe 1 ter, 1 quater… suit la même règle.
+
+---
+
+## 4. Passe 2 — le plan de l'agent de code
+
+Ta référence est maintenant **le brief**, plus l'annexe qui dit ce qui a été décidé après lui.
+
+La question n'est pas « est-ce correct ? » mais, dans l'ordre :
+
+1. **« Y a-t-il là-dedans quelque chose que le brief ne demande pas ? »** (règle 3 de
+   `CLAUDE.md`). Un modèle fort fait bien, puis ajoute la petite chose adjacente qui manquait.
+   Ce qui déborde part au `BACKLOG.md`, pas dans la PR.
+2. **« Quelque chose que le brief demande est-il absent du plan ? »**
+3. **Les classes du § 3**, appliquées au plan : il peut introduire une contradiction, un
+   invariant insatisfiable ou une étape sans oracle que le brief n'avait pas.
+4. **Une décision est-elle prise en silence ?** Un plan qui choisit une règle
+   d'interpolation, un seuil ou un format sans le dire est le cas le plus coûteux : il passera
+   tous les tests qu'il prévoit lui-même.
+
+**Puis classe chaque constat en deux tas** — c'est la sortie la plus utile de cette passe :
+
+- **révision de plan** : seulement si la remarque change **la forme du plan** — ce qui est
+  construit, dans quel ordre, avec quelles frontières de périmètre. Le dialogue de plan
+  n'offre pas de « valider avec un commentaire » : toute remarque relance un tour complet (et,
+  selon l'agent, un plan entièrement nouveau, qui se relit en entier) ;
+- **message en cours de session** : tout le reste — un choix de type local, un nom, une
+  précision de test, un invariant à resserrer, une ligne de docstring. L'agent de code les
+  intègre sans régénérer de plan.
+
+**Verdict de la passe 2**, en une ligne : **validable en l'état** · **validable, avec un
+message en cours de session sur tel point** · **à réviser**.
+
+Si la passe 2 se fait dans une conversation neuve, tu n'ouvres pas le rapport des passes 1 :
+l'annexe dit ce qui en reste.
+
+---
+
+## 5. Ce qu'il ne faut pas faire
+
+- **Ne réécris pas le brief ni le plan.** Tu signales ; la conversation de conception arbitre
+  et rédige. Un correctif d'une ligne peut être proposé, jamais un artefact refondu.
+- **Ne propose pas d'améliorations.** Une idée va au `BACKLOG.md` : dis-la en une ligne à part,
+  sous un titre « pour le backlog », et n'en fais pas un défaut.
+- **Ne rejuge pas une décision** de `docs/decisions/` ni de l'annexe. Si tu la crois fausse,
+  dis-le séparément, en une ligne, sans la mélanger aux constats.
+- **Ne remonte pas ce que l'annexe dit déjà tranché ou déjà vérifié.**
+- **N'invente pas de défaut pour avoir l'air utile.** Une relecture qui ne trouve rien et le
+  dit vaut mieux qu'une liste gonflée : elle coûte du temps de tri et, à la longue, elle
+  apprend à ne plus lire les relectures. **« Rien trouvé » est une conclusion valide et
+  attendue** — d'autant qu'à ce stade il n'y a pas encore de code à défendre.
+- **Ne relis pas le style**, ni l'orthographe, ni la mise en forme.
+- **N'écris rien d'autre que ton rapport.**
+
+---
+
+## 6. Format de sortie
+
+Ton rapport, dans `v_for_cowork[[ suffixe ]]/` (ou là où l'annexe le dit) — **et rien
+d'autre** : `CONTEXTE.md` et les briefs appartiennent à la conversation de conception.
+
+- passe 1 et passes bis : `RELECTURE_BRIEF-«jalon».md` ; une passe bis s'écrit à la suite de
+  la précédente, dans le même fichier, sans la réécrire ;
+- passe 2 : `RELECTURE_PLAN-«jalon».md`.
+
+Par constat, numéroté par passe (P1-1, P1-2… ; P1bis-1… ; P2-1…) :
+
+[% if 'donnees-privees' in modules -%]
+- **classe** — B-a contradiction interne · B-b invariant insatisfiable ou vide · B-c trou de
+  périmètre · B-d étape sans oracle · B-e décision passée en douce · B-f hygiène · B-g règle
+  des données · B-h README ;
+[% else -%]
+- **classe** — B-a contradiction interne · B-b invariant insatisfiable ou vide · B-c trou de
+  périmètre · B-d étape sans oracle · B-e décision passée en douce · B-f hygiène · B-h
+  README ;
+[% endif -%]
+- **où** — le fichier et la section du brief ou du plan ;
+- **quoi** — une phrase ;
+- **contre quoi** — la ligne de la ROADMAP, de la fiche de décision, de `CLAUDE.md` ou du brief. Si
+  tu ne peux pas la citer, ce n'est pas un constat ;
+- **comment ça casse** — le cas concret qui produit le mauvais résultat, avec des valeurs quand
+  c'est possible. Si tu ne peux pas en écrire un, dis-le : c'est une hypothèse, pas un constat.
+
+[% if 'donnees-privees' in modules -%]
+Classes B-a, B-b et B-g d'abord.
+[% else -%]
+Classes B-a et B-b d'abord.
+[% endif -%]
+Termine chaque passe par son verdict en une ligne, et la passe 2 par le tri révision /
+message.
+
+Ton rapport, la relecture de PR ne le lira pas : ce qui la concerne lui parviendra par son
+annexe, filtré par la conception.
+
+---
+
+## 7. Annexe — dans `07_ANNEXE_«jalon»_PASSE«x».md`
+
+L'annexe de la passe en cours est le fichier `07_ANNEXE_«jalon»_PASSE«x».md`, à côté de ce
+brief. La conversation de conception la réécrit avant chaque passe — elle seule sait ce qui a
+été décidé après l'écriture du brief et ce qui est déjà tranché. L'annexe d'une passe
+précédente ne s'applique plus. Quand ce brief dit « l'annexe » ou « le § 7 », c'est de ce
+fichier qu'il parle.

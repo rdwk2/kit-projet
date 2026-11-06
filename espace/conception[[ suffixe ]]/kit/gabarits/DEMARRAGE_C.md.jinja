@@ -1,0 +1,127 @@
+[% set opt_piste = '' if piste == 'principale' else ' --piste ' ~ piste -%]
+# Démarrage — C «complète | bornée | seconde C («variante»)», PR #«n» («jalon»)
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/C_PR-«n»/` (une C bornée ou une seconde C :
+> `C_PR-«n»_«variante»/`) sous le nom `DEMARRAGE.md`,
+> remplir les `«…»`, retirer ce bloc. Le dossier `C_PR-«n»/` est le **paquet** de la C :
+> `outils/clone_c.py` le copie tel quel dans son poste.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrit par** A, avec le paquet : copier dans `passations/C_PR-«n»/` le brief de C
+> (`v_for_cowork[[ suffixe ]]/06_BRIEF_RELECTURE_PR.md`), son annexe (`06_ANNEXE_PR-«n».md`, gabarit
+> `ANNEXE_C.md`), le brief du jalon (`BRIEF_«jalon».md`), le plan et son feu vert, et les messages
+> passés en cours de session ; noter leurs empreintes en bas de ce fichier. La C calcule le diff elle-même ; joindre
+> `pr-«n».diff` seulement s'il le faut. **Rien d'autre** : ni rapport de B, ni arbitrage, ni compte
+> rendu de l'agent de code, ni prototype — le relecteur ne prend pas son énoncé des mains de
+> l'auteur (`kit/METHODE.md`, § 2).
+> **Lancé par** [[ humain ]] : `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --paquet C_PR-«n»[[ opt_piste ]]`
+> (C bornée ou seconde : `--paquet C_PR-«n»_«variante» --variante «variante»`) ; puis l'agent
+> **dans** le poste que le script affiche, `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/`
+> (`«-variante»` : rien pour la première C, `-bornee`, `-seconde`…), sans mode plan, si ton agent en a
+> un (il l'empêcherait d'écrire son rapport), aucun dossier ajouté, avec : « Lis paquet/DEMARRAGE.md et
+> exécute-le. »[% if langage == 'python' %] Si le script finit sur « just check est rouge », la PR ne passe pas ses propres
+> vérifications : à régler avant la C, ou à lui dire.[% endif %] Quand la C a fini :
+> `uv run outils/clone_c.py «n» --recuperer[[ opt_piste ]]` (avec `--variante «variante»` pour une C bornée
+> ou seconde : son rapport arrive chez A sous le nom `RELECTURE_PR-«n»_«variante».md`). Le poste n'est
+> jamais connecté à une conversation (`kit/MACHINE.md`, VER-2).
+> **Champs** : `«n»` (PR), `«jalon»`, `«titre»`, `«k»` (l'A qui écrit), `«date»`, `«variante»`, `«sha»` (tête),
+> `«base»` (base de fusion), `«r»` (révision du brief), les commandes refusées, le mandat, les empreintes,
+> `«modèle»`, `«effort»`, `«alternative»`, `«raison»`, `«dérogation»`.
+
+**Réglages, pour [[ humain ]] au lancement** : **«modèle», `«effort»`** — recommandé : la ligne « C — relecture
+de PR » (ou « C bornée ») du § 0 de `kit/MODELES_ET_EFFORTS.md` (une seconde C, partielle, sur une autre
+famille de moteurs pour une PR très structurante, si [[ humain ]] le décide) ; alternative :
+«alternative» ; raison : «raison» ; dérogation : «aucune | dérogation». À choisir dans l'interface :
+ce texte ne configure pas l'outil.
+
+*Préparé le «date» par la «k»ᵉ A.*
+
+## Qui tu es
+
+Tu es la C «complète | bornée — les correctifs seulement | seconde C, «variante»» de la PR #«n»
+(«jalon», «titre») du projet `[[ github ]]`. Tu n'as participé ni à sa conception, ni à la relecture du
+brief et du plan, ni à son implémentation : c'est voulu. «Une autre C, d'un autre moteur, relit la
+même PR en parallèle sans voir ton rapport : ton regard vaut par sa différence.» Il ne s'agit ni de
+produire un plan, ni de corriger le code.
+
+## Ton poste
+
+- Ton dossier : `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/`. Le clone `[[ slug ]]/` y est sur la tête de
+  la PR (`«sha»`)[% if langage == 'python' %], avec son environnement (`uv sync --locked`) ; `just check` y a tourné à la
+  préparation, relance-le toi-même : son résultat fait partie de ta relecture[% endif %]. Ton paquet est `paquet/`.
+- Le clone est jetable : mutations et essais y sont permis, mais **restaure chaque mutation avant la
+  suivante** — une coupure ne doit jamais laisser un arbre muté.
+[% if 'donnees-privees' in modules -%]
+- Le hook du dépôt ne garde pas ta session, ouverte au-dessus du clone : **ne lance pas** «commandes
+  qui touchent les données, ou rien» ; ton clone n'a pas de `.env`. Aucune donnée réelle n'est
+  accessible, et aucune n'est nécessaire : les tests n'utilisent que des fixtures synthétiques.
+[% endif -%]
+- N'ouvre rien hors de ce dossier. Personne ne suit forcément ta session en direct : demande le moins
+  d'autorisations possible, et ne t'arrête pas pour une question que le brief tranche.
+- Écris tes chemins avec des `/`.
+
+## À lire, dans cet ordre
+
+1. `paquet/06_BRIEF_RELECTURE_PR.md`, en entier ;
+2. `paquet/06_ANNEXE_PR-«n».md` ;
+3. `paquet/BRIEF_«jalon».md` (révision «r») ;
+4. `paquet/PLAN_«jalon».md`, puis `paquet/FEU_VERT_PLAN_«jalon».md`, qui prime sur le plan, et
+   `paquet/MESSAGE_CODE_«jalon»_«k».md` s'il y en a ;
+5. le diff, que tu calcules toi-même depuis la base de fusion, dans le clone :
+   `git fetch origin main` puis `git diff origin/main...HEAD` (base
+   attendue : `«base»`).
+
+Le brief et les décisions de l'annexe priment sur les passages correspondants du plan.
+
+## Ce que tu n'ouvres pas
+
+Ce que le § 2 du brief de C exclut, dont la description de la PR et ses commentaires. Pour ses
+métadonnées, seulement `gh pr view «n» --json number,state,headRefName,headRefOid,baseRefName,baseRefOid`
+(jamais `body` ni `comments`). `docs/JOURNAL.md` fait partie du diff : tu le relis comme livrable,
+jamais comme preuve.
+
+## Avant les mutations
+
+1. Consigne le SHA complet de la tête, celui de `main` et leur base de fusion. L'annexe annonce la
+   tête `«sha»` et la base `«base»` : un écart se signale précisément, sans verdict implicite sur une
+   autre version. Fige ces références pour toute la relecture.
+2. Le code testé est celui de cette tête, sans modification initiale. Une base verte avant toute
+   mutation : la vérification complète de `CLAUDE.md`, puis les cibles ci-dessous.
+
+## Ton mandat
+
+«C complète : toutes les mutations obligatoires de l'annexe, puis le § 4 du brief de C en entier. |
+C bornée : les correctifs seulement — `git diff «sha avant»..HEAD`, chaque correctif contre sa
+prescription (`CORRECTIFS_PR-«n».md`, dans le paquet). | Seconde C, partielle : ta fenêtre ne suffira
+probablement pas à tout faire ; dans cet ordre : 1. les vérifications d'avant les mutations ; 2. les
+mutations obligatoires de l'annexe, dans leur ordre ; 3. ta propre recherche, le § 4 du brief de C
+dans l'ordre de valeur.» Si ta session est coupée, suis le § 6 bis du brief de C.
+
+Une mutation à la fois, avec la méthode du § 6 ter ; pour chacune : la modification, la commande, le
+test qui rougit et pourquoi ; si rien ne rougit, le comportement faux qui survit et sa portée. Tes
+contre-exemples vont dans des fichiers neufs de ta copie, jamais dans un fichier existant. Pas de
+sous-agents, pas de refonte, pas de revue de style. Les cibles : «fichiers de tests».
+
+## Ton rapport
+
+Au format du § 6 du brief de C, écrit **au fil de l'eau** (journal de progression en tête), dans
+`RELECTURE_PR-«n».md`, à la racine de ton dossier (ci-dessus) — ce nom-là même pour une C bornée
+ou une seconde C : le rapatriement vers A le renomme. N'écris rien ailleurs, ni dans le paquet.
+
+Il donne les SHA, la provenance du diff, les vérifications réellement exécutées, chaque mutation
+avec son résultat, les constats reproductibles et le verdict ; si tu t'arrêtes avant la fin, il dit
+où ; si une mutation obligatoire n'a pas pu être exécutée, le verdict le dit. Aucun commit, push,
+commentaire GitHub ni fusion : ton rapport revient à la conception, qui arbitre.
+
+## Empreintes du paquet
+
+Instantanés des références, sans compte rendu d'auteur ni rapport d'un autre relecteur. Les
+originaux sont tenus par la conception : ne corrige pas ces copies.
+
+| Fichier | SHA-256 |
+|---|---|
+| `06_BRIEF_RELECTURE_PR.md` | `«…»` |
+| `06_ANNEXE_PR-«n».md` | `«…»` |
+| `BRIEF_«jalon».md` | `«…»` |
+| `PLAN_«jalon».md` | `«…»` |
+| `FEU_VERT_PLAN_«jalon».md` | `«…»` |

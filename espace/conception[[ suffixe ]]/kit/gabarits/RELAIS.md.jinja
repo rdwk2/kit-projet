@@ -1,0 +1,61 @@
+> Un relais : un message écrit entre les A de deux pistes, que [[ humain ]] recopie à la main.
+>
+> **Gabarit** — copier dans `relais/` de ta conception (`conception/relais/` pour la piste
+> principale, `conception_«piste»/relais/` sinon) sous le nom `RELAIS_«émetteur»_«nn».md`,
+> remplir les `«…»`, retirer ce bloc. [[ humain ]] le copie ensuite, à l'identique, dans le `relais/` de
+> l'autre piste, avec ses pièces jointes (`kit/PISTES.md`, § 10.2, bloc 7).
+>
+> Champs : `«nn»` (numéro du relais, sur deux chiffres, compté par la piste qui écrit) ·
+> `«émetteur»`, `«destinataire»` (noms des pistes) · `«rang»` (rang de l'A qui écrit) ·
+> `«date»`, `«heure lue»` (lue par une commande, juste avant d'écrire) · `«v»` (version) ·
+> `«sha»`, `«arbre»` (tête de `main` et son arbre) · `«k»` (nombre de points) · les autres
+> se lisent dans leur rubrique.
+>
+> Règles (`kit/PISTES.md`, § 6.4) : un relais ne part que pour un point qui compte ; la
+> réponse attendue en tête ; pour une demande d'accord, le diff exact des fichiers communs et
+> une fusion d'essai ; aucune donnée privée ni aucun chiffre tiré des données réelles ;
+> une version qui ne part pas se renomme `RELAIS_«émetteur»_«nn»_v«k».md`.
+
+# Relais «nn» — de la piste « «émetteur» » à la piste « «destinataire» »
+
+*De la «rang» A de la piste « «émetteur» », relayé par [[ humain ]]. Écrit le «date», «heure lue».
+Version «v» ; versions non parties : «aucune | liste».*
+
+**Objet** : «demande d'accord | information | réponse à ta demande du «date»» — «en une phrase».
+
+**Réponse attendue** : «sur les points x et y, avant «étape»» | «pas de réponse attendue, sauf
+objection».
+
+**État vu** : `main` = «sha» (arbre «arbre») ; PR ouvertes : «liste, ou aucune» ; dernière pièce
+reçue de toi : «`REPONSE_RELAIS_…` ou `MESSAGE_…`, avec son empreinte», ou « aucune ».
+
+0. **Réponse à ton «relais ou message»** : «accord | objection | conditions». *(Retirer ce point
+   s'il n'y a rien à répondre.)*
+1. **«Objet du point»** — «ce qui est fait ou proposé, en deux phrases au plus».
+   *Ce que je te demande* : «une question fermée, ou un accord».
+2. **«Objet du point»** — «…».
+
+**Fichiers communs touchés** (régimes : `kit/PISTES.md`, § 5) :
+
+| Fichier | Nature du changement | Régime | Conflit attendu avec | Résolution proposée |
+|---|---|---|---|---|
+| «`CLAUDE.md`, « Structure »» | «deux lignes ajoutées» | «accord des deux A» | «ta PR #…, ou rien» | «garder les deux côtés, la tienne d'abord» |
+
+**Pièces jointes**, [[ que_humain ]] copie avec ce relais :
+
+- le diff exact des fichiers communs, contre «sha» : `RELAIS_«émetteur»_«nn»_diff_communs.diff`
+  («empreinte») ;
+- «le paquet : «chemin», copié par [[ humain ]] là où tu lis ; son script d'application : «empreinte»» ;
+- la fusion d'essai : «ta branche ou ta PR» sur «sha» : «sans conflit | conflits dans «fichiers»,
+  résolus en gardant les deux côtés».
+
+**Ce qui ne change pas chez toi** : «contrats, signatures et sorties gardés ; tes tests passent
+sans modification, vérifié sur «sha»».
+
+**Calendrier** : «qui fusionne d'abord ; qui fusionne `main` dans sa branche ; numéro de
+fiche de décision réservé : `00«nn»`, après lecture du miroir et des PR ouvertes».
+
+**Vérifié avant l'envoi** : «sans chiffre tiré des données réelles (script «nom») ; suite verte,
+avec et sans extras ; points numérotés de 1 à «k»».
+
+*Fin du relais «nn» : «k» points.*

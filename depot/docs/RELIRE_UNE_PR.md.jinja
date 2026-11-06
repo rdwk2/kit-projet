@@ -1,0 +1,135 @@
+# Relire la PR d'un camarade
+
+Dans [[ projet ]], aucune PR n'est fusionnée sans avoir été relue par quelqu'un d'autre que
+son auteur. Ce guide dit comment faire cette relecture, même si tu débutes sur GitHub. Compte
+vingt à quarante minutes pour une PR ordinaire.
+
+## Ton rôle, en une phrase
+
+Tu vérifies que la PR fait **ce qui était demandé** — le ticket GitHub (une issue) ou la tâche
+du jalon — et que ses tests **testent vraiment** ce qu'ils disent. Tu ne refais pas le travail, et tu ne décides
+pas à la place du groupe.
+
+Tu as un avantage sur l'auteur : tu n'as pas écrit ce code. Tu le lis comme quelqu'un qui le
+découvre, et c'est pour ça que ta relecture sert.
+
+## Avant de commencer
+
+1. **Lis ce qui était demandé** : le ticket GitHub (une issue) lié à la PR (« Closes #12 »),
+   ou la tâche du jalon. C'est ta référence : tu compares la PR à ce texte, pas à ce que tu aurais fait.
+2. **Lis la description de la PR comme une affirmation à vérifier** : « j'ai ajouté un test
+   pour la liste vide » se vérifie dans le code.
+[% if langage == 'python' -%]
+3. **Regarde la CI**, les vérifications que GitHub lance seul (la coche verte, ou la croix rouge,
+   en bas de la PR). Si elle est rouge, dis-le et arrête-toi là : l'auteur corrige d'abord.
+[% endif %]
+## Ce que tu cherches, du plus utile au moins utile
+
+1. **Un test qui ne teste rien.** Le plus rentable, et le plus dur à voir pour l'auteur : un
+   test qui passe même quand le code qu'il protège est faux ne protège rien.
+2. **Un écart avec ce qui était demandé** : la PR fait autre chose, ou moins, ou plus (une
+   « petite amélioration » que personne n'a demandée) ; ou elle contredit une décision écrite
+   dans `docs/decisions/`.
+3. **Un bug** : un cas limite oublié — liste vide, zéro, une valeur égale à la borne, un seul
+   élément, deux valeurs égales.
+4. **Un texte devenu faux** : le README, un commentaire ou une docstring qui ne correspond plus
+   au code.
+5. **Le reste** (un nom trompeur, un réglage sans explication) : seulement si ça coûtera cher
+   plus tard.
+
+**« Rien trouvé » est une conclusion valide.** Une relecture qui ne trouve rien et le dit vaut
+mieux qu'une liste de remarques inventées pour avoir l'air utile.
+
+## Exécute, n'imagine pas
+
+Le geste qui change tout : récupère la branche, lance les tests, puis **casse exprès** une
+ligne que la PR ajoute, et regarde si un test rougit.
+
+`gh` s'installe et s'identifie une fois, comme le dit `CONTRIBUTING.md`, section 1.
+
+[% if langage == 'python' -%]
+```
+gh pr checkout «n»                       # récupère la branche de la PR («n» : son numéro)
+uv run pytest tests/test_«module».py -x  # les tests passent ?
+```
+[% else -%]
+```
+gh pr checkout «n»          # récupère la branche de la PR («n» : son numéro)
+«commande des tests»        # celle que donnent CLAUDE.md ou le README
+```
+[% endif %]
+Sans `gh` : `git fetch origin`, puis `git switch «branche de la PR»` (son nom est en haut de la
+PR).
+
+Ouvre ensuite un fichier que la PR modifie, supprime (ou inverse) une vérification qu'elle
+ajoute — par exemple la ligne `if note > 20: raise ValueError(...)` — et relance le test qui
+est censé la protéger :
+
+- **le test rougit** : il protège bien cette ligne ;
+- **le test reste vert** : c'est un constat — le test ne teste pas ce qu'il prétend.
+
+Remets le fichier dans son état avec `git restore «fichier»`, et vérifie que `git status` ne
+montre plus rien. Reviens ensuite sur ta branche : `git switch -`. Ne commite rien, ne pousse
+rien : tu relis, tu ne corriges pas.
+
+Si tu n'as pas pu exécuter, dis-le dans ton résumé : « vérifié en lisant, sans lancer ».
+
+## Écrire un constat
+
+Un constat tient en quatre lignes. Sans « comment ça casse », c'est une hypothèse : écris-la
+comme telle (« je pense que…, à vérifier »).
+
+> - **Où** : `src/notes.py`, ligne 42 (fonction `moyenne`)
+> - **Quoi** : une liste vide fait planter la fonction.
+> - **Contre quoi** : l'issue #12 demande « renvoyer None quand il n'y a aucune note ».
+> - **Comment ça casse** : `moyenne([])` lève `ZeroDivisionError` au lieu de renvoyer `None`.
+
+Un autre, sur un test :
+
+> - **Où** : `tests/test_notes.py`, `test_note_trop_grande`
+> - **Quoi** : le test passe même sans le contrôle qu'il est censé vérifier.
+> - **Contre quoi** : la description de la PR dit « une note au-dessus de 20 est refusée ».
+> - **Comment ça casse** : j'ai supprimé la ligne 18 de `src/notes.py` ; le test est resté vert.
+
+## Ce que tu ne fais pas
+
+- **Tu ne rejuges pas les décisions** du groupe (`docs/decisions/`, `docs/ROADMAP.md`). Si tu
+  en crois une mauvaise, dis-le en une ligne à part, pas comme un défaut de la PR.
+[% if langage == 'python' -%]
+- **Tu ne relis pas le style** : la mise en forme et le lint, la CI les vérifie.
+[% endif -%]
+- **Tu ne proposes pas d'améliorations dans la relecture** : une idée, c'est une ligne dans
+  `BACKLOG.md` (ou une issue), à part.
+- **Tu ne corriges pas à la place de l'auteur**, et tu ne pousses rien sur sa branche.
+- **Tu ne fusionnes pas** la PR d'un autre, même si tout est bon : c'est un responsable qui
+  fusionne (`CONTRIBUTING.md`).
+
+## Les gestes sur GitHub
+
+1. Ouvre la PR, onglet **« Files changed »** : tout le diff, fichier par fichier.
+2. Pour commenter une ligne : survole son numéro et clique sur le **« + »** bleu ; pour
+   plusieurs lignes, clique sur le « + » de la première et fais glisser jusqu'à la dernière.
+3. Écris ton constat, puis clique sur **« Start a review »** — pas « Add single comment » :
+   tes commentaires restent en brouillon jusqu'à la fin, et l'auteur les reçoit en une fois.
+4. Coche **« Viewed »** sur chaque fichier lu : c'est un pense-bête, pas une preuve.
+5. À la fin, le bouton vert en haut à droite (**« Review changes »**, ou **« Submit review »**
+   selon l'interface) : écris ton résumé et ton verdict, puis choisis :
+   - **« Comment »** : des remarques ou des questions, sans verdict de fusion ;
+   - **« Request changes »** : au moins un constat empêche de fusionner ;
+   - **« Approve »** : ton verdict est « fusionnable en l'état » et tu as lancé les tests.
+6. Après un nouveau push de l'auteur, ne relis que ce qui a changé : en haut de « Files
+   changed », le menu **« Changes from all commits »** permet de choisir les nouveaux commits.
+
+## Le verdict, en une ligne
+
+Termine ton résumé par une de ces trois phrases :
+
+- **fusionnable en l'état** ;
+- **fusionnable après correction de** «tel point» ;
+- **à ne pas fusionner** (et pourquoi).
+
+Exemple de résumé :
+
+> J'ai relu les quatre fichiers et lancé `tests/test_notes.py`. Deux constats (la liste vide,
+> le test de la borne qui passe à vide), commentés sur les lignes. Rien sur le reste.
+> **Fusionnable après correction des deux constats.**

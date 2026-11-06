@@ -1,0 +1,98 @@
+# Prompt — la première conversation de conception (« A »)
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> À coller dans une conversation neuve, une fois l'espace et le dépôt générés. A réfléchit avec
+> toi et n'écrit pas de code ; l'agent de code l'écrit. La première A fait le **cadrage** (jalon
+> [[ prefixe_jalon ]]0) : décider quoi construire avant la première ligne de code. Pas de code, des décisions.
+>
+> Un mot inconnu (PR, branche, fusion, jalon…) ? `kit/VOCABULAIRE.md` ; pour git, son § 8.
+[% if piste != 'principale' %]>
+> **Pas pour une piste parallèle** : ce prompt est celui d'un projet neuf. La première A de la
+> piste « [[ piste ]] » s'ouvre avec le message du § 10.3 de `kit/PISTES.md` (la ROADMAP, `CLAUDE.md`
+> et les fiches de décision sont communs : on ne les recadre pas sans l'accord de l'autre A).
+[% endif %]
+
+## 0. Ce qu'il te faut
+
+Commence par ce fichier. Vérifie d'abord tes outils : chaque commande doit répondre sans erreur.
+Pour les installer : `docs/GUIDE.md` du kit.
+
+| Il te faut | Pour vérifier |
+|---|---|
+| git | `git --version` |
+| uv | `uv --version` |
+[% if langage == 'python' -%]
+| just | `just --version` |
+[% endif -%]
+| un compte GitHub et `gh` | `gh auth status` |
+| un outil de conversation qui lit des dossiers | ouvre-le une fois |
+| ton agent de code (Claude Code, Codex…) | ouvre-le une fois |
+
+## 1. Avant d'ouvrir — à faire toi-même
+
+1. Le dépôt existe sur GitHub et la copie de travail est à `[[ depot_travail ]]`
+   (`docs/GUIDE.md` du kit, « Après la génération »).
+2. Le miroir (une copie du dépôt en lecture seule, pour les conversations) est cloné :
+   ```bash
+   cd [[ racine ]]
+   uv run outils/miroir.py[% if piste != 'principale' %] --piste [[ piste ]][% endif %]
+   ```
+3. Conversation neuve ; dossiers connectés (ceux auxquels la conversation a accès) :
+   `[[ racine ]]/conception[[ suffixe ]]` et `[[ racine ]]/v_for_cowork[[ suffixe ]]`, **et rien d'autre**. Si
+   ton outil ne connecte pas de dossier, ouvre ton agent dans le premier, et donne-lui accès au second.
+4. Modèle et effort, choisis à l'ouverture et plus touchés : le modèle le plus capable auquel tu as
+   accès, avec une réflexion élevée — un cadrage prend des décisions qui n'ont aucun filet en aval.
+   Un autre choix se fait comme essai délibéré, décidé à l'ouverture. Détail :
+   `kit/MODELES_ET_EFFORTS.md`.
+
+## 2. Le message à coller
+
+> Projet **[[ projet ]]** — [[ description ]]
+> Tu es la **première conversation A (conception)** de la piste « [[ piste ]] ».
+>
+> Lis en entier, dans l'ordre : `conception[[ suffixe ]]/kit/METHODE.md` ; le § 0 de
+> `kit/MODELES_ET_EFFORTS.md` ; `conception[[ suffixe ]]/CONTEXTE.md` (presque vide : c'est
+> toi qui le remplis) ; `conception[[ suffixe ]]/00_LISEZ_MOI.md` ; les ★ de `kit/LECONS.md`.
+> Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : `CLAUDE.md`, `README.md`,
+> `docs/ROADMAP.md`.
+>
+> Ta mission : le **cadrage** du projet (jalon [[ prefixe_jalon ]]0), sans code.
+> 1. Me poser les questions qui décident de tout — le but, pour qui, ce qui compterait comme
+>    réussi et comment on le mesurerait, les contraintes de temps, les données, ce qui
+>    m'appartient — une série courte à la fois, en proposant à chaque fois ta recommandation.
+> 2. Proposer la ROADMAP : trois à six jalons [[ prefixe_jalon ]]1…, chacun avec un « Fini
+>    quand » vérifiable (le test qui dira que le jalon est fini) ; le premier jalon est une tranche
+>    verticale minimale, utilisable (un petit morceau qui marche de bout en bout).
+> 3. Proposer les premières fiches de décision (`docs/decisions/`, gabarit `0000-template.md`,
+>    au premier numéro libre[% if 'donnees-privees' in modules %] : `0001` est déjà pris par la séparation données / code[% endif %]) pour ce
+>    qui est déjà tranché, avec les options écartées et pourquoi.
+> 4. Proposer les compléments de `CLAUDE.md` (règles dures propres au projet, ce qui
+>    m'appartient, conventions), sous forme de texte prêt à appliquer : l'agent de code les
+>    appliquera dans une PR « [[ prefixe_jalon ]]0 — Cadrage ».
+> 5. Remplir `CONTEXTE.md` : § 1 (vérifie chaque chemin ; demande-moi ceux que tu ne vois pas),
+>    § 2 (commandes, adaptées au projet), §§ 4, 5 et 7.
+[% if 'relectures' in modules -%]
+> 6. Décider avec moi du niveau du workflow pour ce projet : quelles PR passent par le cycle
+>    complet, quand une relecture neuve ; le noter au § 2 du CONTEXTE.
+[% endif -%]
+>
+> Termine chaque réponse qui implique une action par une consigne explicite : qui agit (moi
+> ou l'agent de code), quoi exactement, quand. Des schémas en notation standard (Mermaid)
+> plutôt que des pavés, quand c'est possible.
+
+## 3. Ce que la première A rend
+
+- La ROADMAP, les fiches de décision et les compléments de `CLAUDE.md` → une consigne pour
+  l'agent de code (`kit/gabarits/CONSIGNE_CODE.md`), puis une PR de documentation. Ouvre ton agent
+  dans `[[ depot_travail ]]`, colle la consigne, relis la PR, fusionne-la.
+- `CONTEXTE.md` rempli, et `OUVERTURES_A2.md` (gabarit `kit/gabarits/OUVERTURES_A.md`) : le message
+  qui ouvrira la conversation suivante. La deuxième A écrit le brief du premier jalon.
+[% if 'groupe' in modules %]
+**Projet de groupe** : le cadrage se décide avec le groupe, qui désigne la personne qui tient
+l'espace. La première A aide cette personne à préparer la réunion (questions, proposition de
+ROADMAP et de répartition), puis à écrire ce qui a été décidé ; les camarades ne lisent que le
+dépôt (`CONTRIBUTING.md`, `docs/LIVRAISONS.md`).
+[% endif -%]

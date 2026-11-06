@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────────────────────
+# DONNÉES — ne doivent jamais entrer dans le dépôt
+[% if 'donnees-privees' in modules -%]
+# (elles vivent dans le dossier pointé par [[ var_donnees ]])
+[% endif -%]
+# ─────────────────────────────────────────────────────────────
+data/
+[% if 'donnees-privees' in modules -%]
+# «À compléter : les extensions de tes fichiers de données (ex. *.csv, *.parquet, *.xlsx)»
+# exception : les fixtures synthétiques des tests sont commitées
+# !tests/fixtures/**/*.csv
+[% endif %]
+# secrets
+.env
+.env.*
+!.env.example
+*.token
+credentials*
+secrets*
+
+# sorties et exports
+outputs/
+exports/
+
+[% if langage == 'python' -%]
+# ─────────────────────────────────────────────────────────────
+# Python
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# outils
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.hypothesis/
+.ipynb_checkpoints/
+mutants/
+
+[% endif -%]
+# Claude Code : réglages personnels
+.claude/settings.local.json
+
+# ─────────────────────────────────────────────────────────────
+# Éditeurs et OS
+# ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

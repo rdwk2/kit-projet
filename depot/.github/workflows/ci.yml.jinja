@@ -1,0 +1,40 @@
+# CI : `just check` sur une machine vierge[% if 'donnees-privees' in modules %], sans accès aux données privées.
+# Elle ne peut être verte que si le code ne dépend d'aucun fichier privé[% endif %].
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # setup-uv ne publie pas de tag majeur flottant : épingler la version exacte. Celle-ci
+      # tournait dans une CI réelle quand le kit a été écrit ; la monter à la main.
+      - uses: astral-sh/setup-uv@v10.1.0
+        with:
+          python-version: "[[ python_version ]]"
+          enable-cache: true
+
+      - name: Installer les dépendances (verrouillées)
+        run: uv sync --locked
+
+      - name: Installer just
+        run: |
+          uv tool install rust-just
+          echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
+
+      - name: just check
+        run: just check
+
+      # Quand le projet aura des extras optionnels : un second passage avec tous
+      # les extras (les tests qui en dépendent se sautent au premier passage par
+      # pytest.importorskip).
+      # - name: Tests et types, avec tous les extras
+      #   run: |
+      #     uv run --locked --all-extras pytest
+      #     uv run --locked --all-extras mypy

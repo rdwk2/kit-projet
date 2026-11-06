@@ -1,0 +1,343 @@
+# Gabarit — annexe du brief de relecture de PR (`06_ANNEXE_PR-«n».md`)
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Gabarit** — copier dans `v_for_cowork[[ suffixe ]]/` sous le nom `06_ANNEXE_PR-«n».md`,
+> remplir les `«…»`, retirer ce bloc.
+>
+> - Garder **une** des deux versions : la **courte** (une PR ordinaire, une seule C) ou la
+>   **complète** (une PR qui porte une décision, plusieurs C[% if 'mutation' in modules %], un balayage[% endif %]) ; supprimer
+>   l'autre, et les consignes « **A :** ».
+> - Une rubrique sans objet se supprime, sauf quand son absence est une information : l'écrire
+>   alors en une ligne (« Aucune consigne passée en cours de session. »).
+> - Pour la C, copier aussi cette annexe, avec `06_BRIEF_RELECTURE_PR.md`, dans le paquet
+>   `conception[[ suffixe ]]/passations/«paquet»/`, que `uv run outils/clone_c.py «n» --paquet «paquet»`
+>   recopie dans son poste.
+> - Une fois la PR fusionnée, déplacer l'annexe dans `conception[[ suffixe ]]/passations/` :
+>   une annexe close ne reste pas dans le dossier que voient B et C.
+>
+> Champs : «n» (numéro de la PR) · «jalon» · «titre» (de la PR) · «date» · «A» (quelle
+> conversation de conception) · «branche» · «sha» (base, tête) · «arbre» · «fichier»,
+> «empreinte» (une pièce et son SHA-256) · «r» (révision du brief) · «paquet» · «C-x» (le nom
+> d'une C quand il y en a plusieurs) · «variante» (suffixe du rapport d'une seconde C) ·
+> «paquet_python» (le paquet importé par les tests, pour vérifier qu'il vient de la copie) ·
+> «python_du_clone» (l'interpréteur du clone : `.venv/Scripts/python.exe` sous Windows,
+> `.venv/bin/python` ailleurs).
+
+---
+
+# Version courte
+
+# 7. Annexe — PR #«n», «jalon», «titre»
+
+> Écrite le «date» par «A», pour la PR #«n». L'annexe d'une PR précédente ne s'applique plus.
+
+## Tes pièces
+
+1. ce brief de relecture, `06_BRIEF_RELECTURE_PR.md` ;
+2. le brief du jalon, `«fichier»`, révision «r» ;
+3. le plan validé, `«fichier»`, et le message qui l'a validé, `«fichier»` — il prime sur le
+   plan ;
+4. ton clone, sur la tête de la PR : branche `«branche»`, tête `«sha»`, base de fusion `«sha»`
+   (`main`). Calcule le diff toi-même (§ 2).
+
+## Décidé après le brief — ne le signale pas comme un écart
+
+- «une ligne par décision prise après l'écriture du brief : l'arbitrage d'une relecture, une
+  précision du message de validation»
+- Consignes passées en cours de session (§ 4, C-b) : «une par ligne, ou « aucune »». Pour
+  chacune : est-elle dans le code, et dans un test qui rougit sans elle ?
+
+## Déjà tranché — ne le remonte pas
+
+- «les constats déjà soulevés sur le brief et le plan, et leur sort»
+- «les écarts que l'auteur a déclarés, et qui sont acceptés»
+
+## Mutations obligatoires
+
+Pour chacune, le test qui rougit, ou qu'aucun ne rougit.
+
+1. «l'invariant ou la garantie écrite à retirer — fichier, fonction — et ce qu'il protège»
+2. «…»
+3. «…»
+
+> **A :** trois à cinq : les invariants que la PR introduit, et les garanties écrites du brief
+> qu'aucun test ne nomme. Chacune nomme du code qui lit ce qu'elle mute.
+
+Rapport : `RELECTURE_PR-«n».md`, au format du § 6, à la racine de ton poste. Verdict en une
+ligne.
+
+---
+
+# Version complète
+
+# 7. Annexe — PR #«n», «jalon», «titre»
+
+> **Section réécrite avant chaque PR par la conversation de conception** — elle seule sait ce
+> qui a été décidé après l'écriture du brief et ce qui est déjà tranché. L'annexe de la PR
+> #«n précédent» ne s'applique plus, et tu ne l'ouvres pas.
+> _Écrite le «date» par «A», à l'ouverture de la **PR #«n»**._
+
+## Combien de C, et laquelle tu es
+
+> **A :** la configuration, et sa raison :
+> - **une C** — le cas courant ;
+> - **deux C en parallèle, une complète et une partielle** — la PR porte une décision (de
+>   modèle, de contrat) : deux modèles différents ; la partielle a un mandat ordonné dans son
+>   démarrage ; aucune ne voit le rapport de l'autre ;
+> - **deux C, deux moitiés** — la PR est trop grosse pour une seule : chacune lit toute la PR
+>   comme contexte, mais son mandat, ses mutations obligatoires et ses constats portent sur sa
+>   moitié ; nommer, pour chaque moitié, les fichiers de `src/`, les tests, les fixtures et les
+>   textes ; dire ce que les deux lisent en entier (la fiche de décision de la PR) ;
+> - **une C bornée** — sur un lot de correctifs qui touche `src/` : le lot, et rien d'autre.
+>
+> Dire ce que la conception fait à côté ([% if 'mutation' in modules %]balayage, [% endif %]seconde lecture, contrôle réel), et comment
+> la C sait laquelle elle est (son démarrage, son poste). Le choix revient à [[ humain ]].
+
+Texte type, pour deux moitiés : « Un défaut que tu vois en passant dans l'autre moitié se note
+en une ligne, sous un titre « Hors de ma moitié », sans l'instruire. Ton démarrage te dit
+quelle C tu es. »
+
+## Ce que tu relis
+
+> **A :** la PR en deux ou trois phrases : son titre exact, sa branche, sa place dans le jalon,
+> ce qu'elle produit. Qui a écrit quoi (« l'agent de code a écrit tout le code et tous les
+> tests, d'après le brief » ; un prototype de la conception, hors du dépôt, que tu ne vois
+> pas). Ce qui s'est passé avant toi (les passes de B ; l'accord d'une autre piste ; les
+> contre-épreuves jouées par l'auteur ; les tests du prototype rejoués contre la PR). Ce qui
+> vient après toi (l'arbitrage, les correctifs, le contrôle réel, la fusion).
+
+Texte type : « Tu es le premier regard indépendant sur le code, et le dernier avant les
+correctifs, le contrôle réel [[ de_humain ]] et la fusion. »
+
+## Tes pièces
+
+1. ce brief de relecture, `06_BRIEF_RELECTURE_PR.md` ;
+2. **`«brief du jalon»`**, **révision «r»** (SHA-256 `«empreinte complète»`) — la référence de
+   la PR ; son § 11 (« Révisions ») dit ce que les relectures du brief ont changé ; «ses
+   annexes, chacune avec son empreinte, et ce qui s'y lit en entier ou seulement pour ta
+   moitié» ;
+3. **`«plan»`** (SHA-256 `«…»`) — le plan de la session, relu contre le brief ;
+   **`«message de validation»`** — le message qui l'a validé, avec «k» précisions ; il prime
+   sur le plan ;
+4. le diff, que tu calcules toi-même dans ton clone : `git fetch origin`, puis
+   `git diff origin/main...HEAD` :
+   - base : `«sha»` (« «titre du commit» »), arbre `«…»` ;
+   - tête : `«sha»`, arbre `«…»` ;
+   - «k» commits («lesquels, dans quel ordre») ; «f» fichiers, +«a» / −«d» (`src/` +«…» /
+     −«…», `tests/` +«…» / −«…») ;
+   - `git rev-parse "HEAD^{tree}"` doit rendre `«arbre»`, et `origin/main` être à `«base»` ;
+     sinon, dis-le en tête du rapport ;
+5. dans le dépôt, à la tête : «les fiches de décision, avec les sections précises» ;
+   `docs/ROADMAP.md` («jalon») ; `CLAUDE.md` (règles «…») ; «les autres fichiers de
+   référence». Pour les métadonnées de la PR, `gh pr view «n» --json
+   number,state,headRefName,headRefOid,baseRefName,baseRefOid` — la seule commande `gh` permise,
+   jamais `body` ni `comments` (§ 2).
+
+Reconstitue et exécute plutôt que de lire seulement.
+
+## Ce que cette PR a de particulier
+
+> **A :** trois à huit puces, chacune avec son renvoi au brief :
+> - la règle de fond du brief, et **ce qui est un constat, et de quelle classe, dans cette
+>   PR** — « une copie de l'une de ces règles dans «module» est un constat C-b » ; « une
+>   exception hors de celles que la commande attrape est un constat C-d » ; l'annexe peut
+>   fixer une classe hors de la liste du § 4 — avec les exceptions admises ;
+> - qui a écrit le code et les tests ; ce qui n'est pas joint ;
+> - ce qui existe et doit se relire à l'identique, avec les tests inchangés qui en sont les
+>   oracles ;
+> - les points de contact avec une autre piste ou équipe (l'accord porte sur un diff exact ;
+>   « un test de l'autre piste modifié serait un écart de fond ») ;
+> - la plate-forme : des tests réservés à un système (sous l'autre, une mutation qu'eux seuls
+>   tueraient est « raisonnée ») ;
+> - la taille : lignes de `src/` et de tests, commits, et les dépassements de la taille de
+>   commit que la PR annonce.
+[%- if 'donnees-privees' in modules %]
+>
+> Et, pour les données privées : les commandes que ni l'auteur ni la C ne lancent (celles qui
+> lisent `[[ var_donnees ]]`, que le hook refuse), et comment elles se testent quand même ; ce
+> qu'aucun texte de la PR ne doit contenir (règle des données, C-g).
+[%- endif %]
+
+## Décisions prises — ne les signale pas comme des écarts
+
+> **A :** numéroter :
+> 1. les décisions du brief (§ 3, D1 à D«n»), avec leurs sources : le cadrage tranché par [[ humain ]],[% if 'expert' in modules %]
+>    une passe experte et son arbitrage s'il y en a eu,[% endif %] les choix [[ de_humain ]], les choix de la
+>    conception relus par B ;
+> 2. les arbitrages des relectures du brief et du plan : le sort des constats de B (B-a…B-h),
+>    en une ligne chacun — jamais son rapport ;
+> 3. le message de validation du plan, et ses précisions ;
+> 4. ce qui est hors de la PR, et où c'est fait ;
+> 5. ce que les sorties ne sont pas (les non-promesses du brief) : leur absence de validation
+>    n'est pas un constat ;
+> 6. les lignes de `BACKLOG.md` ajoutées par la PR, qui sont des limites connues.
+
+Texte type : « Les lignes de `BACKLOG.md` ajoutées par la PR sont des limites connues : **ne
+construis pas de constat sur elles**, sauf à montrer qu'elles laissent passer autre chose que
+ce que la ligne dit. »
+
+## Consignes passées en cours de session (§ 4, C-b)
+
+> **A :** la liste numérotée des messages passés à la session après la validation du plan,
+> chacun en une ou deux phrases précises. Puis, pour chacun, à qui il revient : vérifié par la
+> conception (rubrique « Ce qui a été vérifié ») ; une affirmation de l'auteur que la C ne
+> refait pas (§ 3) ; **à la C** (et à quelle moitié). Écrire « Aucune consigne passée en cours
+> de session » s'il n'y en a pas.
+
+Texte type : « Les points «…» sont à toi : pour chacun, est-il dans le code, et dans un test qui
+rougit sans lui ? »
+
+## Points déjà soulevés et tranchés — ne les remonte pas
+
+> **A :**
+> - **brief et plan** : les passes de B, leurs comptes de constats, leur sort ;
+> - **écarts déclarés par l'auteur, acceptés** : la liste, un point par écart ;
+> - **correctifs déjà décidés par [[ humain ]]**, qui partiront avec ceux de la C, en un lot :
+>   numérotés, chacun avec sa moitié.
+
+Texte type : « Ne les rejoue pas et ne les compte pas comme tes constats ; un constat voisin
+qu'ils ne couvrent pas reste le tien. »
+
+## Ce qui a été vérifié — ne le refais pas
+
+> **A :** chaque vérification, avec ce qu'elle couvre exactement :
+> - la tête : les commits, leurs arbres, exactement les fichiers attendus ; ce qui ne change
+>   pas (configuration, verrou des dépendances, CI) ;
+> - la CI, et les comptes de tests (réussis, sautés, sous quel système, avec quels extras) ;
+> - les fichiers communs, comparés au diff accordé à l'autre piste ;
+> - deux implémentations croisées : le prototype de la conception et la tête, chacune sous les
+>   tests de l'autre — texte type : « Ce qui reste à trouver est ce qu'**aucun des deux** ne
+>   teste » ;
+> - une longue entrée synthétique : sa taille, la durée, le résultat comparé ;
+> - la suite complète : faite, ou en cours (« son résultat rejoint l'arbitrage »).
+[%- if 'mutation' in modules %]
+> - le balayage mécanique (`kit/MUTATION.md`) : lancé, en cours ou fini ; **sur quels
+>   fichiers, nommés un par un**, sous quels tests ; ce qu'il n'a pas couvert ; ce que l'outil
+>   ne voit pas (d'où les mutations obligatoires).
+[%- endif %]
+
+## Ce que l'auteur déclare, et que tu dois vérifier plutôt que croire
+
+> **A :** les affirmations de la description et du compte rendu
+> (`passations/COMPTE_RENDU_CODE_PR-«n».md`, que la C ne voit pas), numérotées : les commits ;
+> la vérification complète verte avant chacun ; les comptes de tests ; les fichiers non
+> touchés ; la campagne de contre-épreuves (ses conditions, ses résultats, les équivalences
+> déclarées)[% if 'donnees-privees' in modules %] ; aucune donnée réelle lue ni écrite[% endif %]. Marquer celles qui ne se revérifient pas :
+> « *À ne pas revérifier (§ 3), sauf raison concrète de douter.* »
+
+## Mandat de «C-x» (plusieurs C)
+
+> **A :** des pistes numérotées, **non limitatives**, par moitié — ou, pour une C partielle,
+> dans l'ordre où elle doit les suivre. Chaque piste nomme les fonctions ou les fichiers, et
+> la décision du brief qu'elle vérifie.
+
+## Mutations obligatoires «de C-x»
+
+Elles se font toutes, même quand une mutation proche a déjà été faite : ici, cette liste
+l'emporte sur « ne le refais pas ». **Joue-les dans cet ordre** ; pour chacune, le test qui
+rougit, ou qu'aucun ne rougit.
+
+[% if 'mutation' in modules -%]
+> **A :** ce que ni l'outil de mutation ni la campagne de l'auteur ne voient, par familles.
+[% else -%]
+> **A :** ce que la campagne de l'auteur ne voit pas, par familles — et, faute de balayage
+> mécanique, quelques mutations d'opérateurs, de comparaisons et de bornes dans les modules
+> neufs.
+[% endif -%]
+> Ne garder que les familles qui s'appliquent ; chaque mutation nomme le code qui lit ce
+> qu'elle mute (une recherche du nom suffit à le vérifier).
+> 1. **tenu par la valeur ou par le contrat** : le producteur muté **et** le contrôle du
+>    contrat neutralisé — un test rougit-il encore, par une valeur ?
+> 2. **les constantes de module et les décorateurs** : l'immuabilité retirée, un champ de
+>    tuple rendu liste, une valeur de chaque énumération publiée, l'ordre des membres quand il
+>    fixe un ordre de sortie ;
+> 3. **les sommes et les ordres de calcul** que le brief nomme ; si aucun test ne les sépare,
+>    le cas qui les sépare, et dire si c'est une règle écrite sans oracle ;
+> 4. **les fichiers écrits** : l'ordre des clés, l'encodage, les fins de ligne, l'ouverture
+>    exclusive, l'ordre d'écriture de deux fichiers, le nettoyage après un échec ;
+> 5. **la commande** : chaque classe d'erreur attrapée, retirée une à une ; l'ordre des
+>    étapes ; un seuil rendu strict ; les lignes de sortie dans un autre ordre ; des arguments
+>    mal formés ;
+> 6. **la relecture de l'existant** : un ancien format lu par la tête et par la base,
+>    identique champ par champ ;
+> 7. **des entrées plausibles du réel**, construites par objets (une colonne absente, une seule
+>    ligne, des doublons, des trous, une série constante, un fichier manquant) ; un lecteur
+>    de fichiers externes se fuzze (octets altérés, document tronqué, champ d'un autre type) ;
+> 8. **les consignes passées en cours de session** qui reviennent à la C ;
+> 9. **les facteurs qui valent 1 dans les fixtures** — texte type : « Une mutation qu'un de
+>    ces facteurs rendrait invisible est un constat C-a. » ;
+> 10. **les documents** : la fiche de décision contre le brief, le README, `CLAUDE.md`,
+>     `BACKLOG.md`, le journal ; une phrase devenue fausse ailleurs ;
+> 11. **toute garantie écrite par la PR** (docstrings), au sens du § 6 ter, point 4.
+
+## Git dans ton clone (et dans le miroir)
+
+> **A :** les commandes exactes, pour le shell de la C :
+> - le miroir (`v_for_cowork[[ suffixe ]]/[[ slug ]]/`) se lit seulement, **jamais avec
+>   `git status`**, qui écrit un verrou (`.git/index.lock`) qui bloque ensuite les commandes de
+>   [[ humain ]] : `git --no-optional-locks`, ou le clone ;
+> - le clone du poste est jetable ; les extras installés, et la vérification que les tests qui
+>   dépendent d'un extra ne se sautent pas (sinon une mutation « survit » sans qu'aucun test
+>   tourne) ;
+> - les mutations sur une copie neuve de la tête (`git worktree add ../essai HEAD`, lancé dans
+>   le clone), jamais dans le clone où tourne la session ;
+> - l'état à effacer avant chaque mutation (base d'exemples, caches) ;
+> - aucun commit, aucun push ; la durée de la suite complète, d'où : cible d'abord (§ 6 ter).
+[%- if langage == 'python' %]
+>
+> En Python, la ligne type qui lance un test dans la copie, avec l'interpréteur du clone, le
+> `src/` de la copie, et la vérification que le module importé vient bien de la copie :
+>
+> ```
+> cd «poste»/essai && PYTHONPATH=«poste»/essai/src ../[[ slug ]]/«python_du_clone» -B -c "import «paquet_python» as m; assert 'essai' in m.__file__, m.__file__" && PYTHONPATH=«poste»/essai/src ../[[ slug ]]/«python_du_clone» -B -m pytest -o addopts= -q -x -p no:cacheprovider --hypothesis-seed=0 --basetemp=.bt «fichier de tests»
+> ```
+>
+> Pas de `uv sync` dans la copie : elle réutilise l'environnement du clone.
+[%- endif %]
+
+## Points d'attention propres à cette PR
+
+> **A :** les flottants (les tolérances que le brief écrit ; une égalité qui ne tient que par
+> compensation d'arrondis ; une tolérance trop large pour distinguer la règle de sa voisine) ;
+> les bornes (comprises ou non ; un test sans valeur **sur** la borne, ou à un ulp d'elle, ne
+> la tient pas) ; la plate-forme (fins de ligne, encodage, jour local contre UTC) ; les
+> propriétés (leurs exemples couvrent-ils la règle qu'elles nomment ?) ; le coût, si une
+> fonction sera appelée à grande échelle (mesurer sa croissance).
+[%- if 'donnees-privees' in modules %]
+>
+> Les garde-fous de la session : comment les éprouver sans casser sa propre session (une copie
+> mutée du hook se joue dans une copie du dépôt, jamais dans le clone où tourne la C).
+[%- endif %]
+
+## Format de sortie
+
+Le rapport au format du § 6, avec le journal de progression du § 6 bis, au chemin
+`[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/RELECTURE_PR-«n».md` (toujours ce nom : le
+rapatriement le renomme pour A) ; à la fin, la section « Hors de ma moitié » s'il y a lieu.
+Verdict en une ligne «(pour ta moitié)» : **fusionnable en l'état**, **fusionnable après
+correction de tel point**, ou **à ne pas fusionner**.
+
+---
+
+## Avant de publier l'annexe (pour A ; à retirer avec les consignes)
+
+- L'annexe est relue par un agent neuf contre la tête de la PR : une règle paraphrasée se
+  vérifie contre sa fiche de décision et le code ; chaque mutation obligatoire nomme du code
+  qui lit ce qu'elle mute ; ce qui a été balayé se nomme fichier par fichier, avec ce qui ne
+  l'a pas été ; le mot d'une décision se garde, avec ce que le code fait vraiment.
+[%- if 'mutation' in modules %]
+- Le balayage a été lancé avant l'annexe (`kit/MUTATION.md`), ou son état est dit. Quand on
+  veut mesurer le recoupement des C avec l'outil, ses lacunes ne sont pas listées ici.
+[%- endif %]
+- Les empreintes, SHA et comptes sont recopiés depuis la sortie d'une commande, pas de
+  mémoire.
+- Rien du rapport de B n'est recopié tel quel : ce qui en reste est filtré, en une ligne par
+  point.
+[%- if 'donnees-privees' in modules %]
+- La description de la PR (`passations/COMPTE_RENDU_CODE_PR-«n».md`) relue contre la règle des
+  données : la C ne l'ouvre pas, c'est A qui la vérifie ; une donnée trouvée se retire
+  (`kit/MACHINE.md`, GH-3).
+[%- endif %]

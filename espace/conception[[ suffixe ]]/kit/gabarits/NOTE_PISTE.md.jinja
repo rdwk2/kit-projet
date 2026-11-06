@@ -1,0 +1,126 @@
+> Une piste : une seconde ligne de travail, parallèle à la piste « référence » (en général
+> `principale`).
+>
+> **Gabarit** — l'A de la référence copie ce fichier dans `conception/` sous le nom
+> `NOTE_PISTE_«PISTE».md`, remplit les `«…»`, retire ce bloc ; [[ humain ]] copie la note dans
+> `conception_«piste»/` une fois la piste créée (`kit/PISTES.md`, § 10). La note sert pendant le
+> cadrage de la piste (`«préfixe»0`), puis [% if 'archives' in modules %]s'archive[% else %]se retire[% endif %], quand le `CONTEXTE.md` de la piste en a
+> repris l'utile.
+>
+> Champs : `«piste»` (nom de la nouvelle piste) et `«PISTE»` (le même, en capitales) ·
+> `«préfixe»` (préfixe de ses jalons) · `«référence»` (la piste qui écrit, en général
+> `principale`) · `«rang»` (rang de l'A qui écrit) · `«date»`, `«heure lue»` · `«sha»` (tête
+> du miroir lue) · `«dépôt»` · les autres se lisent dans leur rubrique.
+>
+> **En lecture seule** : l'A de la référence ne crée rien[% if 'donnees-privees' in modules %], n'ouvre aucun fichier de données[% endif %], et
+> dit ce qu'elle a vérifié. Elle écrit la note parce qu'elle seule connaît l'état de la référence,
+> que la piste ne lira jamais.
+
+# Piste « «piste» » — note d'ouverture
+
+*Écrite le «date», «heure lue», par la «rang» A de la piste « «référence» », à la demande [[ de_humain ]].*
+
+**C'est une proposition.** Seul ce que la rubrique 2 dit acquis l'est ; tout le reste se décide
+avec [[ humain ]].
+
+**Pour qui** : la première A de la piste « «piste» ».
+
+**Ce que ce n'est pas** : ni un brief, ni une fiche de décision.
+
+**Ce que j'ai vérifié pour l'écrire**, en lecture seule, le «date» : dans le miroir à «sha»,
+«fichiers lus» ; dans `conception/`, «sections lues»[% if 'donnees-privees' in modules %] ; pour des données, «seulement les noms des
+dossiers, aucun fichier ouvert»[% endif %].
+
+## 1. Ce [[ que_humain ]] veut
+
+«Ses objectifs, avec ses mots entre guillemets ; ce qui reste « à déterminer ». Si la suite est
+ouverte, le premier travail est un cadrage, pas du code.»
+
+## 2. Ce qui est acquis ([[ humain ]], «date»)
+
+1. **Le même dépôt**, `«dépôt»`.
+2. **La même méthode** : seule l'échelle s'ajuste au risque (rubrique 6).
+3. **En parallèle de la piste « «référence» »**, qui continue avec «son jalon en cours».
+
+**Proposé, pas tranché** : «le niveau (léger ou complet : `kit/PISTES.md`, § 2) et le reste de
+l'organisation».
+
+## 3. Ce que le dépôt et la référence prévoient déjà
+
+«Ce qui, dans `CLAUDE.md`, la ROADMAP, les fiches de décision et le `BACKLOG`, touche la piste :
+les règles qui comptent ici, les jalons de la référence qui la préparent, une ligne
+« hors périmètre » à changer.»
+
+**Points ouverts de la référence qui touchent la piste**, recopiés parce que la piste ne lira pas
+l'état de la référence :
+
+- «point» («jalon de la référence» ; «source»).
+
+## 4. Les matériaux, et comment y accéder sans risque
+
+«Données et sources : où elles sont, qui y a accès, comment les lire sans les modifier.»
+
+## 5. Ce que la piste peut produire
+
+«Ce que les matériaux permettent, et leurs limites : le nombre d'observations vraiment
+indépendantes, les facteurs de confusion à nommer, ce qui suffit pour décrire et ce qui ne suffit
+pas pour modéliser.»
+
+## 6. Méthode : le même workflow, à l'échelle du risque
+
+Une relecture ne paie que si elle dispose d'une référence écrite qu'elle n'a pas produite.
+Appliquée à la piste :
+
+| Ce qu'on produit | Référence du relecteur | Cycle proposé |
+|---|---|---|
+| «du code dans `src/`» | «le brief, puis le plan» | «le cycle complet» |
+| «un plan d'analyse, un document de méthode» | «la liste des questions, la charte» | «[% if 'expert' in modules %]une passe experte, puis [% endif %][% if 'relectures' in modules %]B ; ensuite le code et une C[% else %]une relecture neuve par A ; ensuite le code[% endif %]» |
+| «une exploration jetable» | «aucune» | «pas de relecture ; aucun de ses chiffres ne compte comme résultat» |
+
+«Les règles de `CLAUDE.md` à préciser pour la piste, chacune par une fiche de décision.»
+
+## 7. Outils et dépendances proposés
+
+«Ce que la piste prend, ce que la référence s'interdit et pourquoi ; comment les déclarer
+(extras, groupes, clôtures d'imports, CI en deux temps). Chaque choix est une décision [[ de_humain ]].»
+
+## 8. Lien avec la référence
+
+«Ce que chaque piste fournit à l'autre ; le code de la référence que la piste appellera, jamais
+réimplémenté ; ce qui deviendra commun, et par quelle PR (`kit/PISTES.md`, § 8) ; les conditions
+que l'A de la référence posera.»
+
+## 9. Premiers jalons, esquissés
+
+| | Contenu | Fini quand | Dépend de |
+|---|---|---|---|
+| **«préfixe»0 — cadrage** | «l'inventaire ; les documents de méthode ; les dépendances ; la PR de documentation (ROADMAP, `CLAUDE.md`, fiches de décision) ; le brief de «préfixe»1» | «[[ humain ]] a validé ; la PR de documentation est fusionnée ; le brief de «préfixe»1 est prêt à relire» | «rien ; seule la PR attend «…»» |
+| **«préfixe»1 — «nom»** | «une tranche verticale : le minimum qui sert déjà» | «…» | «préfixe»0 |
+
+## 10. Organisation
+
+**Niveau proposé** : «léger, une A | léger, deux A | complet», parce que «…»
+(`kit/PISTES.md`, § 2).
+
+**Dossiers** : créés par `copier` (`kit/PISTES.md`, § 10) — `conception_«piste»/`,
+`v_for_cowork_«piste»/`[% if 'archives' in modules %], «`archives_conception_«piste»/`»[% endif %] ; une copie de travail distincte
+(«second clone | arbre worktree») ; «au niveau complet : l'extraction des §§ 1, 2, 3 et 6 du
+CONTEXTE de la référence».
+
+**Points de contact, à régler avant qu'ils ne posent problème** :
+
+| Point | Risque | Proposition |
+|---|---|---|
+| «les fichiers partagés du dépôt» | «des conflits de fusion, une règle changée sans accord» | «les régimes de `kit/PISTES.md`, § 5» |
+| «les numéros de `docs/decisions/`» | «deux fiches de décision au même numéro» | «réservés dans les relais» |
+| «…» | «…» | «…» |
+
+**L'autre option** : «que l'A de la référence prenne le sujet» — «pourquoi je la recommande ou la
+déconseille».
+
+## 11. Points ouverts, pour [[ humain ]] et la première A de la piste
+
+1. **Le niveau et l'organisation** : «…».
+2. «…».
+3. **Modèle et effort** de chaque conversation de la piste (A, [% if 'relectures' in modules %]B, [% endif %][% if 'expert' in modules %]passes expertes, [% endif %]Code[% if 'relectures' in modules %], C[% endif %]), selon
+   `kit/MODELES_ET_EFFORTS.md` : «proposition, alternative, raison».

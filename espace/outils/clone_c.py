@@ -1,0 +1,200 @@
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""Prépare le poste d'une relecture C : un dossier neuf par relecture, avec un clone sur la
+tête de la PR et le paquet de démarrage écrit par A.
+
+    uv run outils/clone_c.py 42 --paquet C_PR-42                       (la C de la PR 42)
+    uv run outils/clone_c.py 42 --paquet C_PR-42_bornee --variante bornee   (C bornée, après correctifs)
+    uv run outils/clone_c.py 42 --paquet C_PR-42_seconde --variante seconde (seconde C, autre moteur)
+    uv run outils/clone_c.py 42 --paquet C_PR-42 --piste analyse
+    uv run outils/clone_c.py 42 --recuperer [--variante bornee]         (après la C : ses rapports vers A)
+
+Résultat : relecture/c-pr42[-variante][_piste]/<dépôt>/ (le clone, sur la tête de la PR) et
+…/paquet/ (copie de conception/passations/<paquet>/). Puis, dans le poste à sa place définitive :
+`uv sync --locked` si le dépôt a un `pyproject.toml`, `just check` s'il a un `justfile`
+(`--sans-check` pour s'en passer). Lancer ensuite l'agent **dans** ce dossier (pas de .git à sa
+racine, aucun dossier ajouté), dans un mode où il peut écrire (ni mode plan ni lecture seule),
+pour son rapport, avec le message : « Lis paquet/DEMARRAGE.md et exécute-le. »
+
+Un poste neuf par relecture, jamais réutilisé : sous Windows, un dossier encore ouvert par une
+session refuse de s'effacer, et la C suivante jouerait sur l'ancien clone (kit/MACHINE.md, VER-1).
+Le clone et le paquet se préparent dans `….preparation`, renommé dès qu'ils sont prêts : un
+échec à ce stade ne laisse qu'un dossier qu'aucune session n'a ouvert, que la relance retire.
+L'environnement Python ne se crée qu'**après** le renommage : un `.venv` déplacé ne marche plus
+(piège UV-2, kit/MACHINE.md). Le ménage des postes finis se fait à la main, sessions fermées.
+
+`--recuperer` copie les `RELECTURE_PR-*.md` du poste vers conception/passations/. La C écrit
+toujours `RELECTURE_PR-«n».md` ; avec `--variante`, la copie s'appelle
+`RELECTURE_PR-«n»_«variante».md`, pour que les rapports de deux C de la même PR ne se marchent
+pas dessus. Rien n'est jamais écrasé.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import espace
+
+
+def dossier_c(numero: int, piste: str | None, variante: str) -> Path:
+    nom = f"c-pr{numero}{'-' + variante if variante else ''}{espace.suffixe(piste)}"
+    return espace.RACINE / "relecture" / nom
+
+
+def retirer(dossier: Path) -> None:
+    """Efface un dossier, fichiers en lecture seule compris (git crée ses objets ainsi sous Windows)."""
+
+    def forcer(fonction, chemin, _erreur):
+        os.chmod(chemin, stat.S_IRWXU)
+        fonction(chemin)
+
+    if sys.version_info >= (3, 12):
+        shutil.rmtree(dossier, onexc=forcer)
+    else:
+        shutil.rmtree(dossier, onerror=forcer)
+
+
+def renommer(source: Path, cible: Path) -> None:
+    for essai in range(10):
+        try:
+            source.rename(cible)
+            return
+        except OSError:
+            # Sous Windows, l'antivirus tient parfois les fichiers neufs quelques secondes.
+            if essai == 9:
+                sys.exit(
+                    f"Clone et paquet prêts, mais impossible de renommer {source} en {cible} "
+                    f"(un fichier encore tenu ?) : renommer à la main, puis lancer "
+                    f"`uv sync --locked` et `just check` dans le clone."
+                )
+            time.sleep(1)
+
+
+def essayer(cmd: list[str], dossier: Path) -> bool:
+    """Lance une commande sans s'arrêter si elle échoue ; renvoie True si elle a réussi."""
+    print(f"> ({dossier}) {' '.join(cmd)}", flush=True)
+    try:
+        return subprocess.run(cmd, cwd=dossier, check=False).returncode == 0
+    except FileNotFoundError:
+        print(f"  {cmd[0]} introuvable.")
+        return False
+
+
+def verifier_poste(clone: Path) -> bool:
+    """uv sync puis just check, dans le poste à sa place définitive. True si tout est vert."""
+    if (clone / "pyproject.toml").is_file() and not essayer(["uv", "sync", "--locked"], clone):
+        print(
+            f"\n✗ uv sync a échoué : le poste est là, mais sans environnement. Relancer "
+            f"`uv sync --locked` dans {clone} (réseau ? uv.lock pas à jour dans la PR ?)."
+        )
+        return False
+    if (clone / "justfile").is_file() and not essayer(["just", "check"], clone):
+        print(
+            "\n✗ just check est rouge sur la tête de la PR : le poste est prêt, mais la PR ne passe "
+            "pas ses propres vérifications. À régler avant de lancer la C — ou la lancer en le "
+            "sachant, et le lui dire."
+        )
+        return False
+    return True
+
+
+def preparer(numero: int, paquet: str, piste: str | None, variante: str, sans_check: bool) -> int:
+    poste = dossier_c(numero, piste, variante)
+    if poste.exists():
+        sys.exit(
+            f"{poste} existe déjà : un poste neuf par relecture. Pour une autre C de la même PR "
+            f"(bornée, seconde), --variante «nom» ; pour rapatrier ses rapports, --recuperer."
+        )
+    source_paquet = espace.passations(piste) / paquet
+    if not (source_paquet / "DEMARRAGE.md").is_file():
+        sys.exit(f"Paquet incomplet : {source_paquet / 'DEMARRAGE.md'} manquant (A l'écrit d'abord).")
+
+    prep = poste.with_name(poste.name + ".preparation")
+    if prep.exists():
+        print(f"Reste d'une préparation échouée, jamais ouvert par une session : {prep} — retiré.")
+        try:
+            retirer(prep)
+        except OSError as erreur:
+            sys.exit(
+                f"Impossible de retirer {prep} ({erreur}). Le supprimer à la main, ou relancer "
+                f"avec une autre --variante."
+            )
+    prep.mkdir(parents=True)
+    clone = prep / espace.SLUG
+    espace.cloner(f"https://github.com/{espace.GITHUB}.git", clone)
+    espace.lancer(["gh", "pr", "checkout", str(numero)], clone)
+    shutil.copytree(source_paquet, prep / "paquet")
+    renommer(prep, poste)
+
+    vert = True if sans_check else verifier_poste(poste / espace.SLUG)
+    print(f"\nPoste {'prêt' if vert else 'créé (voir ci-dessus)'} : {poste}")
+    print("Lancer l'agent dans ce dossier, dans un mode où il peut écrire, avec : « Lis paquet/DEMARRAGE.md et exécute-le. »")
+    print("Modèle et effort : ceux qu'indique paquet/DEMARRAGE.md.")
+    return 0 if vert else 1
+
+
+def nom_pour_a(rapport: Path, numero: int, variante: str) -> str:
+    """RELECTURE_PR-42.md d'une C « bornee » devient RELECTURE_PR-42_bornee.md."""
+    prefixe = f"RELECTURE_PR-{numero}"
+    nom = rapport.name
+    reste = nom[len(prefixe):]
+    if not variante or not nom.startswith(prefixe) or reste[:1] not in {".", "_"}:
+        return nom
+    if reste.startswith(f"_{variante}"):
+        return nom
+    return f"{prefixe}_{variante}{reste}"
+
+
+def recuperer(numero: int, piste: str | None, variante: str) -> None:
+    poste = dossier_c(numero, piste, variante)
+    if not poste.is_dir():
+        sys.exit(f"Poste introuvable : {poste}" + ("" if variante else " (une C bornée ou seconde : --variante «nom»)"))
+    rapports = sorted(poste.glob("RELECTURE_PR-*.md")) + sorted((poste / "paquet").glob("RELECTURE_PR-*.md"))
+    if not rapports:
+        sys.exit(f"Aucun RELECTURE_PR-*.md dans {poste} : la C a-t-elle fini ?")
+    cibles = [espace.passations(piste) / nom_pour_a(r, numero, variante) for r in rapports]
+    deja = [c for c in cibles if c.exists()]
+    if deja:
+        sys.exit(
+            "Rien n'est copié, ces fichiers existent déjà : "
+            + ", ".join(str(c) for c in deja)
+            + ("" if variante else " (le rapport d'une C bornée ou seconde : --variante «nom»)")
+        )
+    for rapport, cible in zip(rapports, cibles, strict=True):
+        shutil.copy2(rapport, cible)
+        print(f"-> {cible}")
+    print("Rapports copiés pour A (et pour A seulement).")
+
+
+def main() -> None:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("numero", type=int)
+    p.add_argument("--paquet", help="nom du dossier du paquet dans conception/passations/")
+    p.add_argument("--piste", default=None)
+    p.add_argument(
+        "--variante", default="", help="autre C de la même PR : bornee, seconde… (minuscules, chiffres, tirets)"
+    )
+    p.add_argument("--recuperer", action="store_true", help="copier les rapports de la C vers A")
+    p.add_argument("--sans-check", action="store_true", help="ne lancer ni uv sync ni just check")
+    args = p.parse_args()
+    if args.variante and not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.variante):
+        p.error("--variante : minuscules, chiffres et tirets seulement")
+    if args.recuperer:
+        recuperer(args.numero, args.piste, args.variante)
+    elif args.paquet:
+        sys.exit(preparer(args.numero, args.paquet, args.piste, args.variante, args.sans_check))
+    else:
+        p.error("--paquet est obligatoire pour préparer un poste (ou --recuperer)")
+
+
+if __name__ == "__main__":
+    main()

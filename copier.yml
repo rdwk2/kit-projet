@@ -1,0 +1,275 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# kit-projet — gabarit Copier (https://copier.readthedocs.io)
+#
+# Deux couches, générées chacune par sa propre commande :
+#   depot  → le dépôt git du projet (CLAUDE.md, docs/, CI…) ; mise à jour : copier update
+#   espace → l'espace de travail IA autour du dépôt (conception, v_for_cowork,
+#            archives, outils) ; une fois par piste ; mise à jour : copier recopy
+#
+# Délimiteurs Jinja changés en [[ … ]] / [% … %] / [# … #] : les {{ … }} de
+# GitHub Actions, de just et des exemples restent tels quels.
+# Seuls les fichiers en .jinja sont interprétés ; tous les autres sont copiés tels quels.
+# ─────────────────────────────────────────────────────────────────────────────
+_min_copier_version: "9.4"
+_envops:
+  block_start_string: "[%"
+  block_end_string: "%]"
+  variable_start_string: "[["
+  variable_end_string: "]]"
+  comment_start_string: "[#"
+  comment_end_string: "#]"
+  keep_trailing_newline: true
+_subdirectory: "[[ couche ]]"
+_answers_file: >-
+  [% if couche == 'depot' %].copier-answers.depot.yml[% else %].copier-answers.espace[[ suffixe ]].yml[% endif %]
+
+# Présence des fichiers selon les modules : les noms restent naturels dans le kit,
+# c'est ici qu'on décide. Un motif vide (condition fausse) n'exclut rien.
+_exclude:
+  - "__pycache__"
+  - "*.pyc"
+  - "~*"
+  # ── couche depot : langage Python
+  - "[% if langage != 'python' %]pyproject.toml*[% endif %]"
+  - "[% if langage != 'python' %]justfile*[% endif %]"
+  - "[% if langage != 'python' %].python-version*[% endif %]"
+  - "[% if langage != 'python' %]/src[% endif %]"
+  - "[% if langage != 'python' %]/tests[% endif %]"
+  - "[% if langage != 'python' %].github/workflows[% endif %]"
+  - "[% if langage != 'python' and 'groupe' not in modules %]/.github[% endif %]"
+  # ── couche depot : module donnees-privees
+  - "[% if 'donnees-privees' not in modules %].env.example*[% endif %]"
+  - "[% if 'donnees-privees' not in modules %]/.claude[% endif %]"
+  - "[% if 'donnees-privees' not in modules %]/scripts[% endif %]"
+  - "[% if 'donnees-privees' not in modules or langage != 'python' %]tests/test_proteger_donnees.py*[% endif %]"
+  - "[% if 'donnees-privees' not in modules %]docs/decisions/0001-*[% endif %]"
+  # ── couche depot : module analyse-donnees
+  - "[% if 'analyse-donnees' not in modules %]/docs/analyse[% endif %]"
+  # ── couche depot : module groupe
+  - "[% if 'groupe' not in modules %]CONTRIBUTING.md*[% endif %]"
+  - "[% if 'groupe' not in modules %].github/pull_request_template.md*[% endif %]"
+  - "[% if 'groupe' not in modules %].github/CODEOWNERS*[% endif %]"
+  - "[% if 'groupe' not in modules %]docs/LIVRAISONS.md*[% endif %]"
+  - "[% if 'groupe' not in modules %]docs/RELIRE_UNE_PR.md*[% endif %]"
+  # ── couche espace : ce qui n'existe qu'une fois, à la racine (piste principale)
+  - "[% if piste != 'principale' %]/00_LISEZ_MOI_ESPACE.md*[% endif %]"
+  - "[% if piste != 'principale' %]/outils[% endif %]"
+  - "[% if piste != 'principale' or 'relectures' not in modules %]/relecture[% endif %]"
+  # ── couche espace : module relectures
+  - "[% if 'relectures' not in modules %]v_for_cowork*/06_*[% endif %]"
+  - "[% if 'relectures' not in modules %]v_for_cowork*/07_*[% endif %]"
+  - "[% if 'relectures' not in modules %]conception*/kit/gabarits/ANNEXE_*[% endif %]"
+  - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEPART_B*[% endif %]"
+  - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEMARRAGE_C*[% endif %]"
+  - "[% if 'relectures' not in modules %]outils/clone_c.py[% endif %]"
+  # ── couche espace : module archives
+  - "[% if 'archives' not in modules %]/archives_conception*[% endif %]"
+  - "[% if 'archives' not in modules %]conception*/INVENTAIRE_ARCHIVES.md*[% endif %]"
+  - "[% if 'archives' not in modules %]conception*/kit/ARCHIVES.md*[% endif %]"
+  - "[% if 'archives' not in modules %]outils/archiver.py[% endif %]"
+  # ── couche espace : module mutation
+  - "[% if 'mutation' not in modules %]conception*/kit/MUTATION.md*[% endif %]"
+  # ── couche espace : module expert
+  - "[% if 'expert' not in modules %]conception*/kit/EXPERT.md*[% endif %]"
+  - "[% if 'expert' not in modules %]conception*/kit/gabarits/PASSE_EXPERTE*[% endif %]"
+  - "[% if 'expert' not in modules %]conception*/kit/gabarits/SESSION_A_PART*[% endif %]"
+
+# Fichiers vivants : écrits une fois à la création, jamais écrasés ensuite
+# (ils appartiennent au projet, et à la conversation A qui les tient).
+_skip_if_exists:
+  # couche depot
+  - "README.md"
+  - "BACKLOG.md"
+  - "docs/ROADMAP.md"
+  - "docs/JOURNAL.md"
+  - "docs/PIEGES.md"
+  - "docs/LIVRAISONS.md"
+  - "docs/analyse/CHARTE.md"
+  - "docs/analyse/QUESTIONS.md"
+  - ".env.example"
+  # couche espace
+  - "00_LISEZ_MOI_ESPACE.md"
+  - "conception*/00_LISEZ_MOI.md"
+  - "conception*/CONTEXTE.md"
+  - "conception*/REMONTEES_KIT.md"
+  - "conception*/INVENTAIRE_ARCHIVES.md"
+  - "conception*/passations/**"
+  - "v_for_cowork*/LISEZ_MOI.md"
+
+_message_after_copy: |
+  Généré : couche « [[ couche ]] » de [[ projet ]], préréglage « [[ preset ]] ».
+  Modules : [[ modules | join(', ') ]]
+  Suite : docs/GUIDE.md du kit, section « Après la génération ».
+
+# ─── Questions ──────────────────────────────────────────────────────────────
+couche:
+  type: str
+  help: "Que générer ? (pour débuter : le dépôt seul)"
+  choices:
+    "Le dépôt git du projet (code, documents, vérifications)": depot
+    "L'espace de travail IA, autour du dépôt (conversations de conception et de relecture)": espace
+  default: depot
+
+projet:
+  type: str
+  help: "Nom lisible du projet (ex. : Mon projet)"
+  validator: "[% if not projet.strip() %]Obligatoire.[% endif %]"
+
+slug:
+  type: str
+  help: "Nom du dépôt et du dossier : minuscules, chiffres, tirets (ex. : mon-projet)"
+  default: "[[ projet | lower | replace(' ', '-') ]]"
+  validator: >-
+    [% if not (slug | regex_search('^[a-z0-9][a-z0-9-]*$')) %]Minuscules, chiffres et tirets seulement, sans accent.[% endif %]
+
+sigle:
+  type: str
+  help: "Sigle court, pour nommer les variables d'environnement (ex. : MP)"
+  default: "[[ slug.split('-') | map('first') | join | upper ]]"
+  validator: >-
+    [% if not (sigle | regex_search('^[A-Z][A-Z0-9]*$')) %]Majuscules et chiffres seulement.[% endif %]
+
+description:
+  type: str
+  help: "Une phrase : à quoi sert le projet"
+  default: "«À compléter : une phrase sur le but du projet.»"
+  validator: >-
+    [% if '"' in description or '\\' in description %]Sans guillemet droit ni barre oblique inverse : la phrase part dans pyproject.toml.[% endif %]
+
+humain:
+  type: str
+  help: "Ton prénom ou ton pseudo : les documents te désignent ainsi (ex. : Alice)"
+  validator: "[% if not humain.strip() %]Obligatoire.[% endif %]"
+
+# Valeurs calculées (jamais posées) : le nom avec son élision, pour écrire « d'Alice » ou « de Bob ».
+de_humain:
+  type: str
+  when: false
+  default: >-
+    [% if humain[:1].lower() in 'aàâeéèêiîoôuûyh' %]d'[[ humain ]][% else %]de [[ humain ]][% endif %]
+
+que_humain:
+  type: str
+  when: false
+  default: >-
+    [% if humain[:1].lower() in 'aàâeéèêiîoôuûyh' %]qu'[[ humain ]][% else %]que [[ humain ]][% endif %]
+
+racine:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Dossier de l'espace de travail du projet, sans barre finale"
+  default: "~/dev/[[ slug ]]"
+
+github:
+  type: str
+  help: "Dépôt GitHub, sous la forme compte/nom (ex. : alice/mon-projet)"
+  validator: >-
+    [% if not (github | regex_search('^[^/ ]+/[^/ ]+$')) %]Sous la forme compte/nom.[% endif %]
+
+langage:
+  type: str
+  help: "Langage principal du dépôt"
+  choices:
+    "Python (uv, just, ruff, mypy, pytest)": python
+    "Autre (pas d'outillage Python)": autre
+  default: python
+
+preset:
+  type: str
+  help: "Préréglage : il choisit les modules (détail : docs/GUIDE.md du kit)"
+  # Ne pas renommer ces valeurs : une valeur inconnue fait retomber `copier update --defaults`
+  # sur le défaut, sans erreur, et retire des modules à un projet existant.
+  choices:
+    "Solo léger — petit projet, le dépôt seul": solo-leger
+    "Groupe scolaire — projet à plusieurs, débutants sur GitHub": groupe-scolaire
+    "Standard — conception et relectures indépendantes (A, B, C)": perso-standard
+    "Complet — le standard, plus données privées, archives, mutation, passes expertes": perso-complet
+    "Personnalisé — choisir les modules un à un": personnalise
+  default: solo-leger
+
+modules_choisis:
+  type: str
+  help: "Modules (espace pour cocher)"
+  multiselect: true
+  when: "[[ preset == 'personnalise' ]]"
+  choices:
+    "Dépôt — données privées hors dépôt, protégées de l'agent de code": donnees-privees
+    "Dépôt — analyse de données (charte, registre de questions)": analyse-donnees
+    "Dépôt — projet de groupe (CONTRIBUTING, modèle de PR, livraisons)": groupe
+    "Espace — relectures indépendantes B et C": relectures
+    "Espace — archives de la conception (inventaire, script d'archivage)": archives
+    "Espace — test de mutation : vérifier que les tests détectent une erreur (mutmut)": mutation
+    "Espace — passes expertes et sessions à part": expert
+  default: [relectures]
+
+# Valeur calculée (jamais posée) : la liste effective des modules.
+modules:
+  type: yaml
+  when: false
+  default: >-
+    [% if preset == 'solo-leger' %][][% elif preset == 'groupe-scolaire' %][groupe][% elif preset == 'perso-standard' %][relectures][% elif preset == 'perso-complet' %][donnees-privees, relectures, archives, mutation, expert][% else %][[ modules_choisis | tojson ]][% endif %]
+
+# ─── Couche depot ───────────────────────────────────────────────────────────
+paquet:
+  type: str
+  when: "[[ couche == 'depot' and langage == 'python' ]]"
+  help: "Nom du paquet Python (src/<paquet>)"
+  default: "[[ slug | replace('-', '_') ]]"
+  validator: >-
+    [% if not (paquet | regex_search('^[a-z_][a-z0-9_]*$')) %]Identifiant Python en minuscules.[% endif %]
+
+python_version:
+  type: str
+  when: "[[ couche == 'depot' and langage == 'python' ]]"
+  help: "Version de Python"
+  default: "3.12"
+
+public:
+  type: bool
+  help: "Le dépôt sera-t-il public ? (privé : les conversations lisent GitHub par une copie locale)"
+  default: false
+
+var_donnees:
+  type: str
+  when: "[[ 'donnees-privees' in modules ]]"
+  help: "Variable d'environnement du dossier de données (hors dépôt)"
+  default: "[[ sigle ]]_DATA_DIR"
+
+responsables:
+  type: str
+  when: "[[ couche == 'depot' and 'groupe' in modules ]]"
+  help: "Pseudos GitHub de ceux qui fusionnent, séparés par des espaces (ex. : @alice @bob)"
+  validator: >-
+    [% if not responsables.strip() %]Obligatoire.[% endif %][% for r in responsables.split() %][% if not r.startswith('@') %]Chaque pseudo commence par @.[% endif %][% endfor %]
+
+# ─── Couche espace ──────────────────────────────────────────────────────────
+piste:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Nom de la piste, un axe de travail parallèle (« principale » pour la première ; ex. : analyse)"
+  default: principale
+  validator: >-
+    [% if not (piste | regex_search('^[a-z][a-z0-9-]*$')) %]Minuscules, chiffres et tirets.[% endif %]
+
+prefixe_jalon:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Préfixe des jalons, les grandes étapes de cette piste (J donne J1, J2…)"
+  default: "[% if piste == 'principale' %]J[% else %][[ piste[:2] | upper ]][% endif %]"
+
+depot_travail:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Dossier où tourne l'agent de code de cette piste (une copie du dépôt par piste)"
+  default: "[[ racine ]]/[[ slug ]][% if piste != 'principale' %]_[[ piste ]][% endif %]"
+
+suffixe:
+  type: str
+  when: false
+  default: "[% if couche == 'espace' and piste != 'principale' %]_[[ piste ]][% endif %]"
+
+# La version du kit qui génère : le tag git (ex. v0.1.0), lu dans les réponses de Copier.
+version_kit:
+  type: str
+  when: false
+  default: "[[ (_copier_answers | default({}))._commit | default('dev') ]]"

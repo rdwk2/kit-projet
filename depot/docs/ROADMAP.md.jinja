@@ -1,0 +1,54 @@
+# ROADMAP
+
+> **La carte, volontairement grossière.** Le détail d'un jalon s'écrit juste avant de
+> l'attaquer — écrire aujourd'hui le détail du jalon 7, c'est du travail jeté. Les idées qui
+> arrivent en cours de route vont dans `BACKLOG.md`, pas ici.
+
+---
+
+## Les trois principes qui gouvernent l'ordre
+
+**1. Tranches verticales, pas couches horizontales.**
+On ne fait pas « toute la lecture », puis « tout le modèle », puis « tout l'affichage ». On fait
+un chemin fin de bout en bout, puis on l'épaissit. À chaque palier, quelque chose marche et
+s'utilise.
+
+**2. Les contrats avant les briques.**
+Les formes de données qui circulent entre les briques sont définies avant d'implémenter les
+briques. C'est ce qui permet de remplacer une brique sans tout casser, et de travailler sur
+deux briques en parallèle.
+
+**3. La mesure avant les paramètres.**
+Le moyen de mesurer si ça marche existe **avant** qu'on raffine. Un paramètre ou un effet qui
+ne fait pas progresser la mesure ne rentre pas — ou rentre avec une justification écrite.
+
+---
+
+## Jalons
+
+Chaque jalon : son but en une ligne, ce qu'il contient, et **« Fini quand »** — un critère
+qu'on peut vérifier. Un jalon trop gros se découpe en sous-jalons (`[[ prefixe_jalon ]]2a`,
+`[[ prefixe_jalon ]]2b`…), une PR chacun.
+
+### [[ prefixe_jalon ]]0 — Fondations et cadrage
+
+Le socle technique et les premières décisions. Aucune logique métier.
+
+- le dépôt généré par kit-projet[% if langage == 'python' %] (`pyproject.toml`, `justfile`, `src/`, `tests/`, CI)[% endif %], créé sur GitHub,
+  avec un premier commit[% if langage == 'python' %] qui contient `uv.lock`[% endif %]
+- cette ROADMAP, les premières fiches de décision, la description et l'arborescence de
+  `CLAUDE.md` remplies
+
+**Fini quand** : [% if langage == 'python' %]`just check` est vert sur un clone frais, la CI est verte, [% endif %]`main` est
+protégée (si l'offre GitHub le permet), et les décisions déjà prises ont leur fiche dans
+`docs/decisions/`.
+
+### [[ prefixe_jalon ]]1 — «La plus petite tranche verticale utile»
+
+«Ce qu'elle fait de bout en bout, même grossièrement.»
+
+**Fini quand** : «critère vérifiable».
+
+### [[ prefixe_jalon ]]2 — «…»
+
+**Fini quand** : «…».

@@ -1,0 +1,103 @@
+[%- if langage == 'python' -%]
+[%- set verif = "`just check`" -%]
+[%- else -%]
+[%- set verif = "la commande de vérification de `CLAUDE.md`" -%]
+[%- endif -%]
+# Correctifs — PR #«n» («jalon»)
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom `CORRECTIFS_PR-«n».md`
+> (ou, pour la variante « Fusion de `main` », `FUSION_MAIN_PR-«n».md`), remplir les `«…»`, retirer
+> ce bloc et la variante inutile.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrite par** A, d'après l'arbitrage (`passations/ARBITRAGE_PR-«n».md`) ; **collée par** [[ humain ]] dans la
+> session de code de la PR. Les fichiers joints — des **textes exacts** (un message, une phrase de doc), les **valeurs
+> attendues** (oracle, contre-épreuves) et les **cas de référence** (`cas/` : les contre-exemples des
+> relectures et de A, sur fixtures synthétiques, où l'agent prend les entrées et les valeurs
+> attendues) ; **jamais de code ni de tests à recopier** : l'agent de code
+> écrit le code et les tests des correctifs comme ceux de la PR (`kit/METHODE.md`, § 1), sauf
+> dérogation décidée par [[ humain ]] (§ 2 du CONTEXTE) — vont dans
+> `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/`, sous le dossier que la session voit déjà.
+> **Règle** (`kit/METHODE.md`, § 6) : une **consigne bornée** — un commit par constat retenu, ou, quand
+> les constats se comptent par dizaines, un commit par nature (`fix:`, `test:`, `docs:`) qui nomme ceux
+> qu'il ferme ; avec la barrière de périmètre explicite. Les correctifs ne repartent pas en relecture par défaut : la
+> question restante est « leur application a-t-elle cassé autre chose ? », et le filtre pour ça
+> est la CI.
+> **Champs** : `«n»` (PR), `«jalon»`, `«branche»`, `«k»` (l'A qui écrit), `«c»` (numéro d'un commit, à la
+> suite de ceux de la PR), `«date»`, `«empreinte»`, `«sha»` (tête avant les correctifs), `«arbre»`,
+> `«modèle»`, `«effort»`, `«alternative»`, `«raison»`, `«dérogation»`, les constats retenus et écartés,
+> les tests et leurs cas, les fichiers joints et leurs empreintes.
+
+*Écrite le «date» par la «k»ᵉ A, d'après `ARBITRAGE_PR-«n».md` (`«empreinte»…`).*
+
+**Réglages** : la session de code de la PR, telle qu'ouverte, tant que sa marge de contexte suffit
+(sans mode plan). Sinon, une session neuve de ton agent, sans mode plan, dans
+`[[ depot_travail ]]`, dossier `v_for_cowork[[ suffixe ]]/«jalon»` ajouté ; **«modèle», `«effort»`** —
+recommandé : la ligne « Code » du § 0 de `kit/MODELES_ET_EFFORTS.md` (un effort plus bas seulement pour
+des correctifs recopiés sous dérogation et vérifiés à l'octet) ; alternative : «alternative» ;
+raison : «raison» ; dérogation : «aucune | dérogation».
+
+## Variante 1 — Correctifs après relecture
+
+> La relecture de la PR #«n» est arbitrée : «le compte : les défauts, les phrases fausses, les
+> garanties écrites que rien ne teste», et «ce que ça dit du code, en une phrase». Ta tâche :
+> «corriger les défauts, écrire les tests ci-dessous», en «k» commits sur `«branche»`, dans cet ordre,
+> puis pousser. Tu écris le code et les tests (brief, § 3) ; tu ne fais rien d'autre (règle de
+> périmètre de `CLAUDE.md` : une idée en passant va au `BACKLOG.md`).
+>
+> Les cas de référence sont dans `correctifs-pr«n»/cas/` (SHA-256 `«…»`). **Ne les copie pas dans le
+> dépôt** : prends-y les entrées et les valeurs attendues, et écris tes tests au style de ceux du
+> dépôt. Chaque test ci-dessous dit le cas qui le nourrit. Une valeur qui vient du brief, le test la
+> **recopie du brief**, pas de la constante qu'il éprouve : sinon il est tautologique.
+>
+> **Avant tout** : `git fetch origin`, puis `git switch «branche»` ; `git status` propre ;
+> `git rev-parse HEAD` et `git rev-parse origin/«branche»` valent tous deux `«sha»`. Sinon,
+> arrête-toi et dis-le.
+>
+> **Commit «c» (`«fix: | test: | docs:»`) — «ce qu'il ferme»** : «fichier par fichier, ce qu'il faut
+> changer ; le texte exact d'un message ou d'une phrase de doc».
+>
+> | Test | Garantie | Cas |
+> |---|---|---|
+> | «le cas, et la valeur attendue» | «constat» | «`cas/…::test_…` — ou « à construire »» |
+>
+> Chaque test doit **échouer par une valeur** quand la règle qu'il nomme est cassée, pas par une
+> erreur de collecte : la conception le vérifiera mutation par mutation. Avant chaque commit,
+> [[ verif ]] doit passer[% if 'donnees-privees' in modules %] ; les messages de commit par `git commit -F`[% endif %].
+>
+> **Ce qui n'est pas à faire** : «les constats écartés, chacun avec sa raison en une phrase ; les
+> lignes parties au `BACKLOG.md`». Pas de commentaire GitHub, pas de changement de la description
+> de la PR : la revue dira ce qui a été fait.
+>
+> Quand c'est fait : `git push origin «branche»`. Ton dernier message : le SHA et l'arbre de chaque
+> commit (`git rev-parse "HEAD^{tree}"`) ; les comptes de [[ verif ]], à chaque commit (passés,
+> sautés) ; la tête poussée (`git ls-remote origin «branche»`) ; et, pour chaque ligne des tables ci-dessus, le
+> nom du test qui la tient.
+
+## Variante 2 — Fusion de `main` dans la branche
+
+> Une branche déjà relue se met à jour par une **fusion, pas par un rebase** : les commits relus
+> gardent leurs empreintes, et le conflit se résout une fois.
+>
+> `git fetch origin` puis `git merge origin/main`. Conflits attendus, et pour chacun ce que tu
+> gardes : «`fichier` — les deux côtés, dans l'ordre … | la version de `main` | …». «Sous
+> dérogation seulement (CONTEXTE, § 2) : à résoudre en recopiant les fichiers résolus joints
+> (`correctifs-pr«n»/fusion/`, empreintes ci-dessous).» Arbre attendu après la fusion :
+> `«arbre»`. **Un conflit que cette liste ne prévoit pas : `git merge --abort`, et tu
+> t'arrêtes** — tu ne résous rien d'autre.
+[% if 'donnees-privees' in modules %]
+Si `pyproject.toml` ou le script du hook sont en conflit, le hook échoue et refuse tous les outils
+de la session, `git merge --abort` compris : [[ humain ]] recopie les deux fichiers résolus (empreintes
+vérifiées) juste après le `git merge`, avant que la session ne continue (`kit/MACHINE.md`, CL-7).
+[% endif %]
+## Après, pour A
+
+- Vérifier les arbres annoncés (`git rev-parse "«sha»^{tree}"`) et la CI sur la nouvelle tête.
+[% if 'relectures' in modules -%]
+- Rejouer chaque mutation retenue par l'arbitrage, une à une, en processus neuf, sur la nouvelle
+  tête ; chacune rougit dans un test neuf, par une valeur.
+- Une **C bornée** seulement si les correctifs touchent la logique et dépassent le trivial, ou si
+  l'auteur s'est écarté de la prescription (`kit/METHODE.md`, § 6) ; sinon, le commentaire de revue
+  dit pourquoi il n'y en a pas (`kit/gabarits/REVUE_PR.md`).
+[% endif -%]
+- Le commentaire de revue s'écrit sur l'état final, une fois tout poussé.

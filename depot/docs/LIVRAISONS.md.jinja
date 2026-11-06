@@ -1,0 +1,37 @@
+# Livraisons
+
+Chaque livraison est **figée par un tag** posé sur `main` (une étiquette sur un commit, qui ne
+bouge plus), et publiée comme *release* GitHub. Pas de branche par livraison : `main` continue
+d'avancer, le tag garde la version livrée.
+
+## Calendrier
+
+| Livraison | Date limite | Contenu attendu | Tag | État |
+|---|---|---|---|---|
+| «L1» | «AAAA-MM-JJ» | «ce que le prof attend» | `«L1»` | à venir |
+
+## La veille d'une livraison — ce que fait un responsable
+
+1. Fusionner les PR **relues[% if langage == 'python' %] et vertes[% endif %]** (« Squash and merge ») ; les autres attendent la
+   livraison suivante, sans exception de dernière minute.
+[% if langage == 'python' -%]
+2. Vérifier que `main` est vert (onglet *Actions*, ou la coche verte à côté du dernier commit).
+[% else -%]
+2. Vérifier que `main` passe la commande de vérification du projet.
+[% endif -%]
+3. Poser le tag et publier la *release*. Remplace chaque «…», guillemets compris :
+   ```bash
+   git switch main
+   git pull
+   git tag -a «L1» -m "Livraison «L1»"
+   git push origin «L1»
+   gh release create «L1» --title "Livraison «L1»" --notes "«ce qui est livré»"
+   ```
+   Ou, sur GitHub : onglet *Releases*, *Draft a new release*, choisir le tag. `gh` s'installe
+   comme le dit `CONTRIBUTING.md`, section 1.
+4. Mettre à jour le tableau ci-dessus (une PR « docs: livraison «L1» »).
+
+## Retrouver une livraison
+
+`git switch --detach «L1»` pour regarder, `git switch main` pour revenir ; ou l'onglet
+*Releases* du dépôt, qui propose l'archive `.zip` de la version livrée.

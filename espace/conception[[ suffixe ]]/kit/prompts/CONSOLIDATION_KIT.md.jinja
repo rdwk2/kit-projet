@@ -1,0 +1,75 @@
+# Prompt — consolider le kit à partir des remontées des projets
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> Une session à part, hors de tout projet, pour la personne qui maintient le kit : si ce n'est pas
+> toi, ce prompt ne te concerne pas. Elle transforme les `REMONTEES_KIT.md` de tous les projets en
+> une nouvelle version du kit. Rythme conseillé : après deux ou trois jalons, ou quand une même
+> remontée arrive de deux projets.
+
+## 1. Avant d'ouvrir — à faire toi-même
+
+`«dossier_des_projets»` : le dossier qui contient le kit et tes projets.
+
+```bash
+# 1. Un dossier de travail neuf, daté
+mkdir -p «dossier_des_projets»/kit-consolidation/«AAAA-MM-JJ»/remontees
+cd «dossier_des_projets»/kit-consolidation/«AAAA-MM-JJ»
+# 2. Le kit, à jour, dans ce dossier
+git clone «dossier_des_projets»/kit-projet kit-projet
+# 3. Les remontées de chaque projet, renommées «projet»_«piste».md
+cp «dossier_des_projets»/«projet»/conception/REMONTEES_KIT.md remontees/«projet»_principale.md
+#    (une ligne par piste et par projet)
+```
+
+Puis : ton agent de code (Claude Code, Codex…), lancé dans ce dossier, sans mode plan. Modèle :
+`kit/MODELES_ET_EFFORTS.md`, § 0, ligne « Consolidation du kit » — chaque changement du kit se
+propage à tous les projets.
+
+## 2. Le message à coller
+
+> Tu consolides **kit-projet**, un gabarit Copier (lis `kit-projet/README.md`, puis
+> `kit-projet/CHANGELOG.md`). Les remontées des projets sont dans `remontees/`.
+>
+> Pour chaque remontée au statut « proposée » :
+> 1. décide : **intégrer** (fichier, endroit, texte exact), **fusionner** avec une règle
+>    existante, ou **écarter** (raison). Une remontée entre dans le kit si elle vaut pour un
+>    autre projet, et ne contredit une règle existante qu'en le disant (note datée) ;
+> 2. une **récidive** (la même remontée venue de deux projets, ou deux fois du même) se corrige
+>    par un mécanisme — un gabarit, un script, une vérification — plutôt que par une phrase de
+>    plus.
+>
+> Écris : (a) `DECISIONS_CONSOLIDATION.md`, une ligne par remontée (décision, fichier,
+> raison) ; (b) les modifications dans `kit-projet/`, chaque paragraphe changé marqué d'une
+> barre `▌` en marge (retirée à la consolidation suivante) ; (c) l'entrée de `CHANGELOG.md`
+> (version **majeure** si un fichier vivant change de structure, **mineure** si des règles ou
+> des gabarits s'ajoutent, **correctif** sinon) ; (d) pour chaque projet, la liste des statuts
+> à reporter dans son `REMONTEES_KIT.md`.
+>
+> Puis lance les essais du kit (`uv run kit-projet/outils_kit/tester_kit.py`) et donne-moi le
+> résultat. **Ne commite rien** : je relis le diff, je commite et je tague.
+>
+> Termine par une consigne explicite : ce que je fais, dans quel ordre, avec les commandes.
+
+## 3. Après — ce [[ que_humain ]] fait
+
+1. Relire `git diff` dans `kit-projet` ; pour une version majeure, le faire relire par une
+   conversation neuve (le diff du kit contre `DECISIONS_CONSOLIDATION.md`)[% if 'relectures' in modules %], comme une B[% endif %].
+2. Reporter le kit consolidé dans `«dossier_des_projets»/kit-projet`, par git (les fichiers
+   supprimés ou renommés suivent), puis taguer :
+   ```bash
+   cd «dossier_des_projets»/kit-consolidation/«AAAA-MM-JJ»/kit-projet
+   git add -A
+   git commit -m "feat: kit-projet v«X.Y.Z» — consolidation du «AAAA-MM-JJ»"
+   cd «dossier_des_projets»/kit-projet
+   git pull «dossier_des_projets»/kit-consolidation/«AAAA-MM-JJ»/kit-projet main
+   uv run outils_kit/tester_kit.py --complet
+   git tag v«X.Y.Z»
+   ```
+3. Dans chaque projet : `uvx copier update --defaults -a .copier-answers.depot.yml` dans le
+   dépôt, sur une branche (une PR « chore: kit-projet v«X.Y.Z» ») ; `uvx copier recopy --defaults
+   --overwrite -a .copier-answers.espace.yml` à la racine de l'espace (`docs/GUIDE.md` du kit) ;
+   les statuts reportés dans les
+   `REMONTEES_KIT.md`.

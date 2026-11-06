@@ -1,0 +1,126 @@
+"""Configuration de l'espace de travail, écrite par kit-projet à la création.
+
+Fichier du kit : ne pas le modifier à la main (copier recopy le réécrit).
+Les autres scripts de ce dossier l'importent. Tous tournent avec la seule
+bibliothèque standard : `uv run outils/<script>.py …` depuis la racine de l'espace.
+
+Le vocabulaire des scripts (détail : kit/VOCABULAIRE.md) : A est la conversation de conception ;
+B et C sont les relectures indépendantes ; une piste est une ligne de travail parallèle ; le
+miroir est le clone de `main` que lisent A et B ; le paquet est le dossier de pièces remis à une
+session ; le poste est le dossier où tourne une relecture C.
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+RACINE = Path(__file__).resolve().parent.parent
+"""Racine de l'espace : le dossier parent de `outils/` (déplacer l'espace ne casse rien)."""
+
+SLUG = "[[ slug ]]"
+"""Nom du dossier du dépôt (miroir, copie de travail, clones de relecture)."""
+
+GITHUB = "[[ github ]]"
+"""Dépôt GitHub, propriétaire/nom."""
+
+HUMAIN = "[[ humain ]]"
+"""La personne qui tient le projet : les textes générés par ces scripts la nomment."""
+
+DEPOT_TRAVAIL = Path(r"[[ depot_travail ]]").expanduser()
+"""Copie de travail où tourne l'agent de code de la piste principale (ces scripts n'y écrivent
+jamais : ils y lisent au plus des objets git)."""
+
+
+def suffixe(piste: str | None) -> str:
+    """'' pour la piste principale, '_<piste>' pour une piste supplémentaire."""
+    return "" if not piste or piste == "principale" else f"_{piste}"
+
+
+def conception(piste: str | None = None) -> Path:
+    return RACINE / f"conception{suffixe(piste)}"
+
+
+def v_for_cowork(piste: str | None = None) -> Path:
+    return RACINE / f"v_for_cowork{suffixe(piste)}"
+
+
+def archives(piste: str | None = None) -> Path:
+    return RACINE / f"archives_conception{suffixe(piste)}"
+
+
+def miroir(piste: str | None = None) -> Path:
+    return v_for_cowork(piste) / SLUG
+
+
+def miroir_pret(piste: str | None = None) -> Path:
+    """Le miroir d'une piste ; s'arrête en le disant s'il n'est pas encore cloné."""
+    chemin = miroir(piste)
+    if not (chemin / ".git").exists():
+        option = f" --piste {piste}" if suffixe(piste) else ""
+        sys.exit(f"Miroir introuvable : {chemin} (le cloner d'abord : uv run outils/miroir.py{option})")
+    return chemin
+
+
+def passations(piste: str | None = None) -> Path:
+    return conception(piste) / "passations"
+
+
+def depot_travail(piste: str | None = None) -> Path:
+    """La copie de travail de l'agent de code d'une piste : celle que donnent les réponses de
+    la piste à Copier, sinon `<racine>/<dépôt>_<piste>`."""
+    if not suffixe(piste):
+        return DEPOT_TRAVAIL
+    reponses = RACINE / f".copier-answers.espace{suffixe(piste)}.yml"
+    if reponses.is_file():
+        m = re.search(r"^depot_travail:\s*(.+?)\s*$", reponses.read_text(encoding="utf-8"), re.M)
+        if m:
+            return Path(m.group(1).strip("'\"")).expanduser()
+    return RACINE / f"{SLUG}{suffixe(piste)}"
+
+
+def cloner(url: str, cible: Path) -> None:
+    """`git clone`. Sous Windows, poser `KIT_SCHANNEL=1` ajoute la parade d'un antivirus qui
+    intercepte TLS (`http.sslBackend=schannel`, kit/MACHINE.md, AV-2), écrite dans la
+    configuration du clone pour ses `fetch` suivants. Sans cette variable : un clone ordinaire."""
+    demande = os.name == "nt" and os.environ.get("KIT_SCHANNEL") == "1"
+    options = ["-c", "http.sslBackend=schannel"] if demande else []
+    lancer(["git", "clone", *options, url, str(cible)], cible.parent)
+
+
+def lancer(cmd: list[str], dossier: Path, *, capturer: bool = False) -> bytes:
+    """Lance une commande dans `dossier` ; s'arrête net si elle échoue.
+
+    Avec `capturer`, renvoie la sortie standard **en octets**, sans jamais la
+    décoder : c'est ce qui évite le mojibake et le BOM des redirections
+    PowerShell (kit/MACHINE.md, PS-1).
+
+    Un outil ou un dossier qui manque arrête le script avec une phrase, sans trace Python.
+    """
+    print(f"> ({dossier}) {' '.join(cmd)}", flush=True)
+    try:
+        resultat = subprocess.run(cmd, cwd=dossier, capture_output=capturer, check=False)
+    except (FileNotFoundError, NotADirectoryError):
+        if not dossier.is_dir():
+            sys.exit(f"Dossier introuvable : {dossier}. Pour le miroir : uv run outils/miroir.py.")
+        sys.exit(
+            f"{cmd[0]} introuvable : installe git (https://git-scm.com) et GitHub CLI "
+            "(https://cli.github.com), puis ferme et rouvre le terminal."
+        )
+    if resultat.returncode != 0:
+        if capturer and resultat.stderr:
+            sys.stderr.buffer.write(resultat.stderr)
+        sys.exit(f"Échec (code {resultat.returncode}) : {' '.join(cmd)}")
+    return resultat.stdout if capturer else b""
+
+
+def ecrire_octets(chemin: Path, contenu: bytes) -> None:
+    """Écrit tel quel ; refuse un fichier vide (une commande qui n'a rien produit)."""
+    if not contenu.strip():
+        sys.exit(f"Rien à écrire dans {chemin} : la commande n'a rien produit.")
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    chemin.write_bytes(contenu)
+    print(f"-> {chemin} ({len(contenu)} octets)")

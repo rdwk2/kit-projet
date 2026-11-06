@@ -1,0 +1,410 @@
+# Gabarit — brief d'un jalon (`BRIEF_«jalon».md`)
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Gabarit** — copier dans `v_for_cowork[[ suffixe ]]/«jalon»/` sous le nom
+> `BRIEF_«jalon».md`, remplir les `«…»`, retirer ce bloc.
+>
+> - L'écrire d'abord dans `conception[[ suffixe ]]/`, en parties, dans des fichiers déposés à
+>   chaque point stable ; ne publier dans le dossier du jalon que la révision qui part vers [% if 'relectures' in modules %]B,
+>   puis vers [% endif %]l'agent de code. Une révision remplace la précédente, copiée avant dans
+>   `conception[[ suffixe ]]/`.
+> - Garder **une** des deux versions : la **courte** (petit projet, ou projet de groupe :
+>   §§ 0, 1, 2, 3, 8 et 9) ou la **complète** (§§ 0 à 11) ; supprimer l'autre, et les consignes
+>   « **A :** ».
+> - Garder les numéros de sections, même dans la version courte : [% if 'relectures' in modules %]les briefs de relecture et
+>   leurs annexes y renvoient[% else %]les autres gabarits y renvoient[% endif %].
+>
+> Champs : «jalon» (ex. `[[ prefixe_jalon ]]3-1`) · «titre» · «r» (révision : 0, 0 bis, 1…) ·
+> «date» · «A» (quelle conversation de conception) · «branche» · «sha» (tête de `main` au
+> départ) · «n» (numéro d'une décision, d'un critère, d'un commit).
+
+---
+
+# Version courte — petit projet, ou projet de groupe
+
+# [[ projet ]] — brief de «jalon» : «titre»
+
+> Révision «r», «date». Pour «l'agent de code, en mode plan s'il en a un | le camarade qui prend la tâche» :
+> lire ce brief et le dépôt, présenter un plan, ne rien écrire avant qu'il soit validé.
+> Branche : `«branche»`, depuis `main`.
+
+## 0. Comment lire ce brief
+
+- **La règle de fond**, que tout le reste applique : «une phrase».
+- **Ce que la session ne fait jamais** : «les commandes qu'elle ne lance pas, les fichiers
+  qu'elle ne lit pas».
+- Si une décision qui appartient à [[ humain ]] (`CLAUDE.md`, « Ce qui appartient à l'humain ») se
+  présente sans être au § 3 : s'arrêter et le dire.
+
+## 1. But de cette PR
+
+- **Ce que la PR livre** : «trois à cinq lignes» ; ce qu'elle ne livre pas : «…».
+- **Après la PR, hors de la session** : «ce [[ que_humain ]] fait ensuite, ou rien».
+
+## 2. Périmètre et barrières
+
+- **Dans la PR** : «les modules et les fichiers».
+- **Hors de la PR, intouchable** : «les fichiers qu'on ne modifie pas».
+- **Ce qui déborde** va au `BACKLOG.md`, en une ligne, jamais dans la PR (règle 3 de
+  `CLAUDE.md`).
+
+## 3. Décisions déjà prises — à appliquer, pas à rediscuter
+
+- **D1** — «la décision» («qui l'a prise, et quand»).
+- **D2** — «…»
+
+## 8. Tests exigés et critères d'acceptation
+
+### 8.1 Critères d'acceptation
+
+1. «un critère vérifiable par une commande ou une comparaison»
+2. «…»
+
+### 8.2 Tests attendus
+
+- `«fichier de tests»` : «les cas» — chaque valeur attendue écrite en dur, calculée à la main,
+  avec sa tolérance ; les cas limites (vide, un, deux, égaux, la borne exacte).
+
+### 8.3 Contre-épreuves
+
+Chaque ligne : retirer ou inverser une vérification du code, et le test qui doit rougir.
+
+| Id | Mutation | Test qui doit rougir |
+|---|---|---|
+| X1 | «retirer telle vérification de tel fichier» | `«fichier de tests»`, `«test»` |
+| X2 | «…» | «…» |
+
+## 9. Livraison
+
+1. «commit 1 — ce qu'il contient» (chacun vert à lui seul)
+2. «…»
+
+Titre de la PR : `«jalon» — «titre»` ; la description dit ce qui a été fait, les écarts au
+brief, et les comptes de tests.
+
+---
+
+# Version complète
+
+# [[ projet ]] — brief de «jalon» : «titre»
+
+> **Révision «r»**, «date», par «A», après «ce qui l'a provoquée» ; ce qui change : § 11,
+> « Révisions ». L'empreinte (SHA-256) de chaque révision se calcule après écriture et se note
+> [% if 'relectures' in modules %]dans les annexes de B et de C, et [% endif %]dans la consigne de départ.
+>
+> **Écrit à partir de** : `docs/ROADMAP.md` («jalon») ; les fiches de décision et `CLAUDE.md`, «sections
+> et règles» ; le cadrage et les décisions [[ de_humain ]] ;[% if 'expert' in modules %] «une passe experte et son arbitrage» ;[% endif %][% if 'relectures' in modules %] «les passes
+> de B» ;[% endif %] «l'accord d'une autre piste» ; «le prototype de la conception (un essai écrit à part par A
+> pour calculer les valeurs attendues ; facultatif) : ce qu'il couvre et ce qui y a été joué, sans
+> être joint».
+>
+> **Ce document est la référence de la mission.** Le plan qui en découlera ne la remplace pas.
+> Toute décision prise après son écriture est consignée dans [% if 'relectures' in modules %]l'annexe de relecture[% else %]la rubrique « Révisions » de ce brief[% endif %], pas dans un fil
+> de conversation.
+>
+> **État** : révision «r», pour «[% if 'relectures' in modules %]B | [% endif %]la session de code». Pas de départ de la session sans la consigne
+> explicite [[ de_humain ]].
+>
+> Pour l'agent de code, **en mode plan s'il en a un** : tu lis ce brief et le dépôt (§ 5), tu présentes un plan,
+> et tu n'écris rien avant qu'il soit validé. Le modèle, l'effort, le dossier de travail
+> et le seul dossier ajouté sont dans le message de lancement, pas ici.
+>
+> Branche : `«branche»`, depuis `main` à `«sha»`.
+
+---
+
+## 0. Comment lire ce brief
+
+- **Le lot**, s'il compte plusieurs PR : une table (PR, titre, contenu, brief), puis « **Cette session
+  implémente «jalon» et rien d'autre.** »
+- **La règle de fond**, en une phrase, que le reste applique (exemple : « le rapport affiche ce
+  que le calcul applique, sans le recalculer »).
+- **Les interdits absolus de la session** : les commandes qu'elle ne lance jamais, ce qu'elle
+  ne lit jamais.
+[%- if 'donnees-privees' in modules %]
+- **Les données réelles** : la session ne lit ni n'écrit rien sous `[[ var_donnees ]]` ; les
+  commandes qui les lisent (le hook les refuse) sont lancées par [[ humain ]], après la PR (§ 10).
+[%- endif %]
+- **La règle d'arrêt** : si une décision qui relève de « Ce qui appartient à l'humain »
+  (`CLAUDE.md` : l'architecture, le modèle, la métrique d'erreur, le protocole de validation,
+  les données personnelles) se présente et n'est pas au § 3, la session s'arrête et le dit.
+- **Ce que la PR réemploie sans le réécrire** : les fonctions, les types et les fixtures existants,
+  nommés un par un.
+[% if 'relectures' in modules %]
+> **A :** C se sert de la règle de fond : une copie d'une règle existante, au lieu de son appel,
+> y est un constat C-b contre le § 0. B y cherche B-a (une contradiction avec les §§ 6 à 8).
+[% endif %]
+## 1. But du lot, et de cette PR
+
+- **Ce que demande la ROADMAP**, cité : «la phrase du jalon» ; ce qui existe aujourd'hui, et ce qui
+  manque.
+- **Cette PR livre**, numéroté, en trois à cinq lignes : «1. … 2. …» ; et ce qu'elle ne livre pas.
+- **Après la PR, hors de la session** : ce [[ que_humain ]] lance, ce que la conception vérifie (§ 10), ce qui
+  entre dans une PR suivante.
+
+## 2. Périmètre et barrières
+
+- **Dans la PR** : les modules et les fichiers, nommés.
+- **Hors de la PR, et intouchable** : les fichiers et dossiers que la session ne modifie pas
+  (configuration du projet, verrou des dépendances, CI, réglages de l'agent, `docs/ROADMAP.md`,
+  les modules voisins…).
+- **Fait ailleurs, et où** : ce qui se fait en conception, au contrôle réel (§ 10), ou dans une
+  PR suivante. Une décision « hors PR » s'écrit ici (et au § 10) : sinon [% if 'relectures' in modules %]B la prend[% else %]la relecture la prend[% endif %] pour un
+  trou de périmètre.
+- **Ce qui déborde** va au `BACKLOG.md`, en une ligne, jamais dans la PR (règle 3 de
+  `CLAUDE.md`).
+[% if 'relectures' in modules %]
+> **A :** B y cherche B-c (trou de périmètre), dans les deux sens, contre le « Fini quand » de
+> `docs/ROADMAP.md` ; en passe 2, la question 1 (« quelque chose que le brief ne demande
+> pas ? »). C y cherche ce qui est hors de la PR.
+[% endif %]
+## 3. Décisions déjà prises — à appliquer, pas à rediscuter
+
+- Numérotées (D1, D2…), chacune avec **sa source** et sa date : le cadrage tranché par [[ humain ]] ;[% if 'expert' in modules %]
+  une passe experte et son arbitrage, s'il y en a eu ;[% endif %] un choix [[ de_humain ]] (par exemple : une seule
+  PR) ; et, à part, sous le titre « Choix de la conception, à relire[% if 'relectures' in modules %] par B[% endif %] », ce que A a choisi
+  seule (un paquet, des noms publics, les options d'une commande).
+- Tout ce qui relève de « Ce qui appartient à l'humain » est tranché ici : la session n'en prend
+  aucune.
+- Qui écrit le code et les tests ; ce qui ne lui est pas fourni. Un prototype de la conception
+  reste hors du dépôt et hors du dossier de la session.
+[% if 'relectures' in modules %]
+> **A :** B y cherche B-e (décision passée en douce) : un seuil, une constante, un algorithme ou
+> un format qui apparaît ailleurs dans le brief sans être ici. C reprend cette liste dans son
+> annexe (« ne les signale pas comme des écarts »).
+[% endif %]
+## 4. Points de contact, et `main` qui bouge
+
+- Les fichiers partagés avec une autre piste ou équipe, s'il y en a : ce qui y change,
+  exactement ; l'accord obtenu, et sur quel diff.
+- À l'ouverture de la PR, la conception compare les fichiers communs à ce diff, et relaie tout écart
+  de fond ; un test de l'autre piste modifié en est un. Ce qui devient un point de contact commun
+  après la PR se dit ici.
+- Si `main` bouge pendant la session : fusion, jamais de rebase ; les conflits attendus et leur
+  résolution ; ce qui arrête la session (un conflit dans tel fichier).
+
+## 5. Ce que la session lit avant d'écrire
+
+- `CLAUDE.md` ; les fiches de décision, avec leurs sections ; `docs/PIEGES.md`.
+- Les modules, nommés avec les fonctions et les constantes à lire ; les fixtures et les tests qui
+  servent de modèle.
+- **Ce que le plan doit contenir** : les
+  fichiers touchés ; l'ordre des commits et le contenu de chacun ; les tests, par fichier ; la
+  campagne des contre-épreuves (la table jouée, le critère d'un rouge, la restauration, le
+  témoin) ; les comptes qu'il annonce (lignes de backlog, tests existants modifiés, tailles des
+  commits) ; ce que la session ajoute au brief (aides, réglages, scripts), pour que [% if 'relectures' in modules %]B[% else %]A[% endif %] le juge ;
+  et, à la fin, une rubrique **« Points soumis »** : ce que la session croit permis par le brief
+  sans en être sûre, ou demande.
+
+## 6. La PR «jalon»
+
+### 6.0 Conventions
+
+Ce que le jalon applique partout : les dépendances permises ; les unités, internes et aux
+frontières ; le nommage ; la forme des contrats ; l'ordre des contrôles et la forme des messages
+d'erreur (« le message commence par le nom de l'argument ») ; les instants et les fuseaux ; les
+docstrings. Quand une annexe du brief fixe un ordre plus précis, dire laquelle fait foi.
+
+### 6.1 et suivantes
+
+Une sous-section par module ou fichier, titrée «ce que c'est» — `«fichiers»`. Dans chacune :
+
+- **les types et contrats** : champs, ordre, unités ; producteur et consommateur ;
+- **les invariants** : chaque seuil dit s'il est compris ; chaque valeur flottante dit sa
+  tolérance (ou une règle pour sa famille : « chaque moyenne à `1e−9` ») ;
+- **« Non promis »** : ce sur quoi le consommateur n'a pas le droit de compter — jamais la
+  répétition des invariants ;
+- **les règles numérotées** (P1.1, P1.2…), que la fiche de décision reprendra telles quelles ;
+- **les fichiers écrits** : forme, ordre d'écriture, encodage, fins de ligne, ouverture, ce qui
+  se passe après un échec ;
+- **la commande** : arguments, erreurs attrapées (la liste exacte), lignes de sortie dans leur
+  ordre ;
+- **les imports permis** entre modules.
+
+Dernière sous-section, **les documents** :
+
+- la fiche de décision neuve, dans `docs/decisions/` (ses règles, numérotées comme ici ; « ce que
+  les sorties ne sont pas ») ;
+- la note datée d'une fiche de décision que la PR rend partielle ; les fichiers régénérés ;
+- `CLAUDE.md` (règles, commandes, structure) ;
+- les lignes de `BACKLOG.md`, comptées — cochées, réécrites, neuves : ce sont les limites
+  connues[% if 'relectures' in modules %], que C ne doit pas reprendre en constats[% endif %] ;
+- l'entrée de `docs/JOURNAL.md` ;
+- **README** : soit les phrases du README que la PR rend fausses ou
+  incomplètes, avec leur texte de remplacement, soit « README relu, inchangé ».
+[%- if 'donnees-privees' in modules %]
+- La règle des données : aucun chiffre tiré des données réelles, nulle part (code, textes,
+  messages de commit, description de la PR).
+[%- endif %]
+[% if 'relectures' in modules %]
+> **A :** B y cherche B-a (contradiction interne), B-b (invariant insatisfiable ou vide), B-d
+> (étape sans oracle), B-f (hygiène), B-h (README) — et B-g, la règle des données, quand le
+> projet en a une. C y cherche C-b (contradiction), C-c (porte refermée), C-f (README), C-g,
+> et la liste des garanties écrites qu'il mutera.
+[% endif %]
+## 7. Pièges relevés par le prototype
+
+Numérotés. Ce que le prototype a trouvé, et sans prototype, ce qui a déjà piégé, ou piégera : un garde-fou qui refuse des commandes (et
+comment travailler sans les taper) ; un champ qui change de sens selon le contexte ; un
+fichier généré à régénérer ; le comportement d'un outil sous un système donné.
+
+## 8. Tests exigés et critères d'acceptation
+
+### 8.1 Critères d'acceptation
+
+Numérotés, chacun vérifiable par une commande ou une comparaison : les commandes vertes (la
+vérification complète de `CLAUDE.md`, avec quels extras, à partir de quel commit) ; « seuls ces
+tests existants changent » ; « tel fichier généré ne diffère que par… » ; et ce que devient le
+« Fini quand » de `docs/ROADMAP.md` — ce que la PR en fait, et ce qui vient après elle (§ 10).
+Le dernier : chaque test du § 8.2 existe, et rougit sous sa contre-épreuve, jouée puis restaurée.
+
+### 8.2 Tests attendus
+
+Par fichier de tests neuf, ses cas. Pour les écrire :
+
+- les valeurs littérales sont **calculées** (sur le prototype de la conception, s'il y en a un ;
+  à la main sinon), jamais de tête, et données avec leur tolérance ;
+- chaque seuil se teste à sa valeur exacte, des deux côtés ; chaque paramètre à sa borne
+  permise ;
+- les cas dégénérés (vide, un, deux, égaux, borne) ;
+- les **combinaisons** de deux règles, et les **champs publiés** qui traversent sans calcul ;
+- pour une propriété, ce que ses générateurs doivent produire (le cas qui décide) ;
+- aucun facteur qui vaut 1 dans les fixtures.
+
+### 8.3 Contre-épreuves
+
+- **La table**, par module : identifiant, mutation, fichier de tests qui doit rougir, et entre
+  parenthèses le cas du § 8.2 qui la tient sur le prototype. Une ligne qui nomme deux fichiers n'est
+  rouge que si chacun a un test qui échoue.
+- **Le protocole** : une à une ; graine aléatoire fixée ; le fichier restauré, et vérifié
+  (empreinte, `git diff` vide) ; un témoin sans mutation, vert, avant et après ; « rouge » veut
+  dire un échec dans le corps d'un test, pas à la collecte.
+[%- if langage == 'python' %]
+  En Python : `python -B` et `__pycache__` vidé (sinon un `.pyc` périmé fait un faux vert),
+  `--hypothesis-seed=0`, `-p no:cacheprovider`.
+[%- endif %]
+- **Les équivalences déclarées** (E1…), chacune avec l'argument qui la prouve, après un
+  balayage des entrées où elle pourrait jouer. La session les joue aussi, constate qu'aucun test ne
+  rougit, et le dit dans la description de la PR, sans ajouter de test.
+- Chaque contre-épreuve doit rougir **sous chaque implémentation que le brief permet**.
+[% if 'relectures' in modules %]
+> **A :** B y cherche B-d (étape sans oracle) ; en passe 2, l'exécuteur des contre-épreuves. C
+> y cherche C-a (test à vide), et vérifie la campagne déclarée par l'auteur.
+[% endif %]
+## 9. Livraison
+
+- La branche `«branche»`, partie de `main` à `«sha»`. La liste ordonnée des commits : ce que chacun contient (« le commit 1 ne change aucune
+  sortie ») ; chacun vert à lui seul ; leur taille, annoncée quand elle dépasse la règle de
+  `CLAUDE.md` (environ 300 lignes).
+- Les messages (préfixes de `CLAUDE.md`, ligne d'attribution) ; le titre de la PR
+  (`«jalon» — «titre»`) ; ce que dit sa description : l'accord d'une autre piste (§ 4) ; les commits de
+  plus de 300 lignes, avec leur raison ; les comptes de tests réussis et sautés ; les contre-épreuves
+  jouées, rouges et équivalentes ; tout écart au brief, avec sa raison ; la ligne d'attribution.
+[%- if 'donnees-privees' in modules %]
+- Messages de commit par `git commit -F <fichier>`, corps de PR par `--body-file` : aucun ne cite une
+  commande refusée par le hook.
+[%- endif %]
+- **Si `main` a bougé** : § 4.
+
+## 10. Ce [[ que_humain ]] fait, et quand
+
+- **Avant la session** : «ce qui doit être fusionné ou relayé d'abord» ; la consigne de départ, avec
+  le modèle, l'effort, le mode et le seul dossier ajouté.
+- **Le plan de la session** : copié dans `v_for_cowork[[ suffixe ]]/PLAN_«jalon».md`, relu[% if 'relectures' in modules %] par B[% else %] par A[% endif %] avant
+  que la session n'écrive.
+- **À l'ouverture de la PR** : la conception compare les fichiers communs au diff accordé ; [[ humain ]] relaie
+  tout écart de fond (§ 4).
+[%- if 'relectures' in modules %]
+- **La revue de la PR** : la ou les C, avec leur modèle et leur effort[% if 'mutation' in modules %] ; puis le balayage de la conception
+  sur «modules»[% endif %].
+[%- endif %]
+- **Avant la fusion — le contrôle réel** : ce [[ que_humain ]] lance en personne, sur quel arbre (propre, nom
+  neuf), ce qui se compare à quoi (la référence de la conception ; à l'octet, ou à tolérance) ; la
+  sortie copiée à la conception, et l'accès en lecture qu'il lui faut, le temps de vérifier.
+[%- if 'donnees-privees' in modules %]
+  Sur les données réelles (`[[ var_donnees ]]`) : la commande que la session n'a jamais lancée,
+  et la non-régression faite en conception, sous la règle des données.
+[%- endif %]
+- **Après la fusion** : ce qui reste à lancer, avec les commandes données par la conception ; ce
+  qu'elle en fait (une PR suivante, le `docs/JOURNAL.md`).
+- **Où vont les fichiers** : ce qui se dépose, et où ; rien du prototype dans le dossier que
+  reçoit la session.
+- Ce qui se relaie à une autre piste, et quand.
+
+## 11. Annexe — d'où viennent les choix de ce brief
+
+- Les décisions du § 3 : «leurs sources, par numéro : le cadrage,[% if 'expert' in modules %] la passe experte et son arbitrage,[% endif %]
+  [[ humain ]]» ; les choix de la conception[% if 'relectures' in modules %], relus par B[% endif %].
+- Les règles du § 6, les pièges du § 7, les valeurs du § 8.2 et les contre-épreuves du § 8.3 : «où
+  elles ont été écrites, calculées et jouées».
+
+### Révisions
+
+[% if 'relectures' in modules -%]
+- **Révision 0** («date», «A») : pour la passe 1 de B ; «relue avant envoi par…, «k» constats».
+- **Révision 1** («date», «A»), après la passe 1 de B («k» constats, retenus après rejeu) : «par
+  constat, ce qui change, et les §§ touchés». «Prototype corrigé, campagne rejouée : les comptes.»
+- **Révision 1 bis** («date», «A»), après la passe 1 bis de B : «…».
+
+Le diff du texte de chaque révision se dépose pour B, à côté du brief.
+[% else -%]
+- **Révision 0** («date», «A») : «relue avant envoi par…, «k» constats».
+- **Révision «r»** («date», «A») : «ce qui l'a provoquée ; ce qui change, et les §§ touchés».
+[% endif %]
+---
+
+## Variante : un très gros jalon, un brief en plusieurs fichiers
+
+Pour une PR très grosse (des milliers de lignes de code et de tests), le brief garde les
+décisions et la marche à suivre, et quatre annexes portent le reste, chacune avec son
+empreinte :
+
+- **A — interfaces** : noms, signatures, ordre des champs, valeurs, constantes et messages ; la
+  règle de chaque contrat et de chaque fonction ; l'en-tête donne l'ordre de publication ; une
+  rubrique « Messages » par contrat, dont l'ordre fait foi pour l'ordre des contrôles ;
+- **B — formes** : la forme des fichiers écrits ;
+- **C — tests** : C.1 (règles générales), C.2 (un en-tête par fichier de tests), C.3 (les
+  contre-épreuves : introduction et table) ;
+- **D — textes** : les textes à recopier mot pour mot (D.1…), appliqués par script ou par
+  `git apply`, avec leurs empreintes attendues.
+
+Le brief lui-même peut alors compter plus de sections (les vérifications et les commits vers la
+fin, une section pour les erreurs et les messages).
+[% if 'relectures' in modules %]
+---
+
+## Pour A — ce que B et C chercheront, section par section (à retirer)
+
+| Section | B, passe 1 | B, passe 2 | C |
+|---|---|---|---|
+| § 0 | B-a contre les §§ 6–8 | une décision prise en silence | C-b contre la règle de fond |
+| § 1 | B-c contre le « Fini quand » | ce que le brief ne demande pas | « ce que tu relis » |
+| § 2 | B-c trou de périmètre | ce que le brief ne demande pas | « hors de la PR » |
+| § 3 | B-e décision passée en douce | une décision prise en silence | « décisions prises » |
+| § 4 | B-c | si `main` bouge | « points de contact » |
+| § 5 | — | le plan contient-il ce que le § 5 demande ? | — |
+| § 6 | B-a, B-b, B-f, B-g, B-h | les classes appliquées au plan | C-b, C-c, C-f, C-g ; garanties écrites |
+| § 7 | B-a contre les §§ 6 et 9 | le plan évite-t-il chaque piège ? | « points d'attention » |
+| § 8 | B-d étape sans oracle | l'exécuteur des contre-épreuves ; les comptes | C-a test à vide ; mutations obligatoires |
+| § 9 | B-a contre le § 8.1 | l'ordre des commits | « ce que l'auteur déclare » |
+| § 10 | B-c le « Fini quand » après la PR | — | « ce qui vient après toi » |
+| § 11 | (passe bis) le diff de la révision | — | « décisions prises » |
+
+## Avant de passer le brief à B (pour A ; à retirer)
+
+- Le relire par deux agents sans le contexte de l'écriture : l'un les §§ 0–6 contre le code du
+  prototype (s'il y en a un), l'autre les §§ 7–11 contre ses tests et la campagne.
+- Relire chaque test du prototype en se demandant ce qu'il impose au code (un test qui remplace
+  une fonction par un espion impose la façon de l'appeler).
+- Chaque valeur proposée se joue contre la contre-épreuve qu'elle vise avant d'entrer au brief ;
+  une ligne du § 8.3 s'écrit après l'avoir vue rougir.
+- Après toute correction du prototype, rejouer la campagne entière sur l'état final.
+- Relire chaque chemin de dépôt contre « la session écrit tout » : rien du prototype dans le
+  dossier qu'elle reçoit.
+[%- if 'donnees-privees' in modules %]
+- Aucun chiffre tiré des données réelles, nulle part dans le brief.
+[%- endif %]
+[% endif -%]

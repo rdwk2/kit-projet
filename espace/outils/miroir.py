@@ -1,0 +1,46 @@
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""Met le miroir à jour après une fusion (`git pull` seul), ou le clone s'il n'existe pas, puis
+écrit l'état du dépôt distant à côté.
+
+Le miroir (v_for_cowork/<dépôt>) ne reçoit que des `git pull` : c'est `main` tel que
+fusionné, ce que lisent A et B (C reçoit ses pièces dans son paquet). S'il a été modifié par accident :
+`git reset --hard origin/main` le remet à neuf.
+
+`v_for_cowork/ETAT_DISTANT.txt` reçoit, avec l'heure, la sortie de `git ls-remote origin` : la
+tête de `main` et celle de chaque PR (`refs/pull/«n»/head`). Une conversation le lit au lieu
+d'interroger GitHub — c'est le seul moyen pour un dépôt privé, qu'elle ne peut pas lire sans
+identifiants (kit/MACHINE.md, GH-4). Le relancer chaque fois que l'A a besoin de l'état distant.
+
+Usage : uv run outils/miroir.py [--piste analyse]
+"""
+
+import argparse
+from datetime import datetime
+
+import espace
+
+
+def main() -> None:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("--piste", default=None)
+    args = p.parse_args()
+
+    miroir = espace.miroir(args.piste)
+    if not (miroir / ".git").exists():
+        espace.v_for_cowork(args.piste).mkdir(parents=True, exist_ok=True)
+        espace.cloner(f"https://github.com/{espace.GITHUB}.git", miroir)
+    else:
+        espace.lancer(["git", "pull", "--ff-only"], miroir)
+    tete = espace.lancer(["git", "rev-parse", "--short", "HEAD"], miroir, capturer=True).decode().strip()
+    print(f"Miroir à {tete} : {miroir}")
+
+    distant = espace.lancer(["git", "ls-remote", "origin"], miroir, capturer=True)
+    heure = datetime.now().astimezone().isoformat(timespec="seconds")
+    entete = f"# git ls-remote origin, le {heure} ; miroir à {tete}\n".encode("utf-8")
+    espace.ecrire_octets(espace.v_for_cowork(args.piste) / "ETAT_DISTANT.txt", entete + distant)
+
+
+if __name__ == "__main__":
+    main()

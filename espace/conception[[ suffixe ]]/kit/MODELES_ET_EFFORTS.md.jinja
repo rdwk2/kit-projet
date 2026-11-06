@@ -1,0 +1,161 @@
+# Modèles et efforts — politique
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Le § 0 se lit à chaque ouverture d'une A** et s'applique à chaque passage de main.
+> Le reste explique les choix ; il change rarement. Dans ce fichier, « modèle » veut dire modèle
+> d'IA.
+>
+> *Réglages proposés, à adapter à ton abonnement.*
+
+## 0. Réglages actifs
+
+**Les modèles, par niveaux.** Les noms changent vite : ce fichier n'en cite aucun.
+
+| Niveau | Ce que c'est |
+|---|---|
+| **Fort** | le modèle le plus capable auquel tu as accès |
+| **Intermédiaire** | un cran au-dessous, plus rapide et plus économe |
+| **Léger** | le plus rapide, pour le trivial |
+
+*Exemple* : ton abonnement propose trois modèles. Le plus capable va à la conception, à la relecture
+et au code ; celui du milieu à de l'entretien qui a un précédent dans le dépôt ; le plus léger à une
+tâche triviale. **Avec un seul outil et un seul modèle** : même modèle partout, conversations neuves.
+
+**L'effort** est le réglage de réflexion, si ton outil en a un. Quatre crans ici : moyen, élevé, très
+élevé, maximal (`medium`, `high`, `xhigh`, `max` dans l'échelle de Claude ; les autres outils ont la
+leur). Au-dessus, un **mode multi-agents** lance plusieurs agents en parallèle (ultracode dans Claude
+Code).
+
+| Rôle | Par défaut | Alternative raisonnable | Quand déroger |
+|---|---|---|---|
+| **A — conception** | modèle fort, effort très élevé, pour une conversation qui écrit un découpage, un brief ou un arbitrage | un autre modèle fort, effort très élevé, comme essai délibéré, décidé à l'ouverture | conversation légère (clôture, rangement, questions) : modèle fort, effort élevé |
+[% if 'relectures' in modules -%]
+| **B — relecture d'artefact** | modèle fort, effort très élevé, conversation neuve | un autre moteur, effort élevé, si aucune C n'attend sa fenêtre | passe bis courte : effort élevé |
+[% endif -%]
+| **Code — implémentation** | modèle fort, effort élevé : le brief est prescriptif, et les erreurs sont rattrapées en aval | modèle intermédiaire, effort élevé, pour de l'entretien avec un précédent dans le dépôt | effort très élevé seulement après un échec constaté en effort élevé ; correctifs recopiés et vérifiés à l'octet : effort moyen ; **jamais de mode multi-agents sur un brief prescriptif** |
+[% if 'relectures' in modules -%]
+| **C — relecture de PR** | modèle fort, effort maximal, complète, conversation neuve | seconde C en parallèle, sur une PR très structurante : un autre moteur, effort élevé, partielle, liste de points à traiter dans l'ordre, sur une fenêtre pleine (effort très élevé sur une petite PR) | quota trop juste : effort très élevé ; jamais de mode multi-agents |
+| **C bornée** (correctifs) | modèle fort, effort élevé, conversation neuve | modèle intermédiaire, effort élevé | — |
+[% endif -%]
+[% if 'expert' in modules -%]
+| **Passe experte** (maths, modélisation, algorithmique) | modèle fort, effort très élevé, conversation neuve | un autre moteur, effort très élevé, si la décision le mérite | question étroite : effort élevé |
+| **Session à part** (exploration, mesure longue, rapport) | modèle fort, effort élevé, mode normal | un autre moteur, effort très élevé, pour un autre regard que celui de la conception ; modèle intermédiaire, effort élevé, pour un inventaire simple | travail long et difficile : effort très élevé ; balayage très large de fichiers : mode multi-agents ; un seul fil de raisonnement : jamais de mode multi-agents |
+[% endif -%]
+| **Session « explications »** | modèle fort, effort très élevé | un autre moteur, effort très élevé | — |
+| **Consolidation du kit** | modèle fort, effort très élevé | un autre moteur, effort très élevé | — |
+
+Règle de base : effort moyen = mécanique, correctif déjà prescrit ; élevé = défaut sérieux ;
+très élevé = travail long, agentique ou particulièrement difficile ; maximal = escalade
+exceptionnelle, pas le réglage automatique d'une étape importante.[% if 'relectures' in modules %] La C complète en est la seule
+exception : c'est l'étape au raisonnement le plus dur, et elle laisse pourtant passer des constats.[% endif %]
+
+**À chaque passage de main** (vers [% if 'relectures' in modules %]B, Code, C[% else %]Code[% endif %][% if 'expert' in modules %], une passe experte, une session à part[% endif %]), A
+indique : (1) modèle et effort recommandés ; (2) une alternative raisonnable (autre modèle ou
+autre fournisseur) ; (3) la raison du choix en une phrase ; (4) toute dérogation au tableau
+ci-dessus.
+
+Jamais seulement « tu peux lancer [% if 'relectures' in modules %]B[% else %]Code[% endif %] avec ce message » ; plutôt :
+
+```text
+Étape : «rôle» — «objet»
+Recommandé : «modèle», «effort», mode «plan | normal»
+Alternative : «…»
+Pourquoi : «une phrase»
+Dérogation : «aucune | laquelle, et pourquoi»
+Message à coller : […]
+```
+
+---
+
+## 1. Les critères, qui ne bougent pas
+
+- **La décision est-elle déjà prise ?** Un brief prescriptif demande de la discipline, pas de
+  l'exploration. Une tâche mal cadrée ou un débogage en terrain inconnu demande l'inverse :
+  c'est là que l'effort élevé se paie.
+- **Le coût d'une erreur.** Un contrat de données ou une décision de modélisation se paie sur
+  plusieurs jalons ; de l'entretien se refait en dix minutes. C'est d'abord le temps de relecture
+  qui arbitre ; sur un abonnement limité, le quota aussi.
+- **Y a-t-il un précédent dans le dépôt ?** « Refais comme dans le fichier d'à côté » est la
+  situation type où un modèle plus léger suffit.
+- **La largeur d'exploration paie-t-elle ?** C'est le seul critère qui justifie le haut de
+  l'échelle (le mode multi-agents) : balayer beaucoup d'hypothèses ou de fichiers en parallèle —
+  explorer un ancien projet, ratisser des données brutes à la recherche de pièges. Sur un brief
+  détaillé, ça n'augmente que le risque de hors-périmètre : une session partie en ultracode sur un
+  brief entièrement prescriptif a dépensé son quota pour rien.[% if 'relectures' in modules %] Et jamais pour une C : des agents
+  parallèles qui mutent le même arbre se contamineraient.[% endif %]
+- **Quel modèle a produit l'étape précédente ?** Une autre famille décorrèle : c'est cette diversité
+  qui compte, pas la force brute.
+- **Quel quota reste-t-il**, surtout avant une longue session de code ? Ne pas démarrer une
+  implémentation longue sur une fenêtre presque vide.
+
+## 2. Quand choisir
+
+- **On choisit à l'ouverture, en visant le moment le plus dur de la conversation, et on n'y
+  touche plus.** Changer de modèle ou d'effort en cours de conversation fait relire tout
+  l'historique : le coût croît avec la longueur de la conversation, et il est payé pour un
+  seul message. Une conversation de conception se termine toujours par une écriture de brief
+  ou une relecture : on ouvre directement au niveau que ce moment-là demande. S'il faut
+  vraiment corriger, le faire dans les premiers tours, pendant que l'historique est court.
+- **Un artefact mérite plus d'effort qu'une conversation.** Une erreur en conversation est
+  corrigée au tour suivant par [[ humain ]] ; une erreur dans un brief, une relecture de plan ou de
+  diff part telle quelle.
+- **La conversation de conception mérite au moins autant que la session de code.** C'est là
+  que se prennent les décisions qui n'ont aucun filet en aval (`kit/METHODE.md`, § 7).
+- **Ne pas baisser un effort sur la foi d'un nouveau modèle** : réévaluer après deux sessions réelles.
+
+## 3. Plusieurs fournisseurs
+
+**Le rôle prime sur le moteur** : ce qui définit un relecteur, ce n'est pas le moteur qui le porte,
+c'est de ne pas avoir écrit ce qu'il relit. Si tu as accès à un second fournisseur, il sert de second
+moteur quand la limite d'usage d'un abonnement ne suffit plus, ou comme second regard indépendant[% if 'relectures' in modules %] (une
+seconde C, une passe experte)[% endif %]. Le montage ne change pas ; seuls les moteurs qui
+le portent changent. Les briefs et le kit restent lisibles par n'importe quel moteur.
+
+[% if 'expert' in modules -%]
+**L'expert vaut par son désaccord**, pas par la force brute : [[ humain ]] et A partagent le même contexte.
+D'où une conversation neuve, qui n'a rien vu de celle de A ; un autre moteur y ajoute un second
+regard quand la décision le mérite.
+
+[% endif -%]
+[% if 'relectures' in modules -%]
+Une C sur un autre moteur trouve des constats propres. B, elle, reste bornée : une vérification
+mathématique n'y entre que si A lui fournit une question ou un critère écrit, sinon elle invente ce
+qui manque.
+
+**Quand le quota manque** : d'abord la session qui bloque la suite du cycle. Un aller-retour après
+une relecture (C bornée, seconde passe) se fait en conversation neuve : elle ne défend pas son
+premier rapport.
+
+[% endif -%]
+Quand plusieurs pistes partagent un même compte, le quota est commun : la politique devient
+plus économe ([% if 'relectures' in modules %]une seule C par PR sauf PR très structurante, [% endif %]effort élevé pour les passes courtes).
+
+## 4. Sessions agentiques longues et limites d'usage
+
+Une relecture avec campagne de mutations peut consommer presque une fenêtre d'usage entière.
+Trois parades, dans cet ordre[% if 'relectures' in modules %] (elles sont dans le brief de C)[% endif %] :
+
+1. le rapport s'écrit **au fil de l'eau**, avec un journal de progression en tête ;
+2. chaque mutation est **restaurée avant la suivante** : une coupure ne doit jamais laisser un
+   arbre muté ;
+3. après une réinitialisation de la limite, on **reprend** (depuis le journal) plutôt que de
+   relancer.
+
+Limite atteinte : attendre la réinitialisation ; rien, dans ce workflow, n'est urgent à ce point.
+
+[% if 'relectures' in modules -%]
+**Une PR à deux C** : elles partent en parallèle ; on arbitre quand les deux ont rendu leur rapport,
+complet ou partiel, sans attendre une réinitialisation. Si la PR n'est pas fusionnée quand la fenêtre
+revient, la C partielle reprend et finit ; un constat tardif va dans les correctifs s'il arrive avant
+la fusion, sinon dans une petite PR de suite, jamais perdu.
+
+[% endif -%]
+
+**Le nombre de passes expertes n'est pas limité à une par jalon** : si une question neuve le
+mérite, on en ouvre une autre. Quand une décision importante de mathématiques, de
+modélisation, d'algorithmique ou de science doit être figée, A se demande si une
+contre-expertise apporterait de la valeur ; si oui, elle prépare la question et les fichiers
+minimaux à lire[% if 'expert' in modules %] (`kit/EXPERT.md`)[% endif %].

@@ -1,0 +1,782 @@
+# Leçons de méthode
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Les ★ se lisent à l'ouverture de toute conversation A** (la conversation de conception),
+> après `kit/METHODE.md` ; le thème concerné, avant d'écrire l'artefact correspondant. B, C (les
+> relectures) et l'agent de code ne lisent pas ce fichier : ce qui les concerne est déjà dans
+> leurs briefs et dans `CLAUDE.md`. Les mots du kit sont définis dans `kit/VOCABULAIRE.md`.
+>
+> Chaque leçon est une règle à l'impératif, née d'un incident réel sur un premier projet. Les règles générales du
+> workflow sont dans `kit/METHODE.md` : une leçon qui ne fait que les confirmer y renvoie au
+> lieu de les répéter.
+
+## Mode d'emploi
+
+### Quand lire quoi
+
+| Code | Thème | À lire avant de… |
+|---|---|---|
+| MET | Tenir la méthode et les leçons | clôturer ; faire remonter une leçon |
+| PRI | Principes de conception | cadrer un jalon ; proposer une architecture ou un contrat |
+| MES | Chiffrer et mesurer avant d'écrire | affirmer, recommander, chiffrer un coût |
+| ANA | Analyse de données réelles | lire ou présenter une analyse |
+| BRF | Écrire un brief de jalon | écrire ou réviser un brief |
+| TST | Tests : jeux d'essai et oracles | écrire les tests attendus d'un brief |
+| FLO | Flottants et tolérances | écrire une valeur attendue non entière |
+| MUT | Mutations et contre-épreuves | écrire les contre-épreuves d'un brief ou d'une annexe |
+| REL-B | Relecture B : brief, plan, passe experte | lancer ou arbitrer une relecture d'artefact |
+| COD | Sessions de code | valider un plan ; écrire un message en cours de session |
+| REL-C | Relecture C et diff | écrire l'annexe de la relecture de PR |
+| ARB | Arbitrage des constats et correctifs | arbitrer ; écrire les correctifs et le feu vert |
+| GIT | Git, GitHub, PR | préparer une fusion ; vérifier une PR |
+| PIS | Pistes parallèles | toucher un point de contact avec une autre piste |
+| REE | Contrôles réels sur données | préparer ou comparer un contrôle réel |
+| GAR | Garde-fous | poser ou modifier un hook, une clôture, une règle de lint |
+| CTX | Contexte, compaction, relève | après une compaction ; à chaque point stable |
+| PAS | Passations | passer la main ; démarrer un acteur |
+| RNG | Rangement | le ménage de fin de jalon |
+| MOD | Modèle et effort | un passage de main |
+| HUM | Communication avec la personne qui pilote | une consigne, une demande, une explication pour [[ humain ]] |
+| OUT | Pièges d'outillage | donner un script ou une commande |
+
+### Le format d'une leçon
+
+```markdown
+- **«THM-n»** ★ — **«Règle à l'impératif, en une phrase.»**\
+  Parce que : «l'incident, en une ou deux phrases, sans nom propre ni chiffre du projet».\
+  Niveau : «socle | intermédiaire | avancé»
+```
+
+- **Identifiant** : le code du thème et un numéro, stables, que `REMONTEES_KIT.md`, les
+  briefs et les A citent. Une leçon liée à un module que le projet n'a pas pris n'apparaît
+  pas : son numéro laisse un trou. On ne renumérote jamais.
+- **Niveau** : *socle* — tout projet, même sans module ; *intermédiaire* — avec les
+  conversations B et C (module `relectures`) ; *avancé* — gros projet : plusieurs pistes,
+  mutations outillées, passes expertes.
+
+### Faire remonter une leçon née dans un projet
+
+1. **Dans le projet, à la clôture.** L'A écrit la leçon au § 3 de `CONTEXTE.md` (règle de
+   clôture, `kit/METHODE.md` § 10) : la règle en gras, puis l'incident et ses références
+   (PR, constat, décision), puis ce qu'on fait désormais.
+2. **Vers le kit, en même temps.** Si la leçon vaut au-delà du projet, l'A ajoute une ligne
+   à `REMONTEES_KIT.md` (`kit/METHODE.md` § 12), fichier visé `kit/LECONS.md`, avec l'un de
+   ces trois textes :
+   - « nouvelle leçon » : la leçon au format ci-dessus, avec son thème ;
+   - « source ajoutée à «ID» » : la leçon confirme une leçon existante ;
+   - « récidive de «ID» : mécanisme proposé … » : la leçon revient malgré son texte (MET-1).
+3. **Consolidation, par [[ humain ]].** Dans une session à part (`kit/prompts/CONSOLIDATION_KIT.md`),
+   les remontées de tous les projets deviennent une nouvelle version de ce fichier. La
+   consolidation fusionne avant d'ajouter : au plus quinze leçons par thème.
+
+### Marquer une leçon remplacée
+
+Une leçon devenue fausse ne se réécrit jamais en silence (`kit/METHODE.md` § 10, règle de
+clôture, point 3) :
+
+- dans `CONTEXTE.md`, une note datée en italique sous le texte d'origine, qui reste :
+  *« Note du «AAAA-MM-JJ» («n»ᵉ A) : remplacée par «…», parce que «…». »* ;
+- dans ce fichier, à la consolidation, la leçon garde son identifiant et son texte, et passe
+  dans « Leçons remplacées », en fin de fichier, avec la note *« Remplacée le «date» (kit
+  «version») par «ID» : «raison». »* Son identifiant n'est jamais réutilisé.
+
+### Les ★ — à l'ouverture
+
+MET-1 une récidive se corrige par un mécanisme · MES-1 chiffrer sur une implémentation
+jetable · MES-2 mesurer sur le réel avant d'affirmer · BRF-1 rien du prototype chez l'agent ·
+BRF-2 un brief par PR, à la taille du contexte · TST-1 au moins deux éléments · TST-7 un
+oracle n'importe pas ce qu'il vérifie · MUT-1 vérifier le vérificateur · MUT-3 muter chaque
+branche · REL-B-1 relire avant le code, même une petite PR · REL-B-2 toute révision non
+triviale repasse en relecture · COD-3 une décision de session remonte le jour même · REL-C-1
+trois instruments · ARB-1 une règle aussi étroite que le défaut · CTX-2 reprendre par les
+fichiers · CTX-3 déposer à chaque point stable · HUM-1 un exemple chiffré.
+
+---
+
+## MET — Tenir la méthode et les leçons
+
+- **MET-1** ★ — **Corriger une récidive par un mécanisme, pas par du texte : quand une leçon revient malgré sa règle écrite, en faire un champ obligatoire d'un gabarit, un script d'`outils/` ou un contrôle, au lieu de la réécrire plus fort.**\
+  Parce que : ce qui a tenu, ce sont des mécanismes — une ligne « Compaction : » imposée en tête de chaque compte rendu, un interdit écrit dans le démarrage de chaque relecteur avec la commande permise, des correctifs générés par le script même qui les vérifie, une garde d'arbre dans les paquets ; « dater par l'horloge », réécrit plusieurs fois en texte, échouait encore ensuite.\
+  Niveau : socle
+
+- **MET-2** — **Ne pas alléger une étape de la méthode en silence : la faire, ou proposer l'allègement à [[ humain ]] avec sa raison.**\
+  Parce que : une A voulait fermer la relecture d'artefact avant le plan, et se passer de relecture de PR pour une PR sans code ; l'humain a rappelé les deux : la première a ajouté deux consignes au plan, la seconde a trouvé une contradiction bloquante que deux relectures n'avaient pas vue.\
+  Niveau : socle
+
+## PRI — Principes de conception
+
+- **PRI-1** — **Construire par tranches verticales : un chemin fin de bout en bout d'abord, puis épaissir.**\
+  Parce que : chaque palier livre quelque chose d'utilisable et de mesurable, au lieu de couches qui ne servent qu'une fois toutes finies.\
+  Niveau : socle
+
+- **PRI-2** — **Définir les contrats — les formes de données qui passent d'un module à l'autre — avant les modules.**\
+  Parce que : changer après coup une forme qui traverse les modules oblige à toucher tous ses producteurs et tous ses consommateurs.\
+  Niveau : socle
+
+- **PRI-3** — **Installer l'instrument de mesure (métrique, harnais d'évaluation) avant d'ajouter des paramètres, et refuser tout effet qui ne fait pas baisser l'erreur mesurée, sauf justification écrite.**\
+  Parce que : le projet précédent réglait ses constantes à la main et accumulait des pistes d'amélioration, sans aucun moyen de dire si l'une d'elles améliorait quoi que ce soit.\
+  Niveau : socle
+
+- **PRI-4** — **Expliciter le découpage apprentissage / évaluation de toute évaluation, et le tenir par une propriété testée : changer les données du pli retiré ne change ni ses ajustements ni ses prévisions.**\
+  Parce que : calibrer puis mesurer sur les mêmes données ne veut rien dire (« piège permanent ») ; la propriété tient la séparation quelle que soit l'implémentation, sans oracle.\
+  Niveau : socle
+
+- **PRI-5** — **Écrire un contrat comme une promesse minimale : le schéma, les invariants garantis, qui produit et qui consomme, et ce qui n'est pas promis — domaine borné compris (« non promis au-delà »).**\
+  Parce que : chaque promesse contraint le futur, et la part non promise laisse le droit de changer d'implémentation ; borner le domaine a évité d'inventer, pour des valeurs extrêmes, une règle qui aurait changé une décision de fond.\
+  Niveau : socle
+
+- **PRI-6** — **Ne mettre dans un jalon de contrats que ce qui traverse une frontière de module, toucherait plus d'un module si on le changeait, et s'énonce sans dire comment quoi que ce soit se calcule ; le jalon est fini quand on ne peut plus écrire une ligne sans décider d'un calcul.**\
+  Parce que : le troisième critère se décide en lisant une phrase : « la série porte une valeur lissée » est un contrat, « lissée par une moyenne glissante sur cinq points » n'en est pas un.\
+  Niveau : intermédiaire
+
+- **PRI-7** — **Ne décider tôt que ce qui coûte cher à réparer — ce qui apparaît dans toutes les signatures, ce qui corrompt l'existant en silence, ce qui devient invérifiable après coup (la provenance) — et retirer d'un format persistant tout membre sans usage avant de le figer.**\
+  Parce que : un champ optionnel ou une valeur d'énumération s'ajoutent gratuitement à tout moment, alors qu'un invariant dur ajouté tard rend illégaux des objets déjà écrits ; une valeur jamais écrite allait être emportée dans un format versionné.\
+  Niveau : socle
+
+- **PRI-8** — **Vérifier des documents stockés en les recoupant entre eux, jamais en relançant le code qui les a produits.**\
+  Parce que : un recalcul par ce code rendrait la vérification dépendante de lui, et un changement de sa règle refuserait des lignes déjà écrites.\
+  Niveau : intermédiaire
+
+- **PRI-9** — **Avant de renvoyer un calcul à un jalon suivant, nommer les champs qu'il lira, et vérifier que chaque contrat d'entre-deux les garde.**\
+  Parce que : un rapprochement renvoyé à plus tard n'aurait eu aucune clé, le contrat intermédiaire n'en gardant qu'un rang ; un sous-agent l'a vu en lisant ce contrat contre son usage en aval, avant que sa forme soit figée.\
+  Niveau : intermédiaire
+
+- **PRI-10** — **Relire une disposition [[ que_humain ]] n'exécutera qu'une fois (déplacement de données, structure de dossiers) contre chaque source et chaque usage prévus, avant de la lui proposer.**\
+  Parce que : une disposition proposée aurait arrêté l'ingestion à la première source d'un autre type, après un déplacement de données qui ne se refait pas.\
+  Niveau : intermédiaire
+
+## MES — Chiffrer et mesurer avant d'écrire
+
+- **MES-1** ★ — **Chiffrer chaque seuil, critère et valeur attendue en exécutant une implémentation jetable, jamais de tête.**\
+  Parce que : un seuil choisi par raisonnement rendait un test rouge sur une implémentation juste, et une valeur « évidente » n'était pas le flottant calculé ; chiffrées ainsi, trois implémentations indépendantes — conception, relecture, code — ont donné les mêmes nombres : c'est ce qui rend les tests discriminants plutôt que décoratifs.\
+  Niveau : socle
+
+- **MES-2** ★ — **Mesurer sur les données réelles toute affirmation, recommandation ou estimation de coût avant de l'écrire — exactement la variante recommandée —, consigner la mesure et son fichier, répondre ainsi aux questions [[ de_humain ]], et dire « estimé » ce qui ne l'est pas.**\
+  Parce que : une tolérance déclarée « sans effet » changeait les résultats ; un repli justifié par « des dizaines de tests rouges » ne coûtait qu'une ligne, et la mesure a fait choisir l'option la plus solide ; une recommandation portait sur une combinaison jamais mesurée.\
+  Niveau : socle
+
+- **MES-3** — **Avant d'écrire une règle neuve — de calcul ou de méthode —, vérifier que les données et l'usage réels l'exercent, et la chiffrer sur eux.**\
+  Parce que : aucun jeu de contrôle ne contenait le cas visé ; une règle proposée par l'expert aurait exclu un point de chaque observation réelle ; une implémentation conforme a trouvé sur le réel des interactions que des passes expertes, raisonnant sur des cas construits, n'avaient pas vues ; une règle de méthode trop large aurait figé des tableaux de bord faits pour évoluer avec les données.\
+  Niveau : socle
+
+- **MES-4** — **Revérifier à la source tout nombre, chemin ou fait repris d'ailleurs (autre document, compte rendu, mémoire, phrase dite en passant) avant de l'écrire.**\
+  Parce que : des nombres d'une note étaient faux contre les sorties des scripts, un compte de tests annoncé à l'humain aussi ; deux révisions ont porté un chemin dicté de mémoire ; un brief allait consigner une convention que le fichier ne suivait pas.\
+  Niveau : socle
+
+- **MES-5** — **Construire le cas qu'on croit impossible avant d'écrire qu'il l'est, et vérifier par exécution, des deux côtés de la limite et à pas fin, toute phrase qui dit une limite ou une conséquence « exacte » d'une règle ; faute de quoi, n'écrire que ce que la règle implique.**\
+  Parce que : une chronologie déclarée impossible a été produite par un cas construit ; plusieurs rédactions successives d'une conséquence ont été réfutées par des cas construits, et une limite mesurée à pas grossier était nettement plus haute à pas fin.\
+  Niveau : socle
+
+- **MES-6** — **Avant de retenir une donnée de référence, la comparer à ses autres versions, la dériver d'un original intact plutôt que de la réexporter, et vérifier qu'un cas limite ne disparaît pas avec une autre référence avant d'inventer une règle pour lui.**\
+  Parce que : deux exports d'un même objet différaient d'un point, ce qui décalait toute la suite et créait des ambiguïtés artificielles ; la règle neuve envisagée devenait sans objet avec la bonne référence.\
+  Niveau : intermédiaire
+
+- **MES-7** — **Avant de transmettre une conclusion à qui l'utilisera (une autre piste, un brief), vérifier chaque grandeur qu'il en tirera, avec la chaîne de calcul qu'il utilisera.**\
+  Parce que : une équivalence vérifiée sur une grandeur ne valait pas pour une autre, que la chaîne de calcul de l'aval aurait faussée ; la conclusion, déjà transmise, a dû être corrigée.\
+  Niveau : intermédiaire
+
+- **MES-8** — **Avant de recommander de construire ou d'adopter, chercher ce qui existe, puis lire sa licence.**\
+  Parce que : une A a d'abord recommandé un décodeur maison pour rester « sans dépendance », puis une bibliothèque que sa licence écartait d'un dépôt public.\
+  Niveau : socle
+
+## ANA — Analyse de données réelles
+
+- **ANA-1** — **Avant de lire une variante de sensibilité, vérifier que son paramètre effectif change, ou que la sortie change sur un cas construit (pour un jeu d'essai : TST-5).**\
+  Parce que : deux réglages tombaient sur la même valeur effective ; la variante était stable par construction.\
+  Niveau : intermédiaire
+
+- **ANA-2** — **Lire le numérateur et le dénominateur d'un ratio sur la même série et aux mêmes bornes, et mesurer un biais régime par régime.**\
+  Parce que : un ratio prenait son numérateur sur une série et son dénominateur sur une autre ; le biais touchait surtout un régime, et la moyenne le cachait.\
+  Niveau : intermédiaire
+
+- **ANA-3** — **Ne jamais définir une strate par une grandeur qui dépend de la mesure étudiée : la définir par des variables extérieures, avec une valeur de référence déclarée, jamais calculée sur les données étudiées.**\
+  Parce que : classer des cas par leur durée revenait à les classer par la mesure étudiée ; un cas lent glissait vers la strate des longs.\
+  Niveau : socle
+
+## BRF — Écrire un brief de jalon
+
+- **BRF-1** ★ — **Relire chaque chemin de dépôt du brief contre la règle « l'agent écrit tout le code et tous les tests » (`kit/METHODE.md` § 1) : rien du prototype — code, tests, diff — dans un dossier que l'agent voit.**\
+  Parce que : la règle existe pour que deux implémentations indépendantes se rencontrent (décision de l'humain) ; quand la conception fournissait les tests, relecture et balayage n'ont trouvé aucun défaut du code, mais de nombreuses lacunes dans ces tests ; un brief a failli ranger le diff du prototype dans le dossier que reçoit la session de code.\
+  Niveau : intermédiaire
+
+- **BRF-2** ★ — **Écrire un brief par PR, découpé le long de l'interface la plus étroite et à la taille que tiennent les sessions (implémentation et correctifs dans une même session de code, toutes les passes de relecture dans une même conversation) ; concevoir le lot d'un coup, finaliser le brief d'une PR après la fusion de la précédente.**\
+  Parce que : un brief couvrant trois PR se relisait mal et donnait à chaque session une majorité de texte qui ne la concernait pas ; la limite observée est le contexte des sessions, pas la capacité du modèle.\
+  Niveau : intermédiaire
+
+- **BRF-3** — **Donner à la lettre ce que les tests et le code liront : noms, membres, champs, ordre des paramètres positionnels, module par lequel une fonction est appelée quand un test la remplace, forme d'appel, alias interdits — en relisant chaque test du prototype pour ce qu'il impose au code.**\
+  Parce que : le brief donnait les valeurs d'une énumération quand les tests lisaient les noms de ses membres ; des constats bloquants venaient de tests qui remplaçaient une fonction dans un module précis, quand le brief renvoyait à un autre chemin d'appel.\
+  Niveau : intermédiaire
+
+- **BRF-4** — **Écrire dans le brief tout ce qu'un test comparera (ligne, message d'erreur, compte, un texte attendu par type de ligne d'un rapport, un test du prototype par test exigé) et la commande exacte de chaque vérification, après les avoir confrontés à la sortie réelle et au dépôt.**\
+  Parce que : un attendu n'existait que dans le prototype ; des lignes que le contrôle réel imprimerait n'étaient fixées nulle part ; une correspondance « test du prototype → test du brief » faite en gros donnait un numéro faux ; une commande de vérification donnée telle quelle a été rejouée par la relecture.\
+  Niveau : intermédiaire
+
+- **BRF-5** — **Écrire dans le brief les décisions « hors PR » du cadrage, et toute dérogation nommée comme telle : « par dérogation à … », avec sa source, son étendue mesurée et ce qu'elle change.**\
+  Parce que : une décision placée hors de la PR aurait été prise par la relecture pour un trou de périmètre ; une dérogation non nommée contredisait en silence un decision record, que l'humain doit valider en connaissance de cause.\
+  Niveau : intermédiaire
+
+- **BRF-6** — **Donner à chaque brief une rubrique « README » : la phrase rendue fausse se corrige dans la PR qui la rend fausse, et le brief dit si la PR change les exemples exécutés ou les figures du README.**\
+  Parce que : le README dérivait de `main` ; des exemples recopiés au caractère près et une figure régénérée, tenus par des tests de dérive, ne restent justes que si chaque brief dit quoi en faire — sinon l'agent s'arrête quand ces tests rougissent.\
+  Niveau : socle
+
+- **BRF-7** — **Dresser les imports prescrits et l'ordre des commits depuis le prototype, et les vérifier contre les tests d'imports existants et contre les imports des tests de chaque commit.**\
+  Parce que : le brief disait « n'importe rien de nouveau » quand le prototype importait deux modules ; un test existant interdisait un import que le brief prescrivait ; un test importait un nom publié un commit plus tard.\
+  Niveau : intermédiaire
+
+- **BRF-8** — **Relire en entier le brief assemblé avant de le publier, contre ses cas d'essai, même quand chaque morceau a été vérifié, et de nouveau dès que son découpage ou ses pièces changent (renvois compris).**\
+  Parce que : une relecture finale a trouvé des écarts dont deux auraient coûté une révision, une autre des contradictions avec les cas d'essai ; un correctif décidé en cours de rédaction n'était reporté que dans une partie des sections ; un renvoi restait d'une révision antérieure.\
+  Niveau : socle
+
+- **BRF-9** — **Prévoir dès la révision 0 la marge de taille que la relecture ajoutera ; publier des extraits plutôt que des sorties entières, et signaler un dépassement à [[ humain ]] plutôt que de couper le matériau demandé.**\
+  Parce que : un brief a nettement grossi entre deux révisions sans changer de périmètre.\
+  Niveau : intermédiaire
+
+- **BRF-10** — **Fabriquer et contrôler par script ce que le brief publie : chaque bloc à recopier exécuté et passé à la vérification complète du dépôt (lint, format, types, sur toutes ses cibles), la suite du prototype rejouée avec et sans ses dépendances optionnelles, les données extraites par programme, les tableaux Markdown comptés cellule par cellule.**\
+  Parce que : des annotations devenues inutiles auraient fait rougir le premier commit ; un contrôle limité au code source avait laissé passer des dizaines de lignes trop longues ailleurs ; un module qui chargeait une dépendance optionnelle à l'import n'a montré son défaut que sans elle ; une barre dans un code en ligne coupait une cellule sur GitHub ; un paquet scripté a ramené chaque révision au temps de la retouche.\
+  Niveau : intermédiaire
+
+- **BRF-11** — **Pour chaque appel d'API que le brief prescrit, lire dans sa documentation ce qu'il change d'autre que ce qu'on lui demande.**\
+  Parce que : une reconfiguration de l'encodage prescrite remettait aussi le gestionnaire d'erreurs à `strict` — régression réelle, trouvée par la relecture d'un petit brief.\
+  Niveau : socle
+
+## TST — Tests : jeux d'essai et oracles
+
+- **TST-1** ★ — **Pour chaque règle qui dit « premier », « chaque », « un des » ou « seulement », prévoir une donnée d'essai où le compte vaut au moins deux, et la contre-épreuve qui confond le premier et le dernier, l'un et le tout.**\
+  Parce que : presque tous les constats des relectures d'une PR venaient de données à un seul élément (un élément par groupe, un groupe par jour, un modèle par résultat).\
+  Niveau : socle
+
+- **TST-2** — **Donner des valeurs distinctes à chaque colonne ou paramètre d'une même famille, tester chaque sélection ou filtre là où les éléments gardés et écartés diffèrent, et vérifier qu'aucun facteur ne vaut 1 (ou 0) dans toutes les données, ni qu'elles sont toutes au même endroit.**\
+  Parce que : des données où deux colonnes coïncidaient laissaient passer une confusion d'indices ; une sélection n'était testée que sur des éléments égaux ; un facteur égal à 1 dans toutes les données n'était testé par rien.\
+  Niveau : socle
+
+- **TST-3** — **Faire porter au jeu d'essai les formes dégénérées : chaque champ facultatif absent au moins une fois, chaque liste vide au moins une fois, le premier et le dernier de chaque groupe, chaque branche « indisponible ».**\
+  Parce que : le seul défaut de code d'une PR (aucun élément retenu) et la plupart de ses lacunes venaient de formes que les données d'essai n'avaient pas.\
+  Niveau : socle
+
+- **TST-4** — **Pour chaque choix écrit, ordre prescrit ou combinaison de deux règles, prévoir le cas qui le distingue de la règle voisine — un ordre se teste par une entrée qui viole deux règles à la fois — et croiser les choix avec les cas par un script.**\
+  Parce que : des choix étaient énoncés sur des cas incapables de les distinguer ; une entrée qui ne viole qu'une règle ne distingue pas l'ordre ; les lacunes restantes d'une PR par ailleurs exemplaire étaient des combinaisons que le brief ne listait pas.\
+  Niveau : socle
+
+- **TST-5** — **Tester chaque paramètre à sa borne permise (minimale, et maximale si elle est finie) et chaque comparaison à un seuil à son cas d'égalité, et faire varier chaque paramètre que les données prétendent couvrir pour vérifier que les observations bougent.**\
+  Parce que : des paramètres acceptaient 0 sans que personne l'ait essayé ; seul l'un des deux seuils d'un prédicat avait son cas d'égalité ; sous plusieurs valeurs d'un paramètre, les observations étaient identiques, et l'ignorer ne se voyait que par accident.\
+  Niveau : socle
+
+- **TST-6** — **N'utiliser que des données d'essai déterministes (ni horloge, ni hasard non fixé).**\
+  Parce que : un test ne voyait une mutation que parce qu'il appelait deux fois une donnée d'essai qui lisait l'horloge.\
+  Niveau : socle
+
+- **TST-7** ★ — **Ne jamais laisser un oracle importer ce qu'il vérifie : il écrit ses attentes en littéraux, ou les calcule indépendamment, d'après ce qui fixe la sortie en dur.**\
+  Parce que : du code juste avait des tests faibles — une forte part des mutations survivait, une constante et une fonction de hachage étant comparées à elles-mêmes ; une constante que les tests importaient pour écrire leurs attentes n'était tenue par rien.\
+  Niveau : socle
+
+- **TST-8** — **Écrire l'oracle d'après le seul texte que l'agent lira, jamais d'après le code.**\
+  Parce que : un oracle écrit sur le seul texte des précisions en a été la relecture : des lectures que le texte permettait, un cas qu'il ne disait pas, une erreur de l'implémentation.\
+  Niveau : intermédiaire
+
+- **TST-9** — **Tester par sa valeur tout ce qui est publié — champs recopiés, diagnostics, constantes exportées, libellés, nombre d'itérations quand il est la seule trace d'une règle — et l'absence d'effet de bord d'une fonction dite pure.**\
+  Parce que : un champ recopié, un diagnostic et des constantes exportées n'avaient aucun test, et le contrat ne les voyait pas ; des mutations d'un algorithme itératif ne changeaient que son compte d'itérations.\
+  Niveau : socle
+
+- **TST-10** — **Exiger le type exact de l'exception et son message, pas une classe parente.**\
+  Parce que : une erreur de contrat héritant d'une exception standard, un test qui attendait cette dernière passait sur la mauvaise erreur.\
+  Niveau : socle
+
+- **TST-11** — **Tester une grandeur calculée par réemploi au bit (valeur publiée égale à la fonction pure appliquée aux entrées), pas par une identité entre grandeurs.**\
+  Parce que : une identité algébrique ne teste que la cohérence mutuelle, et un terme calculé par soustraction la satisfait par construction.\
+  Niveau : intermédiaire
+
+- **TST-12** — **Pour un lecteur de fichiers externes, lire les valeurs par défaut de la bibliothèque (mode strict, avertissements) et mesurer par fuzz la liste de ses exceptions (octets altérés, fichier tronqué, en-têtes contradictoires) : un fichier illisible devient un refus au rapport, jamais un arrêt.**\
+  Parce que : un décodeur ne faisait qu'avertir sur une somme de contrôle fausse, si bien qu'un fichier abîmé aurait été lu à moitié ; deux exceptions que personne n'avait listées ont arrêté l'ingestion.\
+  Niveau : socle
+
+- **TST-13** — **Avant de publier un test qui oppose deux formes, imprimer ses deux valeurs ; tester un ordre que le code doit imposer sur une entrée renversée, jamais sur l'ordre du système de fichiers.**\
+  Parce que : deux constantes censées différer étaient le même texte sous deux noms ; un système de fichiers qui liste par nom vidait un test d'ordre de son sens.\
+  Niveau : socle
+
+## FLO — Flottants et tolérances
+
+- **FLO-1** — **Donner à chaque valeur flottante attendue sa tolérance, relative par défaut (`1e−9·max(1, |x|)`), écrite avec sa raison, la même dans le prototype et dans le brief.**\
+  Parce que : une tolérance absolue sur des grandeurs de l'ordre du millier échouait sur un flottant juste ; des valeurs écrites sans tolérance auraient fait rougir un test d'égalité sur du code juste ; un outil d'assertion change de sémantique selon ses arguments (`approx(x, abs=…)` n'applique plus la tolérance relative).\
+  Niveau : socle
+
+- **FLO-2** — **Tirer une tolérance de l'écart mesuré, puis rejouer les mutations à une tolérance cent fois plus large ; faire juger près d'un seuil par un oracle plus exact que la tolérance, tiré aussi sur des grandeurs réalistes et des entrées aux limites, au dénominateur gardé contre zéro.**\
+  Parce que : une solution « certifiée » s'écartait sensiblement de l'exacte ; un oracle portait un bruit supérieur à la tolérance qu'il contrôlait ; un oracle tiré sur des grandeurs courtes manquait un défaut d'arrondi qui n'apparaissait qu'au-delà d'un seuil ; un harnais plantait là où le code était juste.\
+  Niveau : intermédiaire
+
+- **FLO-3** — **Ne comparer exactement qu'un résultat atteint par construction (valeurs dyadiques, fonctions pures) : une égalité de seuil sur des grandeurs calculées, un zéro par compensation, deux sommes d'une même inégalité réelle ou une borne d'`exp` / `log` ne sont pas exacts — mesurer leur marge en ulp et choisir des cas loin du demi-ulp.**\
+  Parce que : deux écritures d'un même seuil « rond » différaient d'un ulp ; un zéro par compensation change avec une autre bibliothèque mathématique ; deux cumuls se sont croisés d'un ulp et ont fait lever une précondition ; un cas « à la borne » n'en était qu'à une fraction d'ulp.\
+  Niveau : intermédiaire
+
+- **FLO-4** — **Pour tout seuil appliqué à une grandeur mesurée, se demander si les données réelles peuvent tomber exactement dessus (valeurs quantifiées), et trancher alors en arithmétique exacte plutôt qu'entre deux implémentations flottantes.**\
+  Parce que : des mesures quantifiées tombaient pile sur un seuil, et l'arrondi décidait ; aucune donnée synthétique n'avait de valeurs quantifiées, et plusieurs relectures l'avaient laissé passer.\
+  Niveau : intermédiaire
+
+## MUT — Mutations et contre-épreuves
+
+*Ces leçons valent aussi pour les contre-épreuves jouées à la main par une relecture
+(`kit/METHODE.md` § 6, « Exécuter les mutations plutôt que les imaginer »).*
+
+- **MUT-1** ★ — **Avant de croire un outil de vérification (balayage de mutations, suite de tests, CI), lui faire passer un cas dont on connaît la réponse — un mutant qu'on sait équivalent doit survivre —, comparer le nombre de cas joués au nombre attendu, et confronter ses résultats au compte rendu de l'auteur.**\
+  Parce que : un balayage annonçait « zéro survivant » parce que l'outil sortait en erreur sur des identifiants de tests accentués, comptés « tués », alors que beaucoup survivaient ; une campagne extraite ligne à ligne en avait manqué une partie et affichait « toutes tuées » ; c'est l'agent, qui disait « inatteignables » des mutants « tués », qui a révélé le montage faux.\
+  Niveau : socle
+
+- **MUT-2** — **Supprimer le code mort qu'une mutation survivante révèle, avec sa précision de spécification, plutôt que de l'épingler par un test.**\
+  Parce que : des contrôles inatteignables survivaient à toute mutation ; un test pour les tenir aurait dû sortir du domaine promis.\
+  Niveau : socle
+
+- **MUT-3** ★ — **Muter chaque branche d'une règle — cas par défaut, repli, extrémités, « aucun » —, pas seulement sa formule, et sous chaque variante d'implémentation que le brief permet.**\
+  Parce que : prototype, calcul indépendant et réimplémentation concordaient sur toutes les valeurs, et plusieurs règles n'étaient pourtant distinguées par aucune ; une liberté laissée à l'agent rendait des contre-épreuves muettes.\
+  Niveau : intermédiaire
+
+- **MUT-4** — **Muter le calcul de conception avant d'écrire le brief, fonctions auxiliaires et paramètres déclaratifs compris, et finir toute la campagne avant les relectures.**\
+  Parce que : cela a trouvé, avant le brief, des grandeurs confondues par des valeurs unitaires et des règles testées par rien ; les fonctions non mutées ont été trouvées plus tard par les relectures ; une campagne finie après la rédaction a fait refaire le paquet.\
+  Niveau : intermédiaire
+
+- **MUT-5** — **Rejouer la campagne entière sur l'état final après toute correction, en réécrivant les mutations dont le texte a bougé et en comparant les tests en échec à la passe d'avant.**\
+  Parce que : après une correction, le texte d'origine d'une mutation n'existait plus dans le code ; sa ligne, jouée sur l'état d'avant, ne prouvait plus rien.\
+  Niveau : intermédiaire
+
+- **MUT-6** — **Muter le producteur *et* neutraliser le contrôle qui le revérifie en aval : une règle tenue par le seul contrat n'est pas testée.**\
+  Parce que : une mutation du producteur était « tuée » par l'erreur du contrat, et l'outil comme une relecture pressée concluaient la règle tenue ; la liste des règles revérifiées par un contrat se dresse depuis le code, pas de mémoire.\
+  Niveau : intermédiaire
+
+- **MUT-7** — **N'affirmer d'un test (docstring, ligne du tableau de contre-épreuves, annotation d'une valeur) que ce qu'on a vu rougir sous la mutation correspondante, une sortie à la fois, dans le test de la couche visée.**\
+  Parce que : des docstrings promettaient plus que leurs assertions ; une valeur proposée par la relecture laissait verte la mutation qu'elle visait ; une mutation changeait deux sorties dont une seule était testée ; le cas nommé « distinguant » n'était pas dans le test de la commande.\
+  Niveau : intermédiaire
+
+- **MUT-8** — **Tester une mutation « acceptée » pour son petit effet sur le cas qui maximise cet effet, et ne déclarer une équivalence qu'après un balayage des entrées où elle est la plus fragile, avec sa raison écrite au brief.**\
+  Parce que : un écart déclaré négligeable a été doublé par la relecture sur un cas construit ; une mutation d'arrondi déclarée équivalente sur un cas gardait un écart sur une part des entrées balayées.\
+  Niveau : intermédiaire
+
+[% if 'mutation' in modules %]
+*Balayage outillé : procédure et pièges dans `kit/MUTATION.md`.*
+
+- **MUT-9** — **Interpréter un balayage avec méthode : muter à la main ce que l'outil ne mute pas (constantes, tables, décorateurs), rejouer chaque survivant avec la suite entière, juger un « inatteignable » depuis l'API publique, ne pas classer « message » une mutation qui change le type d'exception.**\
+  Parce que : une lacune sur des libellés n'a été trouvée qu'à la main ; des aides de test en cache et des données d'essai partagées par module faussaient la carte tests ↔ fonctions (faux survivants) ; des survivants classés « inatteignables » ou « message » étaient de vrais trous.\
+  Niveau : avancé
+
+- **MUT-10** — **Vérifier le montage de chaque campagne : chaque mutant s'importe et s'active, chaque désélection retire ce qu'elle vise, le code chargé est bien la copie mutée (pas de cache de bytecode, pas d'installation éditable qui charge le dépôt), un test écrit pour tuer un survivant se rejoue sous ce mutant même, et chaque mutation se restaure avant la suivante, jamais par `git checkout` sur un fichier qui porte du travail non commité (`kit/MODELES_ET_EFFORTS.md` § 4).**\
+  Parce que : un nom mal formé fabriquait un faux survivant ; un mutant refusé à l'import n'est tué par aucun test ; une désélection n'avait rien retiré ; un bytecode périmé et une installation éditable ont fait paraître survivantes des mutations ou rendu muettes des contre-épreuves.\
+  Niveau : intermédiaire
+[% endif %]
+
+## REL-B — Relecture B : brief, plan, passe experte
+
+*Sans le module `relectures`, ces leçons valent pour la relecture neuve d'une PR qui porte une
+décision (`kit/METHODE.md` § 2).*
+
+- **REL-B-1** ★ — **Faire relire chaque brief et chaque plan par une conversation qui ne les a pas écrits, avant la première ligne de code, même pour une petite PR : ce que la PR touche, pas sa taille, décide des relectures (`kit/METHODE.md` §§ 2, 4 et 6).**\
+  Parce que : la première relecture d'artefact a trouvé des constats tous retenus, dont plusieurs critères insatisfiables par une implémentation correcte, avant la première ligne de code ; un petit brief entièrement exécuté en conception portait encore une régression réelle ; une petite PR qui modifiait un decision record central était structurante.\
+  Niveau : intermédiaire
+
+- **REL-B-2** ★ — **Repasser en relecture — passe bornée, proposée d'office, faite sur le diff entre révisions — toute révision qui ajoute du matériau ou des choix neufs (`kit/METHODE.md` § 4, étape 3) ; une correction d'hygiène proposée par la relecture s'applique sans nouvelle passe.**\
+  Parce que : après une série de constats corrigés, une règle entièrement neuve a failli partir au code sans relecture ; une révision à choix neufs, relue seulement à la demande de l'humain, a eu deux constats ; le diff entre révisions, qui redonne la nouvelle à l'octet, réduit la relecture à ce qui change.\
+  Niveau : intermédiaire
+
+- **REL-B-3** — **Avant la relecture indépendante, faire relire le brief par deux sous-agents sans le contexte de l'écriture — l'un contre le code du prototype, l'autre contre ses tests et ses contre-épreuves —, avec la consigne « écarts vérifiables seulement, ligne à l'appui » ; chacun écrit son rapport dans un fichier, sur des pièces déposées avant son lancement.**\
+  Parce que : à chaque fois, ces relectures internes ont trouvé des dizaines d'écarts que l'auteur ne voyait pas, dont des bloquants et un défaut commun au brief et au prototype, et la relecture indépendante qui a suivi a été courte ; une A compactée pendant deux de ces relectures a repris sur leurs rapports écrits.\
+  Niveau : intermédiaire
+
+- **REL-B-4** — **Demander à la relecture de réimplémenter à partir du seul brief, sans le prototype.**\
+  Parce que : muter son propre calcul ne teste que les erreurs qu'on imagine ; la réimplémentation a trouvé une construction de données non écrite, des mutations qu'aucune donnée d'essai ne distinguait et, appelée sur le code fusionné, des arrondis que le calcul de conception n'avait pas.\
+  Niveau : intermédiaire
+
+- **REL-B-5** — **Déposer le plan de l'agent sous son nom exact (`PLAN_«jalon».md`, dans `v_for_cowork[[ suffixe ]]/`) au moment où [[ humain ]] le colle à la relecture ; les outils de la relecture restent hors du dossier de l'agent (`kit/METHODE.md` § 3).**\
+  Parce que : les noms du plan et du rapport de relecture se sont croisés ; un plan manquant au paquet de la relecture de PR a coûté un aller-retour.\
+  Niveau : intermédiaire
+
+[% if 'expert' in modules %]
+*Passes expertes : `kit/EXPERT.md`.*
+
+- **REL-B-6** — **Soumettre à une passe experte des propositions écrites à critiquer, appuyées sur des mesures réelles et un prototype rejouable, et clore une série de passes par une relecture globale à portée fermée, avec une règle d'arrêt posée par [[ humain ]].**\
+  Parce que : la passe experte a changé des décisions quand elle critiquait des propositions, pas sur une question ouverte ; chaque passe trouvait ses défauts dans les règles écrites en réponse à la précédente, surtout dans leurs interactions.\
+  Niveau : intermédiaire
+
+- **REL-B-7** — **Arbitrer une réponse d'expert sur un prototype qui tourne : le prototyper pendant qu'il travaille, recalculer ses cas, lui demander les agrégats de ses formules pour les comparer, compter les « mesures à faire » qu'il demande, et garder les données réelles jusqu'à l'arbitrage.**\
+  Parce que : un prototype prêt à l'arrivée de la réponse a permis d'appliquer, de tester et de mesurer tous les amendements sans attendre ; deux implémentations indépendantes qui concordent sont le contrôle le moins cher d'un estimateur ; une table dérivée transmettait un défaut que seul l'accès au réel a permis de mesurer.\
+  Niveau : avancé
+[% endif %]
+
+## COD — Sessions de code, mode plan, messages en cours de session
+
+- **COD-1** — **Faire travailler l'agent en mode plan, par petits diffs, et ne fusionner que ce qu'on pourrait expliquer à quelqu'un (`kit/METHODE.md` §§ 1 et 5).**\
+  Parce que : relire un plan court vaut mieux que survoler un long diff ; « est-ce que je pourrais expliquer ce fichier à quelqu'un ? » est le seul vrai seuil avant de fusionner.\
+  Niveau : socle
+
+- **COD-2** — **Ouvrir une conversation de code par contexte partagé, pas par étape de roadmap ; `/clear` à la fusion, au changement de sujet, à la dérive ou après une spirale de débogage ; jamais deux sessions dans le même dépôt de travail.**\
+  Parce que : des livrables qui se nourrissent partagent une session, des effets indépendants non ; deux sessions dans un même dépôt se marchent dessus (règle posée par l'humain lors d'une PR documentaire).\
+  Niveau : socle
+
+- **COD-3** ★ — **Écrire le jour même dans le brief, et dans l'annexe de la relecture de PR (`06_ANNEXE_PR-«n».md`, `kit/METHODE.md` § 6), toute décision prise dans le dialogue avec l'agent (plan, message en cours de session).**\
+  Parce que : sinon le relecteur la signale comme un écart, ou pire ne la voit pas.\
+  Niveau : socle
+
+- **COD-4** — **Garder la session de code de la PR pour ses correctifs tant que sa marge de contexte suffit, et comparer tout montage qu'on propose (session neuve, mode plan, relecture de plus) à ce qui s'est fait aux PR précédentes.**\
+  Parce que : rouvrir une session pour une tâche courte, appliquée par script et vérifiée à l'octet, n'apportait rien ; une A a proposé une session neuve en mode plan pour des correctifs recopiés.\
+  Niveau : intermédiaire
+
+- **COD-5** — **Contrôler ce que livre un agent — agent de code, copie, sous-agent — par ce qu'il a produit (arbre git, empreintes, rejeu), pas par son message de commit ni par son compte rendu ; vérifier après le push un message qui compte.**\
+  Parce que : un agent a écrit son propre message malgré celui donné (le *Squash and merge* les remplace de toute façon) ; comparer les empreintes git a établi en quelques secondes que des fichiers étaient identiques au texte vérifié ; des copies qui construisaient un paquet ont été compactées en chemin, et seul ce qu'elles avaient produit faisait foi.\
+  Niveau : intermédiaire
+
+## REL-C — Relecture C et diff
+
+*Sans le module `relectures`, ces leçons valent pour la relecture neuve d'une PR qui porte une
+décision (`kit/METHODE.md` § 2).*
+
+- **REL-C-1** ★ — **Garder sur chaque PR trois instruments — une relecture de PR en conversation neuve, des mutations exécutées (balayage, ou contre-épreuves de la relecture), un contrôle réel —, et noter à chaque PR ce que chacun a trouvé seul (`kit/METHODE.md` §§ 6 et 7).**\
+  Parce que : PR après PR, ils se recoupent peu : l'outil trouve les valeurs limites, les relectures les écritures et les sélections, le contrôle réel ce qui se voit à l'écran ou sur les vraies données.\
+  Niveau : intermédiaire
+
+- **REL-C-2** — **Séparer deux passes de relecture parallèles par deux dossiers — une frontière, pas une consigne (`kit/METHODE.md` § 0) —, et surveiller une relecture muette par ses journaux, pas par sa durée.**\
+  Parce que : deux passes parallèles n'ont pas interféré ; l'une a fait tourner une boucle d'attente pendant des heures après la fin de ce qu'elle attendait.\
+  Niveau : intermédiaire
+
+- **REL-C-3** — **Faire dresser à la relecture la liste des garanties écrites (« lecture seule », « gelé », types refusés, bornes exactes, « premier rencontré ») et chercher le test de chacune.**\
+  Parce que : cette recherche systématique a donné des constats propres à une seule relecture, et des règles que ni la conception ni la relecture d'artefact n'avaient mutées.\
+  Niveau : intermédiaire
+
+- **REL-C-4** — **Ne pas écarter un constat sur la foi d'une seule relecture : lire les rapports en entier avant d'arbitrer, et faire écrire chaque relecture au fil de l'eau (`kit/MODELES_ET_EFFORTS.md` § 4), pour qu'une passe coupée compte encore.**\
+  Parce que : une relecture coupée par son quota avait construit le seul cas qu'une autre disait non constructible, et trouvé le seul défaut de comportement de la PR.\
+  Niveau : intermédiaire
+
+- **REL-C-5** — **Ne mettre dans l'annexe de la relecture aucune vérification que son brief exclut, ou la marquer « à ne pas revérifier ».**\
+  Parce que : en listant « vérification verte avant chaque commit », l'annexe a fait refaire la suite complète à une relecture autant de fois qu'il y avait de commits.\
+  Niveau : intermédiaire
+
+- **REL-C-6** — **Commencer la seconde lecture de la PR par la conception par les batteries croisées — tests du prototype sur la tête de la PR, tests de la PR sur le prototype —, puis comparer les documents octet pour octet.**\
+  Parce que : faite avant les relectures externes, elle a trouvé un écart que celles-ci, prévenues par l'annexe, n'ont pas remonté.\
+  Niveau : intermédiaire
+
+- **REL-C-7** — **Faire relire l'annexe par un agent neuf, contre la tête de la PR (`kit/METHODE.md` § 6) : chaque mutation obligatoire nomme du code qui lit ce qu'elle mute, et ce qui a été balayé se nomme fichier par fichier, avec ce qui ne l'a pas été.**\
+  Parce que : une annexe écrite par l'A qui connaissait le code paraphrasait une règle en en perdant une partie, imposait une mutation qui ne pouvait rien tuer, et annonçait un balayage « du code » qui n'en couvrait qu'une partie.\
+  Niveau : intermédiaire
+
+[% if 'mutation' in modules %]
+- **REL-C-8** — **Faire tourner le balayage pendant les relectures et jusque sur la tête des correctifs ; livrer ses tests après le rapport de la relecture bornée.**\
+  Parce que : lancer les relectures pendant la fin du balayage n'a rien coûté ; le balayage des correctifs a trouvé des règles sans test, les correctifs ajoutant des branches ; des commits neufs changeraient la tête que la relecture bornée vérifie.\
+  Niveau : intermédiaire
+
+- **REL-C-9** — **Dire dans l'annexe ce que la relecture sait du balayage : par défaut ses lacunes, dans une sous-section « déjà trouvées, ne pas les remonter », dont les tests partent avec les correctifs (`kit/METHODE.md` § 6) ; de temps en temps seulement « balayage fait », pour mesurer ce que la relecture trouve seule ; dans les deux cas, compter à part ses constats hors de la liste imposée.**\
+  Parce que : annoncées, les lacunes ont été confirmées et la relecture a cherché ailleurs, avec des constats neufs et un seul tour de correctifs ; tues, une relecture n'en a retrouvé qu'une petite part, ce qui a mesuré sa portée ; les seuls constats communs à deux relectures venaient de la liste obligatoire, qui fait converger sans mesurer la complétude.\
+  Niveau : intermédiaire
+[% endif %]
+
+## ARB — Arbitrage des constats et correctifs
+
+- **ARB-1** ★ — **Corriger un défaut par une règle aussi étroite que lui, et relire ce que cette règle touche ailleurs avant de l'écrire.**\
+  Parce que : en réponse à un constat sur une tolérance, une règle « valable pour tout ce qui suit » a rendu rouges des valeurs tout juste ajoutées ; l'auteur d'une règle trop large ne voit pas le défaut qu'elle crée ailleurs.\
+  Niveau : socle
+
+- **ARB-2** — **Avant d'arbitrer, rejouer sur le prototype chaque démonstration de la relecture, vérifier à la source ses hypothèses sur les outils, et traiter une alternative qu'elle propose comme un constat (cas de part et d'autre).**\
+  Parce que : le prototype de la conception avait ses défauts, que la relecture a trouvés ; une hypothèse de la relecture sur un shell était démentie par la documentation ; une alternative de la relecture s'est révélée la meilleure décision.\
+  Niveau : intermédiaire
+
+- **ARB-3** — **Rejouer les constats d'une relecture de PR avec ses propres substitutions (mutations, greffons, contre-exemples copiés de son dossier), et compléter en conception une relecture coupée sans attendre sa relance.**\
+  Parce que : rejoués par un script, ses constats se vérifient sans interprétation (en retirant d'abord les refus attendus de la base) ; une relecture interrompue a été complétée pendant sa relance, et son verdict l'a confirmé.\
+  Niveau : avancé
+
+- **ARB-4** — **Planifier les correctifs selon ce qu'ils touchent : dès qu'un constat touche le code de production, prévoir un tour complet (correctif, relecture bornée, contrôle réel refait sur la tête finale) ; sinon, faire le contrôle réel en parallèle des correctifs.**\
+  Parce que : un correctif de code tardif a coûté un tour complet, l'humain compris ; un contrôle réel fait pendant la recopie de correctifs en tests seuls est sorti du chemin critique.\
+  Niveau : intermédiaire
+
+- **ARB-5** — **Faire vérifier chaque test correctif par un script : vert sur la tête, rouge sous la mutation qu'il vise et seulement elle.**\
+  Parce que : la CI ne dit pas si un test tue sa mutation ; des correctifs écrits et vérifiés par un même script, qui générait aussi leur document, n'ont eu aucune divergence, et cette vérification mécanique a tenu lieu de relecture bornée. *Par défaut, l'agent de code écrit ces tests (`kit/METHODE.md`, § 1) et A les vérifie par script.*\
+  Niveau : intermédiaire
+
+- **ARB-6** — **Écrire un feu vert de fusion complet : la règle de relecture bornée appliquée (`kit/METHODE.md` § 6) et pourquoi — ce qu'elle aurait vérifié, comment c'est déjà vérifié, le risque qui reste —, puis le commentaire de revue (`passations/REVUE_PR-«n».md`) et la commande `uv run outils/revue_pr.py «n»`.**\
+  Parce que : il a fallu demander pourquoi il n'y avait pas de relecture, devant un feu vert qui appliquait la règle sans la dire ; un feu vert a oublié le commentaire de revue.\
+  Niveau : intermédiaire
+
+- **ARB-7** — **Avant de changer, corriger ou proposer une phrase ou une règle, chercher dans tout le dépôt, par ses mots clés, chaque endroit qui dit la même chose ou qui énumère ce que la PR étend : le cas qu'on corrige est peut-être une règle.**\
+  Parce que : une règle réécrite était déjà enfreinte par des textes que la PR ne touchait pas ; un chiffre qu'on voulait retirer d'une ligne cachait une règle de publication à trancher ; des phrases du README et de la CI devenaient incomplètes hors des sections visées ; une correction ne reprenait que le paragraphe cité par la relecture.\
+  Niveau : socle
+
+## GIT — Git, GitHub, PR
+
+- **GIT-1** — **Mettre à jour une branche déjà relue par une fusion de `main`, pas par un rebase, et annoncer l'arbre attendu.**\
+  Parce que : les commits relus gardent leurs empreintes, le conflit se résout une fois, et la comparaison d'arbres tient même quand un outil d'empreinte manque.\
+  Niveau : socle
+
+- **GIT-2** — **Relire tout texte destiné au dépôt, à GitHub, à l'agent ou à un expert pour ses données personnelles et pour ses chiffres tirés des données réelles, proportions arrondies comprises, et le vérifier par script ; sur GitHub, supprimer aussi les versions antérieures d'une description ou d'une revue modifiée (menu « edited ») ; un faux chemin d'exemple ne porte pas de nom d'utilisateur.**\
+  Parce que : une description modifiée garde ses anciennes versions visibles ; un premier jet de decision record citait un compte tiré des données, puis une proportion arrondie s'est glissée dans une note pour l'expert, vue par un sous-agent ; un faux chemin écrit dans une mutation a fini dans les comptes rendus des relectures et de l'agent.\
+  Niveau : socle
+
+- **GIT-3** — **Lister les fichiers d'un diff avant de le livrer (`grep '^diff --git'`).**\
+  Parce que : un diff remis à un expert portait un lien vers l'environnement virtuel local.\
+  Niveau : socle
+
+- **GIT-4** — **Comparer la tête du miroir à celle [[ que_humain ]] annonce, sans rien demander au serveur depuis le miroir : même une commande git qui « ne fait que regarder » peut écrire (règle de lecture seule : `kit/METHODE.md` § 3).**\
+  Parce que : `git status` y a créé un verrou d'index, `git fetch` un verrou de maintenance, et `git fetch --dry-run` télécharge et écrit des objets ; aucun ne pouvait être supprimé depuis l'espace de lecture.\
+  Niveau : intermédiaire
+
+- **GIT-5** — **Vérifier les têtes et la fusion par git (`git ls-remote`), la CI par la page des exécutions, et la description d'une PR par un fichier exporté ; ne pas se fier à la page publique de la PR, qui retarde.**\
+  Parce que : la page d'une PR a longtemps montré l'ancienne description, un ancien nombre de commits et la PR encore ouverte, alors que git et la page des exécutions étaient à jour.\
+  Niveau : socle
+
+- **GIT-6** — **Raisonner en arbres git : calculer d'avance l'arbre de chaque commit ou fusion (index jetable : `read-tree`, `hash-object -w`, `update-index --cacheinfo`, `write-tree`), vérifier après le push par comparaison d'arbres, et fixer tout paquet de recopie sur l'arbre de sa base (refus si `main` a bougé).**\
+  Parce que : la vérification se réduit à quelques secondes, et un écart désigne le fichier en cause ; une autre piste a bâti son paquet sur un arbre annoncé, qui a concordé ; un paquet fixé a refusé le nouveau `main` au lieu d'effacer le travail fusionné entre-temps.\
+  Niveau : avancé
+
+- **GIT-7** — **Préparer les fichiers d'infrastructure d'une fusion : si la configuration du projet ou le hook de l'agent entrent en conflit, [[ humain ]] recopie leurs versions résolues juste après le `git merge` ; le verrou des dépendances se refait depuis celui de la branche, se compare paquet par paquet et se donne tout fait.**\
+  Parce que : un marqueur de conflit dans la configuration faisait échouer le hook, qui refusait alors chaque outil de l'agent, abandon de fusion compris ; refait depuis le verrou de `main`, le verrou aurait pris des versions sorties depuis la relecture.\
+  Niveau : avancé
+
+## PIS — Pistes parallèles
+
+*Ouvrir et mener une piste : `kit/PISTES.md`. Ces leçons valent dès que deux pistes partagent un
+dépôt.*
+
+- **PIS-1** — **Quand l'autre piste fusionne pendant le cycle : surveiller ses PR à chaque étape (`git ls-remote origin 'refs/pull/*/head'`), rejouer son propre paquet sur leur référence de fusion puis sur le `main` réel, préparer la fusion de `main` (par défaut, l'agent la fait d'après une consigne qui dit, conflit par conflit, quoi garder ; sous dérogation, A lui donne les fichiers résolus, les empreintes et l'arbre attendu — un conflit imprévu l'arrête), puis trancher « faut-il relire la fusion ? » ligne à ligne.**\
+  Parce que : une PR voisine s'est ouverte en plein cycle ; une fusion préparée a donné un arbre identique sans un échange ; la comparaison ligne à ligne (chaque ligne de chaque côté présente, ou remplacée par leur réunion) a suffi à dire qu'aucune relecture n'était nécessaire.\
+  Niveau : avancé
+
+- **PIS-2** — **À la fusion d'une PR de l'autre piste, relire ses décisions neuves contre la provenance du brief en cours ; et lire chaque garde-fou qu'elle pose sur un dossier partagé (clôture d'imports, règle de lint, motif du hook) contre chaque import et chaque commande que ses propres plans prévoient, avant qu'il entre dans `main`.**\
+  Parce que : une précision ajoutée par l'autre piste rendait incomplet un brief écrit avant elle ; une PR fermait tout un dossier au module de l'autre piste, qui devait l'importer — lu sur la tête avant la fusion, le conflit s'est réglé par un relais.\
+  Niveau : avancé
+
+- **PIS-3** — **Coordonner deux pistes par des diffs exacts : prévoir au brief tout point de contact (fichier de règles, infrastructure de tests commune), demander l'accord de l'autre piste avec le diff exact et une fusion d'essai faite des deux côtés, vérifier sur un prototype toute proposition qu'on lui fait, et donner la portée d'une clôture d'imports dans le nom du test.**\
+  Parce que : une donnée d'essai automatique commune s'appliquait à tous les tests du dépôt ; la fusion d'essai d'un côté montrait des conflits que l'autre ne voyait pas ; deux propositions acceptées cassaient l'appli ou la règle visée ; une clôture écrite « pour cette PR » fermait un dossier entier.\
+  Niveau : avancé
+
+- **PIS-4** — **Quand l'autre piste fusionne entre son accord sur un paquet et le lancement de l'agent, régénérer le paquet sur le nouveau `main` et ne lancer l'agent qu'après un nouvel accord ; la nouvelle révision part avec deux diffs (de l'ancienne à la nouvelle ; les fichiers communs contre `main`) et sa nouvelle empreinte.**\
+  Parce que : l'autre A a préféré un paquet régénéré à une fusion faite par l'agent, et sa relecture a pu vérifier la révision mécaniquement : chaque fichier changé était la fusion à trois voies de l'ancienne révision et des deux `main`.\
+  Niveau : avancé
+
+- **PIS-5** — **Ranger tout ce que l'autre piste envoie dans un dossier de relais, jamais dans un dossier qu'un script réécrit.**\
+  Parce que : l'humain a déposé un envoi de l'autre piste dans le dossier des extraits, qu'un script réécrit.\
+  Niveau : avancé
+
+- **PIS-6** — **Décider une borne d'interface commune (un instant « au plus tard », une inclusion, une unité) avec la convention de chacun de ses lecteurs, et écrire l'égalité exacte en test.**\
+  Parce que : une valeur tombait exactement sur une borne qu'une piste prenait incluse et l'autre exclue ; une lecture la rendait, l'autre non.\
+  Niveau : avancé
+
+- **PIS-7** — **Ne faire partir un relais vers l'autre piste que pour un point qui compte : un relais par sous-jalon, après les décisions [[ de_humain ]] ; un relais hors calendrier seulement si l'autre piste risque de figer une règle avant lui.**\
+  Parce que : les allers-retours de politesse ont été arrêtés ; le seul relais hors calendrier est parti parce qu'un brief de l'autre piste allait figer la règle.\
+  Niveau : avancé
+
+- **PIS-8** — **Numéroter les points d'un relais, le terminer par leur nombre, et faire accuser le dernier par l'autre A.**\
+  Parce que : le dernier point d'un relais n'est jamais arrivé, le texte transmis s'arrêtant au précédent ; on ne l'a appris qu'à la réponse au relais suivant.\
+  Niveau : avancé
+
+## REE — Contrôles réels sur données
+
+- **REE-1** — **Jouer tout essai hors CI d'abord sur `main`, comme témoin, dans un environnement débarrassé de ce qui masquerait le défaut.**\
+  Parce que : un essai ne distinguait rien, le shell de l'agent héritant d'un réglage d'encodage qui cachait justement le défaut.\
+  Niveau : socle
+
+- **REE-2** — **Comparer le contrôle réel en entier — tout ce que la commande publie, y compris ce que produisent les jalons déjà fusionnés — à une synthèse figée du prototype final, rangée à côté du brief.**\
+  Parce que : un oracle élargi a trouvé un défaut d'un jalon fusionné que plusieurs relectures et toutes les données d'essai avaient laissé passer ; la comparaison du rapport complet a montré ce qu'une synthèse partielle cachait.\
+  Niveau : intermédiaire
+
+- **REE-3** — **Comparer champ par champ (structure, entiers, textes hors horodatages, flottants à l'écart relatif, écart maximal publié) quand les sorties portent un instant d'exécution ou viennent d'une autre plateforme.**\
+  Parce que : chaque exécution date ses documents, donc les empreintes changent ; deux plateformes rendent parfois des flottants différents d'un ulp.\
+  Niveau : intermédiaire
+
+- **REE-4** — **Vérifier oracle et comparateur sur le réel avant que l'agent écrive une ligne, et la sensibilité du comparateur sur une sortie volontairement altérée.**\
+  Parce que : le prototype joint au code fusionné a validé l'oracle et le comparateur sur des paires réelles avant le code ; un comparateur qui ne rougit jamais ne prouve rien.\
+  Niveau : intermédiaire
+
+- **REE-5** — **Prototyper une interface jusqu'au navigateur avant son brief, et la contrôler dans l'environnement réel de l'utilisateur (thème, langue, logiciels) sur des données qui exercent tous les cas d'affichage.**\
+  Parce que : les pièges d'un brief d'interface venaient tous du prototype rendu, aucun de la documentation ; un texte sans couleur était illisible sur un thème sombre ; un export gênait un tableur en français ; un premier contrôle sur des données sans étiquettes n'avait rien vu.\
+  Niveau : intermédiaire
+
+- **REE-6** — **N'écrire dans le dossier des données réelles ni pour un essai ni pour tester ses droits : travailler sur des copies hors des dossiers connectés, sous leur vrai nom, dans un dossier d'essai, et les supprimer à la clôture.**\
+  Parce que : un dossier « en lecture seule » ne l'était pas, et un fichier vide y est resté ; le registre réel ne s'écrit qu'en vrai ; les lecteurs citent le nom du fichier dans leurs messages, et une copie renommée posée chez l'utilisateur y a fui.\
+  Niveau : socle
+
+- **REE-7** — **Pour un contrôle réel, vérifier contre le code de la tête la référence qu'un prototype a calculée avant d'annoncer « conforme attendu », calculer d'avance l'empreinte que la commande suivante affichera, et écrire la comparaison pendant que le contrôle tourne, chaque compte attendu calculé par la sélection même du script.**\
+  Parce que : une référence venait d'un prototype bâti sur un ancien `main` ; un compte attendu faux a arrêté un archivage, comme prévu, sans rien supprimer.\
+  Niveau : avancé
+
+## GAR — Garde-fous (hooks, clôtures, règles de lint)
+
+- **GAR-1** — **Vérifier dans la documentation de l'outil chaque propriété de sécurité qu'on affirme d'un garde-fou — quand il s'applique, ce qu'il fait s'il ne démarre pas, quelles sessions il couvre —, puis jouer chaque commande du brief contre lui.**\
+  Parce que : un brief disait un hook actif pour les seules sessions futures, ce qui était faux, et deux de ses messages de commit auraient été refusés ; le CONTEXTE disait un hook valable pour la relecture de PR, alors que l'outil ne lit que les réglages du dossier de lancement.\
+  Niveau : intermédiaire
+
+- **GAR-2** — **Dresser un garde-fou de commandes depuis les formes que prend la commande sur chaque plateforme (extension, guillemets, casse, séparateurs, variables d'environnement), jouer ses tests sur la plateforme cible avant la PR, écrire au `BACKLOG.md` ce qui reste hors de lui, et lister les faux positifs de chaque forme ajoutée.**\
+  Parce que : un hook a échoué plusieurs fois sous Windows : variable d'environnement ignorée, encodage de la console, puis extension, guillemets et casse.\
+  Niveau : intermédiaire
+
+- **GAR-3** — **Quand un hook surveille les commandes, faire écrire les textes qui contiennent ses chaînes par les outils d'édition (Write, Edit) et les vérifier par lecture, lancer les scripts par leur chemin, chercher avec l'outil de recherche, et tenir ces chaînes hors des messages de commit et des commandes du brief.**\
+  Parce que : le hook lit toute la commande shell, heredoc compris, et refusait un script dont les ancres citaient une commande interdite ; Write et Edit ne sont contrôlés que par leur chemin.\
+  Niveau : avancé
+
+## CTX — Contexte, compaction, relève
+
+- **CTX-1** — **Signaler chaque compaction dès qu'on la voit, par une ligne « Compaction : aucune » ou « Compaction : oui, avant tel message » en tête de chaque compte rendu, décidée sur le contexte (un résumé en tête est une compaction) et notée sur le moment, avec l'heure ; puis ne pas commencer de mission neuve (`kit/METHODE.md` § 10).**\
+  Parce que : plusieurs conversations de suite ont été compactées sans le dire malgré la consigne écrite, et la ligne obligatoire, adoptée par l'humain, a tenu ; une conversation compactée a commencé la mission suivante jusqu'à ce que l'humain l'arrête ; une autre a écrit « compactée une fois » quand elle l'avait été deux fois, la première n'étant plus visible que dans le résumé de la seconde.\
+  Niveau : socle
+
+- **CTX-2** ★ — **Après une compaction, reprendre par les fichiers (`kit/METHODE.md` § 10) : revérifier chaque état (journaux, empreintes, têtes, SHA) avant d'agir, relire ce qu'on a écrit juste avant comme le texte d'un tiers — décisions [[ de_humain ]] comprises —, et rattacher chaque ligne d'arbitrage qui parle des données à un compte d'un fichier de mesures, ou la retirer.**\
+  Parce que : un SHA reconstruit de mémoire était faux ; un brouillon écrit dans les minutes précédant la compaction contredisait une décision de l'humain que le résumé ne gardait pas ; relu ainsi, un arbitrage a perdu plusieurs erreurs avant dépôt, dont une heure dite lue qui ne l'était pas.\
+  Niveau : socle
+
+- **CTX-3** ★ — **Déposer son état à chaque point stable — documents écrits en parties dans des fichiers, prototype exporté (`git format-patch` rejoué sur une base neuve) avec ses empreintes — et le sauver avant tout autre travail dès qu'un quota ou une coupure menace.**\
+  Parce que : ce qui vit dans le conteneur de la conversation traverse la compaction, mais pas la perte du conteneur ; un quota presque épuisé a été traversé sans perte grâce à l'état sauvé ; des parties de brief et des commits n'ont vécu que dans le conteneur jusqu'au dépôt.\
+  Niveau : socle
+
+- **CTX-4** — **Écrire dans un script déposé le rejeu de chaque démonstration ou rapport dès qu'on le commence.**\
+  Parce que : le résumé de compaction ne gardait pas les sorties des démonstrations rejouées ; le script les a redonnées en une commande.\
+  Niveau : intermédiaire
+
+- **CTX-5** — **Ne jamais croire qu'un travail de fond a survécu : lancer au premier plan par appels courts, écrire les campagnes pour qu'elles reprennent d'après leur journal (entrées faites sautées, ordre aléatoire fixé), et relancer d'après l'état sur disque.**\
+  Parce que : les processus de l'espace de travail meurent avec le tour et au recyclage du conteneur, même détachés ; des campagnes ont duré plus d'un tour ; un ordre fixé garde un échantillon uniforme si elles s'interrompent.\
+  Niveau : intermédiaire
+
+## PAS — Passations
+
+- **PAS-1** — **Passer la main à une étape stable — PR fusionnée, session de code lancée sur un plan validé, livrable déposé avant un long travail —, ouvrir chaque sous-jalon dans une A neuve, et prévoir dès l'ouverture qu'un cadrage qui demande des mesures occupe une conversation entière (`kit/METHODE.md` § 10).**\
+  Parce que : les relèves ont été placées avant un livrable lourd, pour que celui-ci commence avec un contexte entier ; une A compactée a enchaîné le sous-jalon suivant au lieu de passer la main ; un cadrage et ses mesures ont pris toute une conversation, le brief partant avec une neuve.\
+  Niveau : intermédiaire
+
+- **PAS-2** — **En passant la main au milieu d'un travail, laisser un mode d'emploi : outils et commandes, provenance de chaque valeur, points que la relecture risque d'attaquer, ce que la révision suivante doit faire de toute façon.**\
+  Parce que : ce que la compaction ou la relève perdent, ce sont les nuances non écrites ; la note les écrit.\
+  Niveau : intermédiaire
+
+- **PAS-3** — **Tant que la conversation précédente est ouverte, revérifier les empreintes des fichiers partagés avant chaque écriture ; la précédente n'écrit plus sans le dire à [[ humain ]].**\
+  Parce que : deux conversations de conception ont écrit le kit à quelques minutes d'intervalle, et une copie a dû être supprimée.\
+  Niveau : intermédiaire
+
+- **PAS-4** — **Écrire le démarrage de chaque acteur (relecture, expert, agent) comme un gabarit : ses interdictions avec la commande permise à leur place, et en paramètres tout ce qui change d'une fois à l'autre (dossier, numéro de PR).**\
+  Parce que : un interdit écrit seulement chez la conception a été enfreint par la relecture, puis par l'expert ; un démarrage qui nommait son dossier en dur à plusieurs endroits a obligé à refaire le paquet.\
+  Niveau : intermédiaire
+
+## RNG — Rangement
+
+- **RNG-1** — **Au ménage de fin de jalon, ne garder dans `conception[[ suffixe ]]/` que ce qu'une étape suivante nommée utilise, en écrivant pour chaque pièce gardée l'étape qui s'en sert et quand elle part ; dire à [[ humain ]] tout changement du plan de rangement, avec sa raison.**\
+  Parce que : garder un cycle entier « comme modèle » encombrait le dossier de conception ; presque tout est parti, seules quelques pièces nommées sont restées.\
+  Niveau : intermédiaire
+
+- **RNG-2** — **Ne pas réécrire un document qu'une relecture est en train de lire (un fichier, un rédacteur : `kit/METHODE.md` § 0 ; rapports rangés avant la relecture suivante : § 3).**\
+  Parce que : une annexe partagée a dû attendre la fusion de la PR dont la relecture la lisait ; une conversation de relecture neuve réécrit le rapport existant.\
+  Niveau : intermédiaire
+
+- **RNG-3** — **Ne pas connecter à une conversation un dossier [[ que_humain ]] devra supprimer ; lui faire plutôt copier le rapport dans `conception[[ suffixe ]]/`.**\
+  Parce que : Windows tenait ouvert un clone de relecture connecté pour en copier le rapport, et l'humain n'a pu que le vider.\
+  Niveau : intermédiaire
+
+## MOD — Modèle et effort
+
+*Politique et réglages : `kit/MODELES_ET_EFFORTS.md`. Ces leçons en sont les preuves ; elles ne
+citent aucun réglage.*
+
+- **MOD-1** — **Choisir modèle et effort à l'ouverture, et ne plus y toucher : renvoi à `kit/METHODE.md` § 8.**\
+  Parce que : la raison est au § 2 de `kit/MODELES_ET_EFFORTS.md`.\
+  Niveau : socle
+
+- **MOD-2** — **Faire relire par un modèle d'une autre famille que l'auteur quand la PR le mérite, en gardant une relecture du même modèle (`kit/MODELES_ET_EFFORTS.md` § 3).**\
+  Parce que : sur une PR à trois relectures, la diversité de famille a produit le seul défaut de code, et le même modèle que l'auteur a trouvé ce que l'autre avait manqué ; la troisième n'a rien apporté en propre.\
+  Niveau : intermédiaire
+
+- **MOD-3** — **Avant une relecture ou une campagne longue, vérifier ce qui reste de la fenêtre d'usage, et régler la façon de lancer les tests (test ciblé, arrêt au premier échec) : c'est elle qui fait la durée (parades : `kit/MODELES_ET_EFFORTS.md` § 4).**\
+  Parce que : une relecture a été coupée tôt, la fenêtre d'usage étant déjà pleine au lancement ; la durée d'une relecture tenait surtout à la suite complète relancée à chaque mutation.\
+  Niveau : intermédiaire
+
+- **MOD-4** — **Réserver un effort réduit aux tâches de recopie vérifiées mécaniquement (empreintes, arbres).**\
+  Parce que : des correctifs recopiés à l'identique ont tenu avec un effort réduit, les arbres obtenus égaux à ceux de la conception, sans un échange. *Ne s'applique que sous une dérogation qui laisse A fournir des correctifs (§ 2 du CONTEXTE) : par défaut, l'agent de code écrit aussi les correctifs (`kit/METHODE.md`, § 1).*\
+  Niveau : intermédiaire
+
+## HUM — Communication avec la personne qui pilote
+
+*Les règles de base sont au § 9 de `kit/METHODE.md` : consigne finale explicite, commandes
+redonnées telles quelles, schémas en notation standard.*
+
+- **HUM-1** ★ — **Expliquer à [[ humain ]] par un exemple chiffré et des mots définis : chaque statistique définie à sa première apparition (une seule gardée), une échelle logarithmique traduite en « ± x % », l'exemple qui fixe le sens d'un biais, « rien à décider » écrit sur une simple vérification.**\
+  Parce que : on tranche mieux sur des exemples chiffrés que sur des options abstraites, et une option meilleure que celles proposées en est sortie ; deux tours de questions sont nés de termes non définis, et un biais écrit à l'envers n'a été vu que grâce à l'exemple.\
+  Niveau : socle
+
+- **HUM-2** — **Dire en une phrase, dans toute demande de validation ou de permission, ce qu'elle change pour [[ humain ]] ; consigner sa réponse avec sa phrase exacte et la lecture qu'on en fait.**\
+  Parce que : une demande d'accès sans explication a été refusée, puis acceptée une fois expliquée ; une API a été validée sans que l'on sache ce qui était validé ; un « je valide » consigné avec sa phrase peut être corrigé par la conversation suivante si la lecture était fausse.\
+  Niveau : socle
+
+- **HUM-3** — **Quand une information arrive avant [[ que_humain ]] ait agi, redonner un message complet unique qui remplace les précédents, et le dire.**\
+  Parce que : plusieurs versions d'un message de validation se sont suivies, et l'humain a dû demander laquelle envoyer.\
+  Niveau : socle
+
+- **HUM-4** — **Dire en tête de chaque bloc de commandes s'il est pour PowerShell ou pour bash, et n'y mettre que des commandes qui marchent dans ce shell, chemins écrits en clair (le `cd [[ racine ]]` de tête : `kit/METHODE.md` § 9).**\
+  Parce que : des commandes écrites pour bash sont parfois lancées sous PowerShell (outil d'empreinte absent, variables d'environnement vides) ; une sauvegarde n'a pas été faite faute de chemin explicite.\
+  Niveau : socle
+
+- **HUM-5** — **Faire écrire l'heure par le script qui l'écrit, dans un fuseau nommé ; à défaut, la lire à l'outil d'horloge au moment même où on l'écrit — jamais par estimation, jamais à l'avance, jamais une fois pour tout le tour.**\
+  Parce que : à maintes reprises, une heure estimée ou écrite d'avance était fausse d'une dizaine de minutes, ou d'un jour (shell réglé en UTC) ; même lue à l'horloge, une heure s'est faussée en chemin ; un fuseau nommé suit aussi le changement d'heure. C'est MET-1 appliqué : la règle réécrite en texte n'avait pas suffi.\
+  Niveau : socle
+
+- **HUM-6** — **Vérifier l'état réel (appareil, dossiers de relais listés par date, sortie, journaux) avant d'écrire qu'une chose n'est pas faite ou pas reçue, ou de proposer une relance ; donner l'heure de la vérification avec le constat.**\
+  Parce que : un « pas encore copié » a fait croire à une consigne mal lue ; une réponse attendait dans un dossier depuis quelques minutes ; un calcul qu'on croyait arrêté par une veille avait repris au réveil.\
+  Niveau : socle
+
+- **HUM-7** — **Faire confirmer chaque lancement par [[ humain ]], ne rien noter « lancé » sans sa confirmation, et lui dire à quoi sert chaque dossier qu'une commande crée ou renomme.**\
+  Parce que : un paquet prêt a été noté « lancé » sans confirmation, et n'a été lancé que des heures plus tard.\
+  Niveau : socle
+
+- **HUM-8** — **Annoncer une durée en comptant les étapes mesurées qu'elle contient (une vérification complète par commit, par exemple).**\
+  Parce que : une vérification complète prenait de longues minutes sous Windows, et la durée annoncée sans les compter était fausse du simple au double.\
+  Niveau : socle
+
+- **HUM-9** — **Envoyer un compte rendu intermédiaire par un message et continuer : ne finir son tour que pour une décision ou une commande [[ de_humain ]], ou pour une publication.**\
+  Parce que : il a fallu demander pourquoi la conversation s'était arrêtée.\
+  Niveau : socle
+
+- **HUM-10** — **Quand une autre conversation attend un geste [[ de_humain ]], lui donner une seule liste numérotée de gestes, chacun vérifié avant le suivant ; pour un texte qu'il doit écrire dans un fichier qui sert de garde-fou, lui donner la commande qui écrit les octets exacts, vérifier le fichier, et seulement ensuite donner le commentaire de revue qui le cite.**\
+  Parce que : dans la hâte, une commande a été collée à la place de la ligne attendue, parce que l'autre piste attendait, et la revue, postée avant toute vérification, disait le travail fait.\
+  Niveau : intermédiaire
+
+- **HUM-11** — **Présenter à [[ humain ]] un constat dont la suite dépend des données avec la mesure qui le tranchera, son critère et la voie que chaque issue ouvre.**\
+  Parce que : le critère et les voies ont été acceptés d'avance, et la mesure a tranché sans nouvel aller-retour.\
+  Niveau : intermédiaire
+
+- **HUM-12** — **Faire d'un geste coûteux pour [[ humain ]] (long export, accès, suppression) un message à part, avec son but — pas seulement son verbe — et ce qu'on perd sans lui ; protéger d'abord ce qu'attendre rendrait irréparable.**\
+  Parce que : un geste long recommandé au milieu d'un compte rendu a été oublié ; une consigne de déplacer une sauvegarde visait une copie hors de la machine, et son but, faute d'être dit, n'a pas été compris.\
+  Niveau : socle
+
+## OUT — Pièges d'outillage
+
+*Recettes et pièges d'outillage : `kit/MACHINE.md`.*
+
+- **OUT-1** — **Ne jamais tuer un processus par motif (`pkill -f`) : relever les PID, puis les tuer ; ne pas lancer à la main un script qui attend sa requête sur l'entrée standard.**\
+  Parce que : le motif figurant dans sa propre commande, `pkill` a tué à plusieurs reprises le shell qui le lançait ; le script du hook, lancé sans requête, attendait sans fin.\
+  Niveau : intermédiaire
+
+- **OUT-2** — **Après un incident machine (disque plein, redémarrage, liaison coupée) ou un transfert de fichier entre deux machines, vérifier qu'aucun fichier n'est vide, tronqué ou périmé : déposer sous un nom neuf, même pour une retouche de quelques secondes ; vérifier l'empreinte à l'arrivée ; juger une reprise par le contenu (empreinte, taille non nulle), pas par la présence ; faire passer un fichier que le canal refuse par un remplacement scripté ou sous un nom inerte [[ que_humain ]] recopie, sans contourner le refus.**\
+  Parce que : un canal de dépôt a livré plusieurs fois la version périmée d'un fichier réécrit sous le même nom, a laissé des fichiers vides après une coupure, et a refusé d'écrire certains fichiers de configuration.\
+  Niveau : socle
+
+- **OUT-3** — **Essayer un script sous l'interpréteur exact de la machine qui le lancera, et tenir pour une erreur de lecture un champ toujours présent que son compte dit absent partout.**\
+  Parce que : une fonction de date d'une version de l'interpréteur refusait un format qu'une version plus récente accepte, et le script a tourné sans erreur en écrivant une sortie fausse.\
+  Niveau : socle
+
+- **OUT-4** — **En PowerShell : nommer les variables par leur rôle, jamais deux qui ne diffèrent que par la casse ; sous PowerShell 5, encadrer un appel natif qui écrit sur stderr (`$ErrorActionPreference = 'Continue'`, puis lire `$LASTEXITCODE`) ; écrire un fichier attendu « à l'octet » sans BOM ni fin de ligne ajoutée, et refuser d'en écraser un existant.**\
+  Parce que : un contrôle comparait une valeur à elle-même ; une ligne de stderr d'un outil devenait fatale ; un fichier écrit par PowerShell n'avait pas les octets attendus.\
+  Niveau : intermédiaire
+
+- **OUT-5** — **Dans un script remis à [[ humain ]], lancer chaque commande du dépôt par sa recette (`justfile`), qui charge l'environnement ; faire vérifier par les faux programmes du banc d'essai l'environnement qu'ils reçoivent, pas seulement leurs arguments.**\
+  Parce que : une commande lancée hors de sa recette n'avait pas la variable du dossier de données, et s'est arrêtée sans rien écrire ; le faux programme du banc ne lisait pas l'environnement.\
+  Niveau : intermédiaire
+
+[% if langage == 'python' %]
+*Python*
+
+- **OUT-6** — **Faire tourner sous Windows ce qu'on remet à l'agent de code : UTF-8 explicite en lecture (`subprocess`) et en écriture, fins de ligne choisies (`newline=`), pas de redirection `>` de PowerShell 5.1, chemins en `/`, interpréteur rendu absolu sans résoudre les liens.**\
+  Parce que : `write_text` sans encodage a vidé un fichier puis levé sur « β » ; une redirection PowerShell a écrit de l'UTF-16 et abîmé les accents ; le shell de l'agent (Git Bash) avalait les barres obliques inverses.\
+  Niveau : intermédiaire
+
+- **OUT-7** — **Ne pas promettre d'égalité « à l'octet » entre plateformes : écrire « aux fins de ligne près », ou comparer des octets sur la plateforme cible ; tester une promesse propre à une plateforme sur les arguments de l'appel (un espion de l'écriture de fichier ou du lancement de processus, qui vérifie encodage et fins de ligne) ; chercher dans les tests les chemins formatés en texte (à comparer à `as_posix()`) ; réserver à Linux un nom de fichier de test qui porte `:` ou une barre oblique inverse ; couper un fichier « une ligne par enregistrement » sur `\n` seul.**\
+  Parce que : la sortie texte de Python écrit des CRLF sous Windows ; des mutants d'encodage et de fins de ligne étaient invisibles sous Linux ; des tests qui n'avaient tourné que sous Linux ont arrêté la session de code ; `str.splitlines` coupe aussi sur des séparateurs Unicode.\
+  Niveau : intermédiaire
+
+- **OUT-8** — **Fiabiliser les comptes de tests : lire le compte sur la ligne finale, avec le code de sortie écrit après (`; echo "exit=$?"`) ; lister échecs et erreurs (`-rfE`, `COLUMNS` large) ; compter sur la base (`--collect-only`), pas par soustraction ; purger une base d'exemples locale qui rend un échec systématique ; ne jamais renommer un fichier de tests pendant une exécution.**\
+  Parce que : une suite tuée par un redémarrage a laissé un journal coupé ; `-rf` omettait les erreurs de données d'essai ; un compte par soustraction était faux ; un renommage en cours a produit un faux rouge.\
+  Niveau : intermédiaire
+[% endif %]
+
+---
+
+## Leçons remplacées
+
+*Aucune dans cette version.* Format d'une entrée : la leçon telle qu'elle était, son
+identifiant, puis *« Remplacée le «date» (kit «version») par «ID» : «raison». »*

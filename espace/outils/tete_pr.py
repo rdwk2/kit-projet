@@ -1,0 +1,62 @@
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""Met la tête d'une PR à la portée de A : une archive tar de l'arbre, dans
+conception/passations/TETE_PR-<n>.tar, avec sa fiche TETE_PR-<n>.txt (commit, arbre, branche).
+
+    uv run outils/tete_pr.py 42 [--piste analyse]
+
+Pourquoi : A ne voit que le miroir, qui ne porte que `main` (jamais de `git fetch` dedans) ; or
+le balayage de mutation (kit/MUTATION.md, si le module est actif) et certaines vérifications
+d'annexe se font sur la tête de la PR. A extrait l'archive dans son propre espace de travail et
+vérifie l'arbre (le format tar garde les modes de fichiers, que le zip perd).
+
+Le commit de tête est lu par `gh pr view` ; l'archive se fait par `git archive` dans la copie
+de travail de la piste (qui a les commits de l'agent de code), après un `git fetch origin` si
+le commit n'y est pas. Rien n'est modifié dans la copie de travail : ni branche, ni fichier.
+"""
+
+import argparse
+import datetime
+import subprocess
+
+import espace
+
+
+def main() -> None:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("numero", type=int)
+    p.add_argument("--piste", default=None)
+    args = p.parse_args()
+
+    tete = espace.lancer(
+        ["gh", "pr", "view", str(args.numero), "--json", "headRefOid,headRefName",
+         "-q", '.headRefOid + " " + .headRefName'],
+        espace.miroir_pret(args.piste),
+        capturer=True,
+    ).decode().split()
+    if len(tete) != 2:
+        raise SystemExit(f"Réponse inattendue de gh pr view : {tete}")
+    commit, branche = tete
+    depot = espace.depot_travail(args.piste)
+    if not (depot / ".git").exists():
+        raise SystemExit(f"Copie de travail introuvable : {depot}")
+    present = subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], cwd=depot,
+                                    capture_output=True).returncode == 0
+    if not present:
+        espace.lancer(["git", "fetch", "origin"], depot)
+    arbre = espace.lancer(["git", "rev-parse", f"{commit}^{{tree}}"], depot, capturer=True).decode().strip()
+    archive = espace.lancer(["git", "archive", "--format=tar", commit], depot, capturer=True)
+    espace.ecrire_octets(espace.passations(args.piste) / f"TETE_PR-{args.numero}.tar", archive)
+    fiche = (
+        f"PR #{args.numero}\nbranche : {branche}\ncommit : {commit}\narbre : {arbre}\n"
+        f"archivé le : {datetime.datetime.now():%Y-%m-%d %H:%M}\n"
+        "vérifier après extraction (tar, qui garde les modes), dans un dépôt neuf :\n"
+        "git add -A puis git write-tree doit redonner l'arbre ci-dessus\n"
+    )
+    espace.ecrire_octets(espace.passations(args.piste) / f"TETE_PR-{args.numero}.txt", fiche.encode())
+    print(f"Tête de la PR #{args.numero} : {commit[:12]} (arbre {arbre[:12]}), pour A.")
+
+
+if __name__ == "__main__":
+    main()

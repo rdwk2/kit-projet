@@ -1,0 +1,217 @@
+# Vocabulaire du workflow et du kit
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> À lire à la demande (`kit/METHODE.md`, § 11) ; pour débuter : le § 0, le § 2 et le § 8. Un terme
+> par ligne : sa définition en une ou deux phrases, puis un exemple. Les familles suivent les rôles,
+> le kit, le cycle d'un jalon, la vie des conversations et des archives, les modèles, puis git et
+> GitHub.
+
+## 0. Les rôles
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **A** | La conversation de conception. Elle réfléchit avec [[ humain ]], écrit les briefs et tient le CONTEXTE. Elle n'écrit pas de code. | « la 3ᵉ A » : la troisième conversation de conception du projet. |
+[% if 'relectures' in modules -%]
+| **B** | La relecture d'artefact. Une conversation neuve relit un brief ou un plan, sans avoir vu A. | `RELECTURE_BRIEF-«jalon».md`. |
+| **C** | La relecture de PR. Une session neuve relit le code d'une PR, dans son poste, sans avoir vu A. | `RELECTURE_PR-«n».md`. |
+[% endif -%]
+| **Code** | L'agent de code au travail sur une tâche. Lui seul écrit dans le dépôt. | « Code lit le brief et propose un plan. » |
+| **[[ humain ]]** (l'humain) | La personne qui tient le projet. Elle tranche, lance les commandes, transporte les messages et fusionne. | Une décision d'architecture lui revient. |
+| **Mainteneur du kit** | La personne qui tient kit-projet lui-même. Ce n'est pas forcément l'humain du projet. | Dans une classe : l'enseignant. |
+| **Agent de code** | Une IA qui lit et modifie directement les fichiers d'un dossier, et qui lance des commandes. | Claude Code, Codex… |
+| **Outil de conversation** | Un outil où l'on discute avec une IA. Selon l'outil, elle a accès à des dossiers, ou seulement aux fichiers joints. | Cowork, ou tout outil où l'on choisit les dossiers accessibles. |
+| **Conversation** | Un échange qui réfléchit, relit ou écrit des documents. Elle ne touche pas au dépôt. | [% if 'relectures' in modules %]A, B.[% else %]A, une relecture neuve.[% endif %] |
+| **Session** | Un lancement d'un agent de code dans un dossier, pour une tâche. | La session de code d'un lot. |
+| **Neuve** | Se dit d'une conversation ou d'une session qui n'a rien vu de ce qui précède. | Une relecture neuve ne connaît que ses pièces. |
+| **Moteur** | Le modèle d'IA et son fournisseur. Un même rôle peut changer de moteur. | Une seconde relecture sur un autre moteur. |
+| **Connecter** | Donner à une conversation ou à une session l'accès à un dossier, et à lui seul. Le geste dépend de l'outil. Outil où l'on choisit les dossiers : les choisir à l'ouverture. Agent en terminal : le lancer dans le dossier, et ajouter un second dossier s'il le permet. Outil sans accès aux dossiers : coller ou joindre les fichiers. Sans cette limite, la frontière redevient une consigne. | Claude Code : choisir ce dossier pour la session. Il peut quand même lire toute la machine : seul un hook ou un bac à sable l'en empêche vraiment. |
+
+## 1. Le kit
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Kit** (kit-projet) | Le gabarit Copier, versionné par tags, qui génère le dépôt et l'espace de travail d'un projet ; par extension, ses fichiers dans un projet. | `copier copy`, puis `copier recopy` à chaque nouvelle version. |
+| **Couche** | L'une des deux parties générées séparément : `depot` (le dépôt git : `CLAUDE.md`, `docs/`, CI) et `espace` (l'espace de travail IA d'une piste : conception, `v_for_cowork`, archives, outils). | Le dépôt se met à jour par `copier update`, l'espace par `copier recopy`. |
+| **Module** | Une partie facultative du kit, choisie à la création : elle ajoute des fichiers et des sections. | Couche depot : `donnees-privees`, `analyse-donnees`, `groupe` ; couche espace : `relectures`, `archives`, `mutation`, `expert`. |
+| **Préréglage** | Un jeu de modules nommé, proposé à la création ; « personnalisé » laisse les choisir un à un. | Solo léger (`solo-leger`), Groupe scolaire (`groupe-scolaire`), Standard (`perso-standard`), Complet (`perso-complet`). |
+| **Fichier du kit** | Un fichier rafraîchi à chaque mise à jour du kit, jamais modifié dans un projet : une dérogation va au § 2 de `CONTEXTE.md`, une amélioration dans `REMONTEES_KIT.md`. | Tout `conception[[ suffixe ]]/kit/`, [% if 'relectures' in modules %]les briefs `06_` et `07_`, [% endif %]les scripts d'`outils/`. |
+| **Fichier vivant** | Un fichier écrit une fois à la création, puis tenu par les conversations A ; une mise à jour du kit ne le touche jamais. | `CONTEXTE.md`, `00_LISEZ_MOI.md`, [% if 'archives' in modules %]`INVENTAIRE_ARCHIVES.md`, [% endif %]`REMONTEES_KIT.md`, `passations/`. |
+| **Gabarit** (à l'usage) | Un document du kit que l'A copie et remplit à chaque usage (ses champs `«…»`), puis range. | `kit/gabarits/OUVERTURES_A.md` → `OUVERTURES_A«n+1».md`. |
+| **Prompt** | Un message du kit à coller tel quel pour ouvrir une session hors du cycle. | `kit/prompts/PREMIERE_A.md`, `SESSION_EXPLICATION.md`, `CONSOLIDATION_KIT.md`. |
+| **Remontée** | Ce qui, appris dans un projet, vaut au-delà : l'A qui clôt l'écrit dans `REMONTEES_KIT.md` ; une session de consolidation le reprend dans une version suivante du kit. Facultatif pour qui ne maintient pas le kit. | Un piège d'outillage, une règle de méthode, un script à corriger. |
+| **Dérogation** | Un écart écrit, avec sa raison : à une règle du kit (au § 2 de `CONTEXTE.md`), ou à la politique des modèles (au passage de main). | « effort élevé au lieu de très élevé pour cette conversation courte ». |
+
+## 2. Le découpage du travail
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Jalon** | Une étape de la roadmap, livrée par une ou plusieurs PR ; un gros jalon se découpe en lots numérotés. | `[[ prefixe_jalon ]]3`, puis `[[ prefixe_jalon ]]3a`, `[[ prefixe_jalon ]]3b`. |
+| **Lot** | Une part d'un jalon qui tient dans une PR : un brief, une session de code, une branche. | Une PR titrée `[[ prefixe_jalon ]]«n»«x» — …`. |
+| **Sous-jalon** | Un lot, vu depuis la roadmap : il porte le numéro du jalon, suivi d'une lettre. | `[[ prefixe_jalon ]]3a`. |
+| **ROADMAP** | `docs/ROADMAP.md` : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
+| **BACKLOG** | `BACKLOG.md` : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
+| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | Une entrée par session. |
+| **Tranche verticale** | Un petit morceau qui marche de bout en bout. | Lire un fichier, calculer, afficher une valeur. |
+| **Artefact** | Un document produit puis relu : un brief, un plan, un cadrage. | « un artefact mérite plus d'effort qu'une conversation ». |
+| **Contrat** | Ce qu'un type ou une fonction promet à ceux qui s'en servent. | « ce type refuse toute valeur infinie ». |
+| **Invariant** | Une propriété vraie pour tout objet valide. | « la série commence à zéro ». |
+| **Vérité terrain** | Ce qu'on observe dans le réel, sans passer par le modèle. | Une mesure, un usage réel. |
+| **Piste** | Une ligne de travail parallèle dans le même dépôt, avec sa propre conversation de conception, ses dossiers et son `CONTEXTE.md` (`kit/PISTES.md`). | `conception_analyse/`, jalons `AN1`, `AN2`… |
+| **Référence** (piste de) | La piste qui existait déjà quand une autre s'ouvre, en général `principale`. | L'A de référence, le CONTEXTE de référence. |
+| **Point de contact** | Un fichier ou un sujet commun à deux pistes, qui demande de se coordonner (`kit/PISTES.md`, § 5). | `CLAUDE.md`, le `justfile`, la CI. |
+| **Cadrage** | Le document qui précède le premier brief d'un jalon : les mesures (M), les questions posées à [[ humain ]] (Q) et ses décisions (§ D). | `«NN»_CADRAGE_«jalon».md`, révision «r», tranchée. |
+| **Découpage** | Le partage d'un jalon en lots, avec les décisions qui le justifient. | Un jalon en cinq PR, chacune avec son « fini quand ». |
+| **Brief** | La consigne écrite pour l'agent de code : autoportante, avec ses critères d'acceptation, ses scénarios et ses contre-épreuves. | `«NN»_BRIEF_«jalon».md`. |
+| **Révision** | Un état numéroté d'un brief ou d'un cadrage (`rev0`, `rev1`, « 1 bis ») ; une révision se relit par son diff avec la précédente. | La révision 1 bis n'applique que des constats retenus. |
+| **Plan** (mode plan) | La proposition de l'agent de code avant d'écrire une ligne, relue contre le brief. Le mode plan est un réglage de l'agent. À défaut, lui écrire : présente ton plan et n'écris rien avant validation. | « relire deux cents mots de plan vaut mieux que survoler quelques centaines de lignes de diff ». |
+| **Mode normal** | L'agent de code travaille sans plan à faire valider, et peut écrire. | Une session à part, une relecture qui écrit son rapport. |
+| **Feu vert** | Le message de la conception qui valide une étape, avec ses précisions : le plan avant le code, les correctifs avant la fusion. | Un feu vert de fusion contient toujours le commentaire de revue et sa commande. |
+| **Note d'entrée, consigne** | Le premier message d'une session de code : ce qu'elle lit, dans quel ordre, ce qu'elle produit. | La note d'entrée dans le sous-dossier du jalon de `v_for_cowork[[ suffixe ]]/`. |
+| **Message en cours de session** | Une consigne passée à l'agent de code après son plan ; c'est là qu'une prescription se perd le plus souvent. | Les prescriptions P1, P2… de la consigne. |
+| **Compte rendu** | Le rapport de fin de session de l'agent de code, pour la conception seule. | `passations/COMPTE_RENDU_CODE_PR-«n».md` (`uv run outils/compte_rendu_pr.py «n»`). |
+| **Correctifs** | Le message qui transmet à l'agent de code les constats retenus par l'arbitrage. | Des tests seuls, ou un correctif de `src/` exact. |
+| **Revue** | Le commentaire de revue posté sur la PR avant la fusion. | `uv run outils/revue_pr.py «n»`. |
+| **Contrôle réel** | L'exécution d'une PR sur les vraies données, lancée par [[ humain ]] avant la fusion, puisque l'agent n'y a pas accès. | Une entrée du `JOURNAL` qui le dit. |
+| **Fiche de décision** (ADR, *decision record*) | Un fichier qui fige une décision : contexte, options, choix, raisons, conséquences ; elle fait foi sur tout brief archivé. | `docs/decisions/0007-….md`, citée « `0007` D3 ». |
+
+## 3. La relecture
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Vision** | Ce qu'une conversation voit : les dossiers qu'on lui connecte, avec tout leur sous-arbre. | [% if 'relectures' in modules %]B ne voit que `v_for_cowork[[ suffixe ]]/`, jamais `conception[[ suffixe ]]/`.[% else %]A voit `conception[[ suffixe ]]/` et `v_for_cowork[[ suffixe ]]/`.[% endif %] |
+| **Frontière** | Une séparation physique (dossiers frères, copies) plutôt qu'une consigne de ne pas lire. | « une frontière vaut mieux qu'une consigne » (`kit/METHODE.md`, § 3). |
+[% if 'relectures' in modules -%]
+| **Passe** | Un tour de relecture de B sur un artefact : passe 1 sur le brief, 1 bis (1 ter) sur sa révision, passe 2 sur le plan de l'agent de code. | `RELECTURE_BRIEF-«jalon».md` (passes 1 et bis), `RELECTURE_PLAN-«jalon».md` (passe 2). |
+| **Contre-calcul** | B recalcule les valeurs attendues d'une révision, sans reprendre les calculs de la conception. | B refait le calcul d'une valeur attendue. |
+| **Annexe** | La partie d'un brief de relecture qui est propre à une PR ou à un brief ; le brief ne change pas, l'annexe se réécrit à chaque fois. | `06_ANNEXE_PR-«n».md`, `07_ANNEXE_«jalon»_PASSE«x».md`. |
+[% endif -%]
+| **Constat** | Un écart relevé par une relecture : sa classe, où, quoi, contre quelle ligne écrite, et le cas concret qui casse. Sans ce cas, c'est une hypothèse, pas un constat. | [% if 'relectures' in modules %]Le format de sortie des briefs de B et de C.[% else %]Le format de sortie d'une relecture neuve.[% endif %] |
+[% if 'relectures' in modules -%]
+| **Classes de B** | B-a contradiction interne · B-b invariant insatisfiable ou vide · B-c trou de périmètre · B-d étape sans oracle · B-e décision passée en douce · B-f hygiène · B-g règle des données · B-h README. | Le brief de B (`07_`) fait foi. |
+| **Classes de C** | C-a test à vide ou affirmation fausse · C-b contradiction · C-c porte refermée · C-d défaut · C-e hygiène · C-f README · C-g règle des données. | Le brief de C (`06_`) fait foi. |
+| **Test à vide** (C-a) | Un test qui reste vert quand on retire du code l'invariant qu'il prétend protéger. | Un test qui passait grâce à un autre invariant, et laissait entrer une valeur infinie. |
+| **Porte refermée** (C-c) | Le code promet plus (ou moins) que le contrat ne demandait : une non-promesse devenue promesse de fait, une rubrique « Non promis » décorative, un invariant trop strict, une valeur codée en dur là où un paramètre était annoncé. | Un consommateur pourra s'appuyer dessus, et on ne pourra plus changer l'implémentation. |
+[% endif -%]
+| **Verdict** | La conclusion d'une relecture de PR, en une ligne : fusionnable en l'état, après correction de tel point, ou à ne pas fusionner. « Rien trouvé » est une conclusion valide. | La dernière ligne de `RELECTURE_PR-«n».md`. |
+| **Arbitrage** | La décision écrite de la conception sur chaque constat (retenu, écarté, renvoyé au backlog), qui donne les prescriptions numérotées des correctifs. | Des décisions numérotées R1, R2…, chacune avec sa raison. |
+[% if 'relectures' in modules -%]
+| **C complète, C partielle** | Deux relectures de la même PR par deux moteurs : l'une couvre tout, l'autre une part désignée (souvent faute de quota). | `RELECTURE_PR-«n».md` et `RELECTURE_PR-«n»_«variante».md`. |
+| **Double C** | Deux C indépendantes sur une PR structurante. | Une C complète et une seconde C sur un autre moteur. |
+| **C bornée** | Une courte relecture limitée aux correctifs, quand ils touchent `src/`. | Elle ne tourne pas sur des correctifs faits de tests seuls. |
+[% endif -%]
+| **Passe experte** | Une relecture des définitions par une conversation neuve, souvent d'une autre famille de modèles, avant le brief[% if 'expert' in modules %] (`kit/EXPERT.md`)[% endif %]. | Une règle de modèle relue avant d'être figée. |
+| **Prototype, oracle** | L'implémentation à part de la conception, qui donne les valeurs attendues, les pièges et les contre-épreuves ; elle n'est jamais transmise à l'agent de code. | Le circuit existe pour que deux implémentations indépendantes se rencontrent : un code fourni n'en laisse qu'une. |
+| **Sous-agents sans contexte** | Une relecture du brief par des sous-agents qui ne connaissent que lui[% if 'relectures' in modules %], avant B[% endif %]. | Des écarts que l'auteur du brief ne voyait pas. |
+
+## 4. Tests et mutations
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Mutation** | Une erreur introduite volontairement dans le code, pour vérifier qu'un test la détecte. | Un `<` changé en `<=`. |
+| **Rougir** | Échouer sous une mutation : c'est ce qu'on attend du test qui protège la ligne mutée. | « retire-le du code et regarde quel test rougit ». |
+| **Exécutée, raisonnée** | Une mutation réellement jouée, ou seulement imaginée ; un rapport dit toujours laquelle. | « M3 exécutée : `test_…` rougit ». |
+| **Contre-épreuve** | Une mutation ciblée, annoncée dans le brief avec le fichier de tests qui doit rougir ; jouée une à une, sans cache de bytecode, puis restaurée. Elle doit rougir sous toutes les implémentations que le brief permet. | Le tableau des contre-épreuves d'un brief. |
+[% if 'mutation' in modules -%]
+| **Balayage** | Le passage systématique d'un outil de mutation (mutmut) sur les modules qu'une PR modifie, fait par la conception avant d'écrire l'annexe de C ; survivants triés (`kit/MUTATION.md`). | Les mutations d'opérateurs, de constantes, de comparaisons, d'indices et de booléens. |
+| **Survivant, tueur** | Un mutant qu'aucun test ne détecte ; le test ajouté pour le tuer. | Un survivant qu'un test simple tue est une lacune réelle. |
+| **Équivalent** | Un mutant qui ne change aucune sortie : il survit sans révéler de lacune. | Une borne doublée par une autre vérification. |
+| **Tri** | Le classement des survivants : lacune réelle (un test simple la tue, vérifié), équivalent, message d'erreur. | Donné dans l'annexe de C. |
+[% endif -%]
+| **Banc** | Un montage qui rejoue des mutations ou des correctifs contre la suite de tests. | Le banc des correctifs, avant l'arbitrage. |
+| **Rejeu** | Rejouer une campagne ou un calcul, sur l'état final. | « Une campagne de contre-épreuves se rejoue entière sur l'état final. » |
+| **Test de garantie** | Un test ajouté après une relecture ou un balayage pour tenir une phrase précise d'une docstring ou d'une décision. | `tests/test_«module»_guarantees.py`, dont la docstring dit quelle relecture l'a fait naître. |
+| **Non-régression au bit** | Un remaniement vérifié en comparant les sorties bit à bit, pas à une tolérance près. | La preuve la plus forte qu'une réorganisation n'a rien changé. |
+
+## 5. La vie des conversations
+
+Quatre mots voisins : la **relève** remplace une A par une neuve ; la **passation** transmet des
+pièces ; le **relais** est un message entre deux pistes ; le **passage de main** (§ 7) est le moment
+où A lance une autre session.
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Fichier de contexte** | `CONTEXTE.md` : ce qui est propre au projet (emplacements, commandes, dérogations, état, points ouverts, suite, leçons locales), lu en entier par chaque A ; les règles générales sont dans `kit/METHODE.md`. | Un plafond d'environ 60 Ko (`kit/METHODE.md`, § 10). |
+| **Ouverture** | Le message, écrit par l'A sortante, qui ouvre la suivante avec son modèle et son effort. | `OUVERTURES_A«n+1».md`, d'après `kit/gabarits/OUVERTURES_A.md`. |
+| **Étape stable** | Un moment où passer la main ne perd rien : brief publié, arbitrage écrit, PR fusionnée. | Le moment de la relève. |
+| **Clôture** | La fin d'une conversation A : la règle de clôture, les remontées, l'index, l'archivage s'il y en a un, le message d'ouverture. | `kit/METHODE.md`, § 10. |
+| **Règle de clôture** | Copier le CONTEXTE avant de le modifier ; réécrire l'état, les points ouverts et la suite ; ajouter aux règles et aux leçons locales ; n'en rien retirer sans accord ; tenir la table des matières. | `passations/CONTEXTE_avant_A«n».md`. |
+| **Relève** | Le remplacement d'une conversation A par une neuve, proposé par elle à une étape stable et accepté par [[ humain ]]. | « Relève proposée à «heure», acceptée à «heure» ». |
+| **Compaction** | Le remplacement automatique de l'historique d'une conversation par un résumé. La conversation le signale, ne change rien sur la foi du résumé, revérifie dans les fichiers et propose la relève. | `kit/METHODE.md`, § 10. |
+| **Passation** | La transmission d'une conversation à une autre (message, paquet) ; par extension, le dossier `passations/` où vivent ces pièces et la copie d'avant. | [% if 'relectures' in modules %]Le paquet d'une C, le départ de B.[% else %]Le message d'ouverture de l'A suivante.[% endif %] |
+| **Tenue** (notes de tenue) | Les notes de travail d'une A, déposées au fil de l'eau, reprises dans le CONTEXTE à la clôture. | `«outils du jalon»/tenue_A«n»/notes_A«n».md`. |
+| **Outils du jalon** | Le dossier de travail d'un jalon en conception : révisions, prototype, mesures, notes de tenue. | `«outils du jalon»/`, retiré quand le jalon est fusionné. |
+| **Relais** | Un message numéroté entre deux conceptions qui ne se parlent pas, transmis par [[ humain ]] (`kit/PISTES.md`). | Un accord sur un fichier commun aux deux pistes. |
+| **Extrait** | Une copie générée de sections d'un fichier, donnée à une autre piste par un script qui ne fait que lire. | Les sections de méthode du CONTEXTE d'une piste, pour l'autre. |
+| **Paquet** | Le dossier de pièces préparé pour une session (code, relecture, expert). | `passations/«nom»/`, avec son `DEMARRAGE.md`. |
+| **Préparateur** | Le script qui construit un paquet. | Il recopie à l'octet le brief, le plan[% if 'relectures' in modules %] et l'annexe[% endif %]. |
+| **Démarrage** | Le premier message d'une session de relecture, avec ses commandes. | « Lis paquet/DEMARRAGE.md et exécute-le. » |
+| **Copie de travail** | Le clone du dépôt où travaille l'agent de code, et que rien d'autre ne touche. | `[[ depot_travail ]]`. |
+| **Miroir** | Un clone du dépôt en lecture seule, [[ que_humain ]] met à jour par `git pull` seul ; aucune conversation n'y lance `git status` ni `git fetch`. | `v_for_cowork[[ suffixe ]]/[[ slug ]]/`, tiré par `uv run outils/miroir.py`. |
+[% if 'relectures' in modules -%]
+| **Poste** | Le dossier isolé d'une relecture : un clone jetable et ses pièces. | `relecture/c-pr«n»[[ suffixe ]]/`. |
+[% endif -%]
+| **Conteneur** | L'environnement jetable où tourne le shell d'une conversation, dans certains outils. Il disparaît avec elle. | Ce qui y reste est perdu à la fin de la conversation. |
+| **Vue partagée** | Le dossier vu par les relectures et par la session de code : miroir, briefs, [% if 'relectures' in modules %]annexes, [% endif %]diffs. | `v_for_cowork[[ suffixe ]]/` (son `LISEZ_MOI.md`). |
+| **`v_for_cowork`** | Le nom du dossier de la vue partagée. Ce nom est historique, il vient d'un outil de conversation : le dossier sert avec tout outil. | `v_for_cowork[[ suffixe ]]/`. |
+
+## 6. Archives et traçabilité
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Ranger** | Déposer un rapport ou une copie dans `conception[[ suffixe ]]/` : le geste courant. | Un rapport de relecture déplacé dans `passations/` dès que son auteur a fini. |
+[% if 'archives' in modules -%]
+| **Archiver** | Déplacer hors de la vue ce qui ne sert plus au travail courant, avec sa ligne d'inventaire. | `uv run outils/archiver.py «liste»`, puis `--executer`. |
+| **Archives** | Le dossier frère de la conception, jamais connecté par défaut ; chaque élément y garde son chemin relatif. | `archives_conception[[ suffixe ]]/` (module `archives`). |
+| **Inventaire** | Une ligne par élément archivé : chemin, contenu, quand en avoir besoin ; puis ce qui reste, et quand l'archiver. | `INVENTAIRE_ARCHIVES.md`, et ses douze formules. |
+| **Restés en conception** | La liste des pièces gardées, chacune avec l'étape qui s'en sert et le moment où elle part. | « modèle du prochain brief ; quand le prochain brief est écrit ». |
+| **Modèle** (pièce modèle) | La dernière pièce complète d'un type, gardée comme patron du cycle suivant, puis archivée quand le suivant a la sienne. À ne pas confondre avec le modèle d'IA (§ 7). | Le dernier arbitrage, la dernière revue. |
+[% endif -%]
+| **Copie d'avant** | La copie du CONTEXTE faite juste avant sa première modification par une A : une seule par clôture. | `passations/CONTEXTE_avant_A«n».md`. |
+[% if 'archives' in modules -%]
+| **Liste d'archivage** | La liste des chemins à déplacer, écrite par A, relue et lancée par [[ humain ]] ; le script la range avec le reste. | `passations/A_ARCHIVER_«étape».txt`. |
+| **`_a_retirer/`** | Le sous-dossier où l'on range un fichier en trop quand on n'a pas le droit de supprimer ; il s'archive ensuite. | `kit/ARCHIVES.md`, § 2. |
+| **Correspondance** | La règle qui dit où lire, dans le dépôt, ce qu'un document archivé numérotait autrement. | « le § n du document correspond à la section Dn de la fiche ». |
+[% endif -%]
+| **Empreinte, sceau** | Le SHA-256 d'un fichier, souvent abrégé à huit caractères ; le sceau est l'empreinte de la dernière ligne d'un journal chaîné. | Un brief cité avec son empreinte, pour savoir quelle révision a été relue. |
+| **Fait foi** | La source qui l'emporte quand deux textes divergent : le dépôt sur la conception, la fiche de décision sur le brief archivé, le code au commit sur le fichier de contexte. | « la fiche de décision fait foi ». |
+
+## 7. Modèles et efforts
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Modèle d'IA** | Le logiciel qui répond dans une conversation ou une session. Dans le kit, « modèle » a trois sens : modèle d'IA, modèle mathématique ou métier, pièce modèle. Le contexte tranche. | `kit/MODELES_ET_EFFORTS.md`, § 0. |
+| **Effort** | Le réglage de réflexion d'une session, s'il existe dans l'outil, choisi à l'ouverture et inchangé ensuite (`kit/MODELES_ET_EFFORTS.md`). De `low` à `max`, puis ultracode côté Claude Code (échelle de Claude ; les autres outils ont la leur). | `high` par défaut sérieux ; `xhigh` pour le travail long. |
+| **Escalade** | Le passage motivé à un effort supérieur, en conversation neuve. | `max`, jamais comme réglage automatique d'une étape importante. |
+| **Ultracode** | Dans Claude Code, un effort au-dessus de `max` qui lance plusieurs agents en parallèle ; ailleurs, le mode multi-agents de l'outil, s'il en a un. Réservé au balayage large, jamais sur un brief prescriptif. | Ratisser un ancien projet ou des données brutes. |
+| **Passage de main** (on lit aussi « passage de relais ») | Le moment où A lance une autre session : elle donne le modèle et l'effort, une alternative, la raison, et toute dérogation. | [% if 'relectures' in modules %]Le départ de B, la consigne de Code, le paquet de C.[% else %]La consigne de Code.[% endif %] |
+| **Quota** | Ce qu'un abonnement permet d'utiliser sur une période. | Une longue session de code en consomme beaucoup. |
+| **Fenêtre** | La période de quota d'un abonnement. Une fois le quota dépensé, on attend la réinitialisation. | Ne pas lancer une longue session sur une fenêtre presque vide. |
+
+## 8. git et GitHub
+
+Pour qui débute sur git : ces mots suffisent à lire le kit.
+
+| Terme | Définition | Exemple |
+|---|---|---|
+| **Dépôt** | Le projet et tout son historique. | `https://github.com/[[ github ]]`. |
+| **Commit** | Une étape enregistrée du travail, avec un message. | `feat: lecture du fichier`. |
+| **Branche** | Une ligne de travail à part, pour ne pas toucher à `main`. | Une branche par tâche. |
+| **`main`** | La branche de référence : ce qu'elle contient marche. | Le miroir suit `main`. |
+| **Clone** | Une copie d'un dépôt sur ta machine. | La copie de travail, le miroir. |
+| **PR** (pull request) | Une demande de fusion, où l'on relit les changements avant de les accepter. | La PR #12. |
+| **Fusion** | Faire entrer une branche dans `main`. | *Squash and merge*. |
+| **Diff** | La liste des lignes changées entre deux états. | `pr-«n».diff`. |
+| **Tête** | Le dernier commit d'une branche ou d'une PR. | Une relecture porte sur la tête de la PR. |
+| **Arbre** | Le contenu exact des fichiers d'un commit, sans son historique. Deux commits peuvent avoir le même arbre. | `git rev-parse "HEAD^{tree}"`. |
+| **CI** | Les vérifications que GitHub lance tout seul à chaque envoi. | « CI verte » : tout passe. |
+| **Hook** | Un script lancé automatiquement avant une action, pour la contrôler. | [% if 'donnees-privees' in modules %]Le hook de `.claude/settings.json`, pour Claude Code ; un autre agent n'a que la consigne.[% else %]Claude Code en propose ; sinon, la consigne seule.[% endif %] |
+| **Tag** | Une étiquette posée sur un commit, pour marquer une version. | `v1.0.0`. |
+| **Rebase** | Reposer une branche sur un autre point de départ, ce qui réécrit ses commits. | Le kit l'évite sur une branche déjà relue. |
+| ***Squash and merge*** | Le bouton de GitHub qui fusionne une PR en un seul commit sur `main`. | En bas de la PR, dans le menu du bouton de fusion. |
+| ***Comment*** | Une revue sans approbation. GitHub interdit d'approuver sa propre PR. | Dans la PR : *Files changed*, *Review changes*, *Comment*. |
+| ***Viewed*** | La case qu'on coche sur chaque fichier d'une PR : un bloc-notes, pas la relecture. | Dans la PR : *Files changed*, en haut de chaque fichier. |
+| **« Changes from all commits »** | Le menu qui limite le diff à une plage de commits. | Dans la PR : *Files changed*, en haut à gauche. |
+| **`gh`** | GitHub en ligne de commande. | `gh auth status` dit si tu es connecté. |

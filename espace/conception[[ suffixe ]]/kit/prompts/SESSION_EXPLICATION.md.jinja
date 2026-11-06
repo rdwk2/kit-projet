@@ -1,0 +1,219 @@
+# Prompt — la session « explications » : se faire réexpliquer le projet
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> À coller dans une conversation neuve, en dehors des jalons. Quand un agent écrit tout le code, tu
+> risques de fusionner ce que tu ne saurais pas expliquer à quelqu'un : cette session y remédie. Elle
+> n'a rien écrit ; elle lit le dépôt et reconstruit l'explication avec toi, étape par étape — vue
+> d'ensemble, code bloc par bloc, méthode, puis fiches et pitch.
+
+## 1. Avant d'ouvrir — à faire toi-même
+
+| Quand | Quoi | Commandes |
+|---|---|---|
+| Avant chaque ouverture | Mettre le miroir à jour et noter le commit qu'affiche le script : la session écrit pour ce commit. Ne pas tirer le miroir pendant la session sans le lui dire | `cd [[ racine ]]` puis `uv run outils/miroir.py[% if piste != 'principale' %] --piste [[ piste ]][% endif %]` |
+| Une fois, si le dossier est en Markdown | Créer le dossier qui recevra les fichiers, frère des autres | `cd [[ racine ]]` puis `mkdir explications[[ suffixe ]]` |
+| À l'ouverture | Connecter les dossiers du § 2 (ceux auxquels la conversation a accès), et rien d'autre. Si ton outil ne connecte pas de dossier, ouvre l'agent dans une copie du miroir (§ 2) | — |
+| À l'ouverture | Choisir le modèle et l'effort (§ 4), et ne plus y toucher | — |
+| À l'ouverture | Coller le message du § 3, après avoir rempli les «…» | — |
+| Après chaque fichier ou onglet | Lire, commenter dans le fichier ou le document, puis le dire dans la conversation | — |
+
+## 2. Dossiers à brancher, et en quelle lecture
+
+| Dossier | Accès | Pourquoi |
+|---|---|---|
+| le miroir `[[ racine ]]/v_for_cowork[[ suffixe ]]/[[ slug ]]/` | lecture | le dépôt fusionné, historique compris : c'est ce que la session explique |
+| `[[ racine ]]/conception[[ suffixe ]]/` | lecture, s'il le faut | `CONTEXTE.md` et `kit/`, pour « Qui fait quoi » (étape 1) et la méthode (étape 3) ; ne pas le connecter pour un dossier limité au code |
+| `[[ racine ]]/explications[[ suffixe ]]/` | écriture | le dossier produit, s'il est en Markdown : le seul endroit où la session écrit (sinon, le document lui-même) |
+| l'espace de travail de la session | le sien | une copie du miroir, où elle installe, lance les tests, les commandes sur les fixtures et `git log` : on n'exécute jamais rien dans un dossier connecté. Si ton outil n'a pas d'espace séparé : copie le miroir ailleurs et ouvre l'agent dans cette copie |
+| le reste de `v_for_cowork[[ suffixe ]]/`, [% if 'archives' in modules %]les archives, [% endif %][% if 'relectures' in modules %]les postes de relecture, [% endif %]la copie de travail de l'agent de code, les données réelles | **aucun** | une frontière vaut mieux qu'une consigne : ce qui n'est pas connecté ne peut ni fuir ni induire en erreur |
+
+## 3. Le message à coller
+
+> **Projet [[ projet ]] — session « explications ».** Je veux que tu me réexpliques mon projet :
+> les parties floues, ce que j'ai oublié, ce que je dois savoir défendre. Je suis «ton prénom» : «ce que je
+> sais, et ce que je ne sais pas — par exemple : à l'aise en Python et en maths, novice sur git et sur
+> les agents».
+> Le dossier servira aussi pour «à quoi il servira hors du projet : une soutenance, un oral, une
+> passation ; ou rien». Explique donc les idiomes d'ingénierie (contrats,
+> déterminisme, frontières entre modules, tests de propriété, versions de format…), pas le
+> langage, et appuie-toi sur ce que je sais déjà.
+>
+> **Ce que tu as.** En lecture : le miroir du dépôt (`[[ slug ]]/`), `main` au commit `«commit»`
+> du «date» ; «s'il est connecté : `conception[[ suffixe ]]/`, dont `CONTEXTE.md` et `kit/`».
+> Rien d'autre. Si un fichier cite un chemin hors de ces dossiers, tu ne l'ouvres pas, même s'il
+> est accessible : tu me le nommes et tu dis pourquoi tu en aurais besoin.
+>
+> **Ton espace de travail.** Tu ne lances jamais rien dans un dossier connecté, `git` compris :
+> copie le miroir dans ton espace, historique compris (si tu as été ouvert dans une copie du
+> miroir, cette copie est ton espace), installe-le comme le disent son
+> `README.md` et son `CLAUDE.md`, et lance la suite de tests une fois pour savoir où tu en es.
+> Tu exécutes le code **sur les données inventées du dépôt** (les fixtures des tests) pour
+> vérifier ce que tu affirmes et pour montrer des sorties exactes ; jamais sur des données
+> réelles, ni rien qui lise un dossier de données hors du dépôt.
+>
+> **Ce que tu produis** : «un fichier Markdown par ligne du tableau, dans `explications[[ suffixe ]]/` |
+> un document à onglets, commentable, si ton outil en a», en quatre étapes.
+>
+> | Onglet ou fichier | Étape | Contenu |
+> |---|---|---|
+> | `Comprendre_[[ slug ]]` | 1 | le projet vu d'en haut, et « Comment lire ce dossier » |
+> | `2 · Le code` | 2 | le plan de l'étape 2 et la façon de lire un fichier du projet |
+> | `2a · «bloc»`, `2b · «bloc»`… | 2 | un onglet par bloc, dans l'ordre où les données traversent le code |
+> | `3 · La méthode` (`3a`, `3b`) | 3 | les pratiques d'ingénierie du dépôt ; puis le montage de pilotage des IA, avec un avis sur ce qui vaut son coût |
+> | `4 · Fiches`, `4 · Pitch` | 4 | une fiche par pratique ou concept, pour ma base de connaissances ; un pitch |
+>
+> **Étape 1 — sections obligatoires, dans cet ordre.**
+> 1. *En-tête* : la date ; une phrase qui dit ce que fait le projet ; « à jour pour le dépôt au
+>    «date» («commit», PR #«n») ».
+> 2. *Comment lire ce dossier* : un tableau Étape | Contenu | État, tenu à jour à chaque tour ;
+>    les sources (commit, fichiers de contexte) ; la règle « chaque chemin entre accents graves se
+>    vérifie dans le dépôt ».
+> 3. *Le problème et l'idée* : en une phrase ; pourquoi pas une solution existante ; l'approche ;
+>    l'hypothèse la plus originale ; ce que la sortie doit permettre ; d'où vient le projet.
+> 4. *Le cœur en une formule* (ou en un schéma, si le projet n'a pas de formule) : les opérations
+>    dans l'ordre, un exemple chiffré **calculé avec le code du dépôt** sur une fixture, un
+>    « Pourquoi » par choix, avec sa fiche de décision ; puis ce qu'il ne fait pas, volontairement.
+> 5. *Ce qui marche aujourd'hui* : Commande | Ce qu'elle fait | Lit | Écrit | Jalon ; les
+>    garde-fous (données protégées, résultats qui disent ce qui les a produits).
+> 6. *Architecture* : un schéma ; la répartition des lignes par domaine, en disant comment tu as
+>    compté ; « trois chiffres à retenir ».
+> 7. *Une section par grand chemin du code*, avec « les idées à savoir expliquer ».
+> 8. *Chronologie* : un graphique des lignes de `src/` et de `tests/` au commit de chaque fusion ;
+>    un tableau par phase : Fusion | PR | Jalon | Ce que ça apporte | Lignes ajoutées | Tests à la
+>    fin ; comment tu as compté.
+> 9. *Qui fait quoi* : Acteur | Rôle | Modèle et effort ; le cycle d'un jalon ; ce qui a changé ;
+>    pourquoi des conversations séparées.
+> 10. *Vocabulaire* : Terme | Sens | Dans le code, par domaine, dans l'ordre d'apparition, plus un
+>     tableau « la méthode ».
+> 11. *Regard critique, à «la PR #n»* : ce qui est solide, que je peux défendre sans hésiter ; ce
+>     qui interroge, chiffré (volume, coût, explicabilité, règles écrites et non appliquées, dérives
+>     du processus) ; la question la plus probable qu'on me posera, et la question piège. Ce ne
+>     sont pas des verdicts : l'étape 3 les reprend.
+>
+> **Étape 2 — l'onglet de plan** dit la taille du code, propose l'ordre de lecture (les chemins
+> de données, puis ce qui les relie ; ce qu'on peut sauter, et à quelle condition), donne un
+> tableau Sous-étape | Contenu | Lignes de `src/` | État, et une section « Comment lire un
+> fichier de ce projet » (docstring de module, rubriques des docstrings de types, unités dans les
+> noms, renvois aux fiches de décision, nommage des tests, modules communs, tests nés d'une
+> relecture).
+>
+> **Chaque onglet de bloc (niveau 1) — sections obligatoires, dans cet ordre.** Après l'avoir lu,
+> je dois pouvoir expliquer le bloc à quelqu'un.
+> 1. *En-tête* : la date, le commit de base, ce qui a changé depuis le dernier passage.
+> 2. *Les fichiers* : Fichier | Lignes | Rôle | Entrée → sortie ; un diagramme de flux de données,
+>    et un graphe d'appels si les appels ne se devinent pas ; sous chaque schéma, sa notation en
+>    deux phrases.
+> 3. *Le chemin des données* : les étapes numérotées, puis la sortie exacte d'une commande sur une
+>    fixture.
+> 4. *Chaque choix, et pourquoi* : un paragraphe par décision (la règle ; les options écartées et la
+>    raison ; la fiche de décision et sa section).
+> 5. Les sections propres au bloc.
+> 6. *Les idiomes de développement à retenir* : une puce par idiome, son nom en gras, où il se voit
+>    (fichier, fonction), pourquoi.
+> 7. *Comment c'est testé* : lignes, fichiers, fonctions de test, dont tests de propriété ; les
+>    familles de tests, numérotées, avec un exemple court chacune.
+> 8. *Ce qui a changé depuis «la PR précédente»* (à la mise à jour seulement).
+> 9. *À retenir, et ce que je questionne* : « à retenir » en un paragraphe, ou en une liste de
+>    pratiques « à garder sur n'importe quel projet » (elles nourriront les fiches de l'étape 4) ;
+>    « ce que je questionne » en trois à cinq puces, chacune avec le fait, pourquoi il compte, et ce
+>    qui le trancherait ; « pour l'expliquer en trois phrases ».
+>
+> **Niveau 2, à la demande seulement** : je désigne un fichier ou un mécanisme ; tu le lis ligne à
+> ligne : extraits commentés, cas limites, tests, et une exécution sur les fixtures.
+>
+> **Étape 3** : `3a`, les pratiques d'ingénierie du dépôt, rassemblées depuis l'étape 2 ; `3b`, le
+> montage de pilotage des IA : qui fait quoi, le cycle, ce qu'il a coûté (conversations,
+> relectures, mutations, durées, quotas, tels que les fichiers de contexte les donnent) et ce qu'il
+> a attrapé ; un avis sur ce qui vaut son coût, et ce qui se garde pour un petit projet.
+>
+> **Étape 4** : une fiche par pratique ou concept (titre ; définition en deux phrases ; l'exemple du
+> projet, avec son chemin ; le piège ; quand ne pas l'appliquer) ; un pitch en 30 secondes, en
+> 2 minutes, et les questions probables avec une réponse, y compris la question piège sur le coût.
+>
+> **Règles de preuve.** Chaque affirmation se vérifie : un chemin entre accents graves, une fiche de
+> décision citée par son numéro et sa section. Les nombres sont mesurés par toi, avec une commande,
+> et tu dis comment tu as compté. Tu distingues toujours ce qui est lu dans le code, mesuré, dit par
+> un fichier de contexte sans être revérifié, ou « d'après mon estimation ». Quand un fichier de
+> contexte et le code divergent, le code au commit de référence l'emporte : dis-le. Une erreur se
+> corrige à la vue : « (corrigé le «date» : j'avais écrit …) ».
+>
+> **Ton et forme.** Tu me tutoies ; tu dis « je » pour tes avis. Le texte est en français, les noms
+> du code restent tels qu'ils sont. Chaque terme est défini à sa première apparition ; chaque
+> notion abstraite reçoit un exemple chiffré ; une grandeur abstraite se traduit en ordre de grandeur
+> parlant. Un tableau
+> dès que trois éléments partagent les mêmes attributs ; des extraits de code courts (quinze lignes
+> au plus), seulement quand ils portent l'idée. Pas de remplissage. « Ce que je questionne » est
+> obligatoire et honnête ; quand une réserve se révèle infondée, tu le dis.
+>
+> **Schémas.** Des notations courantes, nommées et expliquées sous chaque schéma, pour que je
+> puisse les réutiliser : diagramme de flux de données de Gane et Sarson (traitements numérotés,
+> stockages D1, D2, entités externes, flux nommés par leur type ; nivellement pour zoomer sur un
+> traitement) ; graphe d'appels (« appelle ») ; niveaux du modèle C4 (contexte, conteneurs,
+> composants, code) ; diagramme de séquence UML pour un échange entre acteurs ; diagramme d'états
+> pour un cycle de vie. Une figure faite sur des données inventées le dit dans son titre.
+>
+> **Comment on travaille.**
+> 1. *Premier tour* : tu lis tout, puis tu proposes le plan du dossier (le tableau des étapes, la
+>    liste des blocs de l'étape 2 avec leur taille) et trois questions au plus. Tu n'écris rien
+>    d'autre, et tu attends mon accord.
+> 2. Ensuite, **un onglet par tour**. Je lis, je commente dans le document, je te préviens dans la
+>    conversation, et on passe à la suite quand je suis prêt.
+> 3. Quand tu modifies un onglet après mes commentaires : une ligne en italique en tête
+>    (« *Modifié le «date», après tes commentaires : …* »), et les paragraphes ou cellules changés
+>    marqués (surlignage ou trait vertical) jusqu'à la passe suivante, où tu retires les marques.
+> 4. Tu tiens à jour la colonne « État » de « Comment lire ce dossier ».
+> 5. Tu termines chaque tour par **« Ce que tu fais maintenant »** : qui agit (moi ou toi), quoi
+>    exactement, quand.
+> 6. Si ta conversation est résumée automatiquement, tu le dis aussitôt, tu relis le dossier et les sources avant
+>    d'écrire, et tu ne réécris rien d'après le résumé.
+>
+> **Mise à jour d'un dossier existant** : chaque onglet dit « mis à jour pour le dépôt au «date»
+> («commit», PR #«n») » ; les sections qui ont changé sont réécrites, les autres gardées ; chaque
+> onglet de bloc reçoit « Ce qui a changé depuis «la PR précédente» » ; le regard critique devient
+> « Mes réserves de «la PR précédente», et ce qu'il en reste », puis « Ce qui interroge de plus ».
+>
+> **Ce que tu ne fais pas.** Écrire ailleurs que dans le dossier produit. Ouvrir des données
+> réelles. Recopier les fichiers de contexte (tu résumes et tu renvoies). Transformer « ce que je
+> questionne » en tâches : une idée d'amélioration tient en une ligne, sous « pour le backlog ».
+> Mettre dans le dossier un chiffre réel, un lieu ou une date personnelle que le dépôt ne publie
+> pas déjà.
+>
+> **Modèle et effort de cette conversation** : «modèle», «effort», choisis à l'ouverture ; on n'y
+> touche plus.
+
+## 4. Modèle et effort
+
+Voir `kit/MODELES_ET_EFFORTS.md`, § 0, ligne « Session « explications » », qui fait foi. Le choix se
+fait à l'ouverture et ne change plus.
+
+Le travail est long : lire tout le dépôt, mesurer, exécuter sur les fixtures, rédiger sur plusieurs
+jours. Un autre modèle donne un autre regard, utile sur un projet qui porte un modèle mathématique
+ou un protocole de mesure. Un modèle plus léger suffit pour un dossier limité à l'étape 1, sur un
+petit dépôt : c'est une dérogation, à dire. Pas de mode multi-agents : il ne sert qu'à un balayage
+large, et cette session explique, elle ne balaie pas. L'effort le plus haut seulement en escalade
+motivée, en conversation neuve.
+
+**Relance** : une conversation par étape suffit d'ordinaire. Si la conversation s'alourdit ou a été
+résumée automatiquement, en ouvrir une neuve avec le même message, complété de : « Le dossier existe : lis-le en
+entier, puis reprends à l'étape «k», onglet «x». » Le dossier porte l'état ; rien ne se perd.
+
+## 5. Niveaux
+
+| Niveau | Étapes | Pour quoi |
+|---|---|---|
+| **Léger** | l'étape 1, avec son regard critique ; le niveau 2 à la demande | petit projet ; reprise après une pause ; un camarade qui rejoint le projet |
+| **Standard** | les étapes 1 et 2 (un onglet par bloc important) | projet perso suivi ; avant une soutenance ou une revue de code |
+| **Complet** | les étapes 1 à 4, mises à jour au fil des jalons | gros projet ; objectif hors du projet (soutenance, portfolio) |
+
+## 6. Variantes
+
+- **Projet de groupe, camarades qui débutent sur GitHub** : le lecteur devient « à l'aise en Python,
+  novice sur git et sur les agents » ; l'étape 2 explique git plutôt que le langage ; une section
+  « Comment contribuer » (branche, PR, revue, CI) s'ajoute à l'étape 1 ; l'étape 4 prépare la
+  soutenance.
+- **Projet pro** : l'objectif devient « une passation à un collègue » ; la règle sur les données
+  personnelles s'étend aux données de l'entreprise ; le regard critique reste, mais se partage avec
+  prudence.

@@ -1,0 +1,25 @@
+# Le banc d'essai du kit, sur les trois systèmes qu'il promet de servir.
+name: banc
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  banc:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.1.0
+      - name: Installer just
+        shell: bash
+        run: |
+          uv tool install rust-just
+          echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
+      - name: Lancer le banc
+        run: uv run outils_kit/tester_kit.py --complet

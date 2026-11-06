@@ -1,0 +1,46 @@
+[% set opt_piste = '' if piste == 'principale' else ' --piste ' ~ piste -%]
+# Commentaire de revue — PR #«n» («jalon»)
+
+> **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom `REVUE_PR-«n».md`,
+> remplir les `«…»`, retirer ce bloc (et le titre : le fichier se publie tel quel).
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Écrit par** A, sur l'état final de la branche (tête `«sha»`, CI verte), une fois les correctifs
+> poussés. **Publié par** [[ humain ]], juste avant la fusion :
+> `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` (option *Comment*[% if 'groupe' in modules %] ; un camarade relit et
+> approuve : `docs/RELIRE_UNE_PR.md`[% else %] : GitHub interdit
+> d'approuver sa propre PR[% endif %]) ; puis, sur GitHub, *Squash and merge* ; puis
+> `uv run outils/miroir.py[[ opt_piste ]]`.
+> **Règles** : le commentaire dit ce qui a été vérifié — vingt secondes, et c'est la trace visible
+> que la relecture a eu lieu (`kit/METHODE.md`, § 6) ; il porte donc sur l'état final. Aucune
+> donnée personnelle (ni chiffre tiré des données, ni chemin personnel) : il est public dans la
+> PR, et ses révisions anciennes restent visibles (`kit/MACHINE.md`, GH-3).
+> **Champs** : `«n»`, `«jalon»`, `«titre»`, `«sha»`, `«r»`, les vérifications et leurs résultats.
+
+Revue de conception — «jalon», «titre» («ce que la PR livre, en une parenthèse»).
+
+- **Brief** : révision «r», après «le cadrage[% if 'expert' in modules %], la passe experte[% endif %][% if 'relectures' in modules %], les passes de B et leurs constats[% endif %]» ;
+  feu vert du plan avec «k» précisions. «Prototype indépendant de la conception, non joint : les deux
+  batteries de tests se croisent sans écart.»
+- **Tête** `«sha»`, «k» commits ; «ce qui ne change pas : [% if langage == 'python' %]`uv.lock`[% else %]le verrou des dépendances[% endif %], configuration, CI» ; «fichiers communs
+  égaux au diff accordé» ; contre-épreuves de l'auteur : «jouées, rouges, équivalentes».
+[% if 'mutation' in modules -%]
+- **Balayage de mutations** : «fichiers, mutants ; survivants rejoués dans un processus neuf, puis
+  triés : lacunes réelles, chacune tuée par un contre-exemple, équivalents, messages».
+[% endif -%]
+[% if 'relectures' in modules -%]
+- **Relecture de PR** : «C complète | partielle | bornée : moteur, effort, système» ; «ce qu'elle a
+  trouvé : défauts, phrases fausses, garanties sans test» ; «k» constats retenus, «k» écartés (raisons
+  dans l'arbitrage).
+[% endif -%]
+- **Contrôle réel** par [[ humain ]] : «ce qui a été lancé, sur quelle tête, comparé à quoi» — ou « sans objet ».
+- **Correctifs** (`«sha»`, `«sha»`), écrits par l'agent de code d'après l'arbitrage : «ce qui change» ;
+  «k» tests neufs[% if 'relectures' in modules %] ; mutations rejouées par A : «lesquelles, chacune rouge par une valeur»[% endif %]. Ou
+  « aucun ».
+- **Tests** : suite verte «sous quels systèmes, avec quels comptes» ; CI verte.
+- **Reste ouvert** : «lignes ajoutées au `BACKLOG.md`» — ou « rien ».
+[% if 'relectures' in modules -%]
+- **Pas de C bornée** (si c'est le cas) : «la règle appliquée, ce qu'une C bornée aurait vérifié, et
+  comment c'est déjà vérifié».
+[% endif %]
+[% if 'groupe' in modules %]Revue publiée : l'approbation vient du camarade qui relit.[% else %]Fusion approuvée.[% endif %]

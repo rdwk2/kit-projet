@@ -1,0 +1,191 @@
+# [[ projet ]]
+
+[[ description ]]
+
+Ce fichier est lu par tout agent de code qui travaille dans ce dépôt (Claude Code, Codex
+via `AGENTS.md`, ou un autre) et par les humains qui y contribuent. [% if public %]Le dépôt est public.[% else %]Le dépôt est privé ; il est tenu comme s'il était public : ni secret, ni donnée, ni chemin personnel.[% endif %]
+
+---
+
+## Règles dures — non négociables
+
+Les numéros sont stables : on y renvoie par « règle 3 ».
+
+[% if 'donnees-privees' in modules -%]
+1. **Aucune donnée privée dans le dépôt** — personnelle, ou confiée par un tiers (entreprise,
+   laboratoire, client).
+   Pas de fichier tiré des données réelles, pas d'identifiants, pas de tokens. Rien, tiré
+   des données réelles, qui date ou situe une personne, ou qui révèle les données d'un tiers :
+   aucune date, aucun lieu, aucune valeur individuelle, nulle part dans le dépôt (code, documentation, `JOURNAL`,
+   `BACKLOG`), ni dans les messages de commit et les descriptions de PR. Tout vit hors du
+   dépôt, dans le dossier pointé par la variable d'environnement `[[ var_donnees ]]`
+   (`docs/decisions/0001-separation-donnees-code.md`).
+   Les tests n'utilisent **que** les fixtures synthétiques de `tests/fixtures/`, minuscules,
+   inventées, et commitées. L'agent de code ne lit ni n'écrit rien sous `[[ var_donnees ]]` :
+   sous Claude Code, le hook de `.claude/settings.json` le refuse ; tout autre agent doit s'y
+   tenir sans filet. Les commandes sur les données réelles sont lancées par l'humain.
+[%- else -%]
+1. **Aucun secret ni donnée privée dans le dépôt.**
+   Pas d'identifiants, de tokens, de fichier `.env`, ni de données réelles qui identifient
+   quelqu'un — ni dans le code, ni dans la documentation, ni dans les messages de commit et les
+   descriptions de PR. Les tests utilisent des données inventées.
+[%- endif %]
+
+2. **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.**
+   Si tu n'arrives pas à le rendre vert, tu t'arrêtes et tu le dis. Tu ne contournes pas
+   (pas d'avertissement réduit au silence[% if langage == 'python' %], pas de `# type: ignore` posé pour faire taire[% endif %], pas de
+   test désactivé) sans le signaler explicitement et en donner la raison.
+
+3. **Tu ne fais que ce qui est demandé.**
+   Toute autre idée, amélioration, refactoring ou bug repéré en passant va dans
+   `BACKLOG.md` — une ligne, et rien d'autre. Tu ne l'implémentes pas.
+
+4. **Toute logique a un test.** Un calcul sans test n'est pas fini. Pour les invariants
+   (monotonie, bornes, conservation, comportement aux limites), privilégier les **tests de
+   propriété**[% if langage == 'python' %] (`hypothesis`)[% endif %] aux seuls tests par l'exemple ; un jeu d'essai a au moins
+   deux éléments, à valeurs distinctes.
+
+5. **Pas de nouvelle dépendance sans accord.**
+   Tu la proposes, avec la raison et ce que ça coûterait de s'en passer, et tu attends. Une
+   dépendance ajoutée en douce est un bug.
+
+[% if 'donnees-privees' in modules -%]
+6. **Le brut est immuable.**
+   On ne modifie jamais un fichier brut (`raw/` sous `[[ var_donnees ]]`). Tout ce qui est en
+   aval doit être entièrement régénérable à partir du brut. Si une lecture est fausse, on
+   relit le brut — on ne re-télécharge pas.
+[%- else -%]
+6. **Ce qui est généré se régénère, ne se corrige pas à la main.**
+   Un fichier produit par un script (documentation générée, figure, données dérivées) se
+   corrige dans sa source, puis se régénère.
+[%- endif %]
+
+7. **Pas de logique métier dans l'interface[% if 'analyse-donnees' in modules %], ni dans un notebook[% endif %].**
+   L'interface appelle la bibliothèque ; si elle calcule quelque chose, c'est que ça manque
+   dans `src/`.[% if 'analyse-donnees' in modules %] Un notebook peut calculer pour explorer, mais ce calcul est jetable : **tout
+   chiffre rapporté** (compte rendu, décision, tableau de bord) vient d'une fonction testée de
+   `src/`.[% endif %]
+
+8. **Jamais de commit direct sur `main`.**
+   Une tâche = une branche (`«jalon»/«sujet»`, ex. `[[ prefixe_jalon | lower ]]2/lecture-fichier`[% if 'groupe' in modules %] ; ou `«type»/«sujet»`,
+   ex. `feat/calcul-du-stock`, voir `CONTRIBUTING.md`[% endif %]) = une pull request (un jalon :
+   une étape du projet, voir `docs/ROADMAP.md`). La PR est
+   le moment de revue : c'est là que le diff se relit[% if langage == 'python' %], avec la CI verte à côté[% endif %]. Messages de
+   commit préfixés : `feat:` `fix:` `docs:` `test:` `refactor:` `build:` `ci:` `chore:`.
+   [% if 'groupe' in modules %]Titre de PR : comme un message de commit (`feat: …`).[% else %]Titre de PR : `[[ prefixe_jalon ]]«n»` (avec sous-jalon éventuel), puis le nom du jalon
+   (ex. `[[ prefixe_jalon ]]1 — Lecture des fichiers`).[% endif %] Avec « Squash and merge », ce titre
+   devient le message du commit sur `main` : la liste des PR est la table des matières du
+   projet.
+
+---
+
+## Ce qui appartient à l'humain
+
+Ces décisions ne sont **jamais** prises sans l'accord explicite [% if 'groupe' in modules %]de l'équipe (les
+responsables du dépôt : [[ responsables ]])[% else %][[ de_humain ]][% endif %]. Si l'une se présente en cours de tâche, tu
+t'arrêtes et tu demandes, en posant les options, leur coût et ta recommandation :
+
+- l'**architecture** : quelles briques existent, quels contrats entre elles ;
+- le **modèle** (mathématique ou métier) : les équations, les règles, les hypothèses et
+  leur justification ;
+- la **métrique d'erreur** et le **protocole de validation** (dont le découpage
+  entraînement / test)[% if 'donnees-privees' in modules %] ;
+- tout ce qui touche aux **données privées**[% endif %].
+
+⚠️ **Fuite d'évaluation** : calibrer sur des données puis rapporter l'erreur sur ces mêmes
+données ne veut rien dire. Toute évaluation explicite sur quoi elle a été calibrée et sur quoi
+elle est évaluée. Si une tâche te conduit à mélanger les deux, tu t'arrêtes et tu le signales.
+
+---
+
+## Méthode de travail
+
+- **Un plan avant toute tâche non triviale** (le mode plan de ton agent, s'il en a un). Tu
+  proposes le plan, l'humain y répond, et seulement ensuite tu écris du code.
+- **Une tâche = un périmètre borné + un critère d'acceptation vérifiable.** Si le critère
+  n'est pas clair, tu le demandes avant de commencer.
+- **Petits commits, un concept chacun.** Si un diff dépasse ~300 lignes, la tâche était
+  probablement mal découpée : signale-le dans la PR.
+- **Ne termine pas une session sur du code cassé** : répare, ou annule et note où tu en es.
+- **Une entrée dans `docs/JOURNAL.md`** à la fin de chaque session de travail : date, ce
+  qui a été fait, la conclusion, où c'est rangé.
+- **Le README décrit `main`** : une PR qui rend l'une de ses phrases fausse la corrige.
+- **Une décision structurante = un fichier dans `docs/decisions/`** (gabarit
+  `0000-template.md`), avec les options écartées et pourquoi.
+- **Avant de toucher à ce qui est fragile, lis `docs/PIEGES.md`** : chaque piège y a déjà été
+  payé une fois.
+
+---
+
+## Commandes
+
+[% if langage == 'python' -%]
+```bash
+just check      # lint + types + tests  ← LA commande. Vert = le projet va bien.
+just test       # pytest seul
+just lint       # ruff (vérifie, ne modifie rien)
+just fmt        # formatage et corrections automatiques
+```
+[%- else -%]
+```bash
+«la commande de vérification»   # ← LA commande. Vert = le projet va bien.
+```
+[%- endif %]
+
+[% if 'donnees-privees' in modules -%]
+Les commandes qui lisent ou écrivent les données réelles (sous `[[ var_donnees ]]`) sont
+lancées par l'humain, jamais par l'agent de code. Sous Claude Code, le hook les refuse
+(`scripts/hooks/proteger_donnees.py`, liste `COMMANDES_DONNEES`) ; tout autre agent s'y tient
+sans filet.
+[%- endif %]
+
+---
+
+## Structure
+
+```
+[% if langage == 'python' -%]
+src/[[ paquet ]]/   le code de la bibliothèque
+tests/              les tests (petits jeux de données inventés, dans tests/fixtures/ quand il y en aura)
+[% endif -%]
+docs/
+  ROADMAP.md        le plan, par jalons
+  JOURNAL.md        une entrée par session de travail
+  PIEGES.md         les pièges déjà payés
+  decisions/        une fiche par décision structurante
+[% if 'groupe' in modules %]  RELIRE_UNE_PR.md  comment relire la PR d'un camarade
+  LIVRAISONS.md     le calendrier des livraisons, et comment les poser
+[% endif %][% if 'analyse-donnees' in modules %]  analyse/          la charte d'analyse et le registre des questions
+[% endif -%]
+[% if 'donnees-privees' in modules -%]
+scripts/hooks/      le hook de protection des données (Claude Code)
+[% endif -%]
+[% if 'groupe' in modules -%]
+CONTRIBUTING.md     le guide de contribution : branche, PR, relecture
+[% endif -%]
+BACKLOG.md          une ligne par idée, jamais implémentée depuis ce fichier
+```
+
+«Tenir cette arborescence à jour : un module par ligne, avec ce qu'il contient et le jalon
+qui l'a créé.»
+
+---
+
+## Conventions
+
+[% if langage == 'python' -%]
+- Python [[ python_version ]]+, annotations de type partout, `mypy` en mode strict ; `ruff`
+  pour le lint et le formatage. Deux souplesses pour le code scientifique. Importer une
+  bibliothèque sans types (scipy, pandas…) n'arrête pas `mypy`, sans `# type: ignore` ; une
+  fonction annotée convertit ce qu'elle en renvoie (`float(…)`). La notation mathématique est
+  permise (`A`, `X`, `l`, `σ`, `α`).
+[% endif -%]
+- Noms dans le code : une seule langue pour tout le projet (par défaut l'anglais) ; commentaires
+  et documentation en français.
+- **Unités explicites dans les noms** : `length_m`, `duration_s`, `mass_kg`. Une variable
+  d'unité ambiguë est un bug en attente. Les conversions se font **aux frontières** (lecture
+  de fichier, affichage), jamais au milieu d'un calcul.
+- **Un objet invalide ne peut pas exister** : les contrats (schémas de données) se valident
+  à la construction, et le message d'erreur dit quel champ, quelle valeur, quelle règle.
+- Les paramètres d'un modèle sont **déclaratifs** (un schéma, pas des constantes
+  éparpillées).

@@ -1,0 +1,14 @@
+# Instructions pour les agents de code
+
+Les règles de ce dépôt sont dans **`CLAUDE.md`** : lis-le en entier avant toute tâche. Elles
+s'appliquent à tout agent de code (Claude Code, Codex ou un autre), pas seulement à Claude.
+
+En particulier : tu ne fais que ce qui est demandé (le reste va dans `BACKLOG.md`, en une
+ligne) ; [% if langage == 'python' %]`just check` est vert avant tout commit ; [% endif %]jamais de commit direct sur `main` ;
+pas de nouvelle dépendance sans accord ; les décisions listées dans « Ce qui appartient à
+l'humain » ne se prennent jamais sans [% if 'groupe' in modules %]l'équipe[% else %][[ humain ]][% endif %].
+[% if 'donnees-privees' in modules %]
+Le dossier pointé par `[[ var_donnees ]]` t'est interdit, en lecture comme en écriture (règle 1
+de `CLAUDE.md`). Le hook de `.claude/settings.json` ne contrôle que Claude Code : tout autre agent
+tient cette consigne seul, sans filet.
+[% endif -%]

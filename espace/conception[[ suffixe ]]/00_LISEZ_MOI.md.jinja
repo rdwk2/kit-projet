@@ -1,0 +1,84 @@
+# Conception — index du dossier[% if piste != 'principale' %] (piste [[ piste ]])[% endif %]
+
+> **Fichier vivant** de [[ projet ]] : créé par kit-projet [[ version_kit ]], tenu ensuite
+> par les conversations A (règle de clôture, `kit/METHODE.md`).
+
+*Réécrit le «date» par l'A«n», à sa clôture, d'après le dossier tel qu'il sera une fois l'archivage
+de cette clôture passé, s'il y en a un.*
+
+Dossier de la conversation A (conception) de [[ projet ]], piste « [[ piste ]] » : A seule le
+voit.
+
+**Où en est le projet.** «Trois à cinq lignes, réécrites à chaque clôture : les jalons fusionnés
+(`main` = «commit») ; le jalon en cours et son étape (cadrage, brief révision «r», plan, PR #«n» en
+relecture…) ; ce qui attend une décision [[ de_humain ]] ; les autres pistes et leurs PR ouvertes.» Détail :
+`CONTEXTE.md`, §§ 4, 5 et 7.
+
+**Entrée de reprise** : `kit/METHODE.md`, § 10 ; les autres fichiers du kit au moment dit
+ci-dessous. Conversation suivante : l'A«n+1», ouverte avec le message de `OUVERTURES_A«n+1».md`.
+
+## Les fichiers du kit (`kit/`)
+
+Ils se rafraîchissent à chaque mise à jour du kit (`copier recopy`) et ne se modifient jamais ici
+(`kit/METHODE.md`, § 12). Ce tableau suit le § 11 de `kit/METHODE.md`, qui fait foi en cas d'écart.
+
+| Fichier | Contenu | Quand le lire |
+|---|---|---|
+| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | **à l'ouverture**, en entier, avant `CONTEXTE.md` |
+| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | **à l'ouverture** (§ 0) ; le reste avant un passage de main |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ **à l'ouverture** ; le thème concerné **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | **avant de donner des commandes** à [[ humain ]] |
+| `kit/VOCABULAIRE.md` | les termes du workflow et du kit | **à la demande** |
+| `kit/IDIOMES_DEV.md` | les idiomes de développement, par niveau | **avant le premier brief** qui crée du code ; pour expliquer du code à [[ humain ]] |
+| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | **à l'ouverture** si cette piste n'est pas la principale ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+[% if 'archives' in modules -%]
+| `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire, la copie d'avant | à chaque clôture, **avant de donner des commandes** d'archivage |
+[% endif -%]
+[% if 'mutation' in modules -%]
+| `kit/MUTATION.md` | le balayage mécanique par A, ses pièges | avant l'annexe de C |
+[% endif -%]
+[% if 'expert' in modules -%]
+| `kit/EXPERT.md` | passes expertes et sessions à part | avant de figer une décision de son ressort |
+[% endif -%]
+| `kit/gabarits/` | les documents qu'A remplit à chaque usage (brief, [% if 'relectures' in modules %]annexes, [% endif %]consignes, arbitrage, revue, messages d'ouverture…) | **à la demande**, au moment d'écrire la pièce |
+| `kit/prompts/` | les messages à coller pour des sessions hors du cycle : `PREMIERE_A.md`, `SESSION_EXPLICATION.md`, `CONSOLIDATION_KIT.md` | **à la demande**, au moment d'ouvrir la session |
+
+## Les fichiers vivants, et ce qui passe
+
+| Fichier ou dossier | Usage | Quand il part |
+|---|---|---|
+| `CONTEXTE.md` | le propre au projet : emplacements, commandes [[ de_humain ]] et dérogations au kit (§§ 1 et 2), état, points ouverts, suite (§§ 4, 5 et 7), leçons locales. Lu en entier par chaque A ; tenu par l'A (règle de clôture, `kit/METHODE.md` § 10) | Jamais |
+| `00_LISEZ_MOI.md` | cet index | Jamais |
+[% if 'archives' in modules -%]
+| `INVENTAIRE_ARCHIVES.md` | une ligne par élément archivé : chemin, contenu, quand en avoir besoin ; ce qui reste ici, et quand l'archiver | Jamais |
+[% endif -%]
+| `REMONTEES_KIT.md` | ce qui, appris ici, vaut au-delà du projet, à consolider dans le kit ; facultatif pour qui ne maintient pas le kit | Jamais |
+| `OUVERTURES_A«n+1».md` | le message d'ouverture de l'A suivante, et ce [[ que_humain ]] fait avant de l'ouvrir | à la clôture de l'A«n+1» |
+| `passations/` | ce qui passe d'une conversation ou d'une session à l'autre, les rapports rangés, les copies `CONTEXTE_avant_A«n».md` (voir son `LISEZ_MOI.md`) | pièce par pièce, quand le cycle suivant a les siennes |
+| `«NN»_CADRAGE_«jalon».md` | «le cadrage du jalon en cours, révision «r», tranché ou en discussion» | quand le jalon est fusionné |
+| `«NN»_BRIEF_«jalon».md` | «le brief en cours, révision «r» ; ensuite, le modèle du brief suivant» | quand le brief suivant est écrit |
+| `«outils du jalon»/` | «le dossier de travail du jalon : révisions, prototype, mesures, notes de tenue `tenue_A«n»/`» | quand le jalon est fusionné |
+[% if 'archives' in modules %]
+« Partir » veut dire : archivé par `outils/archiver.py`, avec sa ligne d'inventaire
+(`kit/ARCHIVES.md`) ; ce qui reste a sa ligne dans « Restés en conception ».
+[% else %]
+« Partir » veut dire : retiré par [[ humain ]], une fois passée l'étape qui s'en servait ; l'A le lui dit à
+la clôture (elle n'a pas le droit de supprimer). Ce qui doit rester consultable reste ici, et cet
+index le dit.
+[% endif %]
+## Hors de ce dossier
+
+| Dossier | Usage |
+|---|---|
+| `[[ racine ]]/v_for_cowork[[ suffixe ]]/` | ce que voient les autres conversations et la session de code : le miroir `[[ slug ]]/`, les briefs, les diffs ; son `LISEZ_MOI.md` le décrit |
+[% if 'archives' in modules -%]
+| `[[ racine ]]/archives_conception[[ suffixe ]]/` | les archives : jamais connecté par défaut ; leur liste est dans `INVENTAIRE_ARCHIVES.md` |
+[% endif -%]
+[% if 'relectures' in modules -%]
+| `[[ racine ]]/relecture/` | un poste par relecture C (`c-pr«n»[[ suffixe ]]/`), préparé par `uv run outils/clone_c.py` |
+[% endif -%]
+| `[[ racine ]]/outils/` | les scripts [[ que_humain ]] lance (`uv run outils/….py`) |
+| `[[ depot_travail ]]` | la copie de travail de l'agent de code, que rien d'autre ne touche |
+[% if 'donnees-privees' in modules -%]
+| le dossier de `[[ var_donnees ]]` | les données réelles : hors du dépôt et de l'espace ; jamais connecté à une conversation sans accès accordé par [[ humain ]], pour une lecture nommée |
+[% endif -%]

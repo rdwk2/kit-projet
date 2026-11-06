@@ -1,0 +1,155 @@
+# Contribuer à [[ projet ]]
+
+Bienvenue ! Ce guide suppose que tu n'as **jamais utilisé GitHub**. Lis-le une fois en entier ;
+ensuite, la section 3 suffit au quotidien. En cas de doute, demande à un responsable du dépôt
+([[ responsables ]]) **avant** de forcer quoi que ce soit : rien de ce qui est sur GitHub ne
+se perd, tant qu'on ne force pas.
+
+Quelques mots à connaître :
+
+- **Dépôt** : le projet et son historique.
+- **Commit** : une étape enregistrée.
+- **Branche** : une ligne de travail à part.
+- **Clone** : ta copie locale.
+[% if langage == 'python' -%]
+- **CI** : les vérifications que GitHub lance seul.
+[% endif %]
+## 0. Pour le responsable, une seule fois
+
+Si le dépôt existe déjà sur GitHub, passe à la section 1.
+
+1. Fais d'abord la section 1, sauf le clone. Puis crée le dépôt `[[ github ]]` sur GitHub,
+   vide : sans README, ni `.gitignore`, ni licence.
+2. Dans le dossier généré, fais le premier commit et envoie-le :
+   ```bash
+   git init -b main
+[% if langage == 'python' %]   uv sync                         # crée uv.lock
+   just check
+   git add .                       # uv.lock compris : sans lui, la CI est rouge
+[% else %]   git add .
+[% endif %]   git commit -m "chore: squelette du projet"
+   git remote add origin https://github.com/[[ github ]].git
+   git push -u origin main
+   ```
+3. Invite les camarades : Settings, Collaborators.
+4. Protège `main` : Settings, Branches. Exige une PR et une relecture[% if langage == 'python' %], avec la CI verte[% endif %]. Sur un
+   dépôt privé d'un compte gratuit, GitHub peut ne pas le proposer, ni appliquer
+   `.github/CODEOWNERS` : vérifie ton offre.
+5. Dans Settings, General, Pull Requests, ne garde que « Allow squash merging ».
+
+## 1. Une fois, pour commencer
+
+Les commandes se tapent dans un terminal : Terminal (macOS, Linux), PowerShell (Windows), ou
+celui de VS Code.
+
+1. Crée un compte sur <https://github.com>, et accepte l'invitation à l'organisation ou au
+   dépôt (un e-mail, ou la cloche en haut à droite de GitHub).
+2. Installe **git** (<https://git-scm.com> ; sous macOS : `xcode-select --install`) et, si tu
+   veux une interface graphique, **VS Code** (onglet « Source Control ») ou **GitHub Desktop**.
+3. Dis à git qui tu es (une fois par ordinateur) :
+   ```bash
+   git config --global user.name "Prénom Nom"
+   git config --global user.email "l-adresse-de-ton-compte-github@exemple.fr"
+   ```
+   Cette adresse est écrite dans chaque commit. Pour la garder privée : GitHub, Settings,
+   Emails, Keep my email addresses private, puis utilise l'adresse en
+   @users.noreply.github.com qu'il affiche.
+4. Identifie-toi auprès de GitHub, qui refuse les mots de passe dans le terminal. Installe
+   **GitHub CLI** (<https://cli.github.com>), puis réponds aux questions de la première commande :
+   ```bash
+   gh auth login
+   gh auth setup-git
+   ```
+5. Récupère le dépôt sur ton ordinateur :
+   ```bash
+   git clone https://github.com/[[ github ]].git
+   cd [[ github.split('/')[-1] ]]
+   ```
+[% if langage == 'python' %]6. Installe l'outillage (une fois). **uv** (<https://docs.astral.sh/uv/>) gère Python et les
+   dépendances ; il installe Python tout seul. **just** lance les commandes du projet. Une fois
+   uv installé :
+   ```bash
+   uv tool install rust-just
+   uv tool update-shell
+   ```
+   Ferme et rouvre le terminal puis, dans le dossier du dépôt :
+   ```bash
+   uv sync
+   just check
+   ```
+   `just check` doit finir sans erreur : c'est la commande qui dit « le projet va bien ».
+[% endif %]
+## 2. Les règles du dépôt, en cinq lignes
+
+1. **On ne travaille jamais directement sur `main`.** `main`, c'est la version qui marche ;
+   elle est protégée (section 0) : GitHub refuse les envois directs.
+2. **Une tâche = une branche = une pull request (PR).** Une PR, c'est « voici mon travail,
+   relisez-le avant qu'il entre dans `main` ».
+3. **Petites PR** : un seul sujet, idéalement moins de 300 lignes modifiées. Une grosse PR ne
+   se relit pas, elle se survole.
+4. **Toute PR est relue par un camarade** (guide : `docs/RELIRE_UNE_PR.md`), puis fusionnée par
+   un responsable. Le camarade clique sur « Approve » quand son verdict est « fusionnable en
+   l'état » et qu'il a lancé les tests. On ne fusionne pas sa propre PR.
+5. **Ce qui est dans `main` au moment de la livraison est ce qui est livré** (`docs/LIVRAISONS.md`).
+
+## 3. Le cycle d'une contribution
+
+```bash
+# 1. Partir de la dernière version de main
+git switch main
+git pull
+[% if langage == 'python' -%]
+uv sync                         # les dépendances ont pu changer
+[% endif %]
+# 2. Créer ta branche (un nom court : type/sujet)
+git switch -c feat/calcul-du-stock
+
+# 3. Travailler… puis enregistrer par petites étapes
+[% if langage == 'python' -%]
+just check                      # si le format est rouge : just fmt
+[% endif -%]
+git status                      # ce qui a changé
+git add chemin/du/fichier       # ce que tu veux enregistrer
+git commit -m "feat: calcul du stock par magasin"
+
+# 4. Envoyer ta branche sur GitHub
+git push -u origin feat/calcul-du-stock
+```
+
+5. Sur GitHub, un bandeau jaune propose **« Compare & pull request »** : clique, remplis le
+   modèle (ce que fait la PR, comment la tester), et demande une relecture à un camarade
+   (« Reviewers », à droite).
+6. Le camarade commente. Tu corriges **sur la même branche** (`git add`, `git commit`,
+   `git push`) : la PR se met à jour toute seule.
+7. Quand la relecture est bonne[% if langage == 'python' %] et que les vérifications automatiques sont vertes[% endif %], un
+   responsable fusionne (« Squash and merge »).
+8. Ensuite, reviens sur `main` et supprime ta branche : `git switch main`, `git pull`, puis
+   `git branch -D feat/calcul-du-stock`. Pour la tâche suivante, crée une nouvelle branche.
+
+**Préfixes des messages de commit** : `feat:` (nouveauté), `fix:` (correction), `docs:`
+(documentation), `test:` (tests), `refactor:` (réorganisation sans changement de
+comportement), `build:` (dépendances et construction), `ci:` (vérifications automatiques),
+`chore:` (le reste).
+
+## 4. Quand ça coince
+
+| Situation | Quoi faire |
+|---|---|
+| `git push` est refusé sur `main` | normal : tu es sur `main`. `git switch -c ma-branche`, puis `git push -u origin ma-branche`, puis `git branch -f main origin/main` |
+| J'ai modifié des fichiers sur `main` par erreur | `git switch -c ma-branche` : tes modifications te suivent sur la nouvelle branche |
+| « conflict » pendant un `git pull` ou dans la PR | ne force rien ; demande à un responsable, il te montrera (c'est normal et ça se règle) |
+| Je veux tout annuler sur un fichier pas encore commité | `git restore chemin/du/fichier` |
+| Je ne sais plus où j'en suis | `git status`, et copie sa sortie à un responsable |
+[% if langage == 'python' -%]
+| La CI est rouge | clique sur Details, lance `just fmt` puis `just check`, corrige la première erreur |
+| Il me faut une bibliothèque | demande d'abord, puis `uv add nom`, et commite `pyproject.toml` et `uv.lock` |
+[% endif %]
+**Jamais** de `git push --force` sur une branche partagée, jamais de suppression de
+l'historique.
+
+## 5. L'IA
+
+Si tu utilises un assistant (ChatGPT, Claude…), respecte les règles du cours sur son usage,
+et **comprends ce que tu commites** : en relecture, on te demandera pourquoi ton code fait ce
+qu'il fait. Les règles que suivent les agents de code (des assistants qui lisent et modifient
+directement les fichiers du dépôt : Claude Code, Codex…) sont dans `CLAUDE.md`.
