@@ -1,0 +1,28 @@
+# JOURNAL
+
+[% if 'groupe' in modules -%]
+> ▌ Trace chronologique de ce qui a été livré, pour ne pas se re-raconter.
+> ▌ **Une entrée par livraison**, ajoutée en haut par un responsable, dans la PR de livraison
+> (`docs/LIVRAISONS.md`) : date · ce qui a été livré · la conclusion · où c'est rangé.
+> ▌ Les autres PR n'y touchent pas : deux PR ouvertes entreraient en conflit. Au quotidien, la liste
+> des PR fusionnées sert d'historique.
+[%- elif debutant -%]
+> ▌ **Facultatif.** Trace chronologique de ce qui a été fait, pour ne pas se re-raconter : une entrée
+> par session qui compte, ajoutée en haut : date · ce qui a été fait · la conclusion · où c'est rangé.
+[%- else -%]
+> Trace chronologique de ce qui a été fait, pour ne pas se re-raconter.
+> **Une entrée par session de travail**, ajoutée en haut : date · ce qui a été fait ·
+> la conclusion · où c'est rangé.
+[%- endif %]
+> Le détail vit dans le code et les livrables ; ici, c'est l'index.
+> Les décisions structurantes ont leur propre fichier dans `decisions/`.
+
+Format :
+
+```
+### AAAA-MM-JJ · [% if 'groupe' in modules %]«Livraison»[% else %]«Jalon»[% endif %] — titre court
+Ce qui a été fait. Ce qu'on en conclut. Où c'est rangé.
+(Quand il y a une mesure : la mesure avant → après.)
+```
+
+---

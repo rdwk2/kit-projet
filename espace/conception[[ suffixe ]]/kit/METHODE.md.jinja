@@ -457,7 +457,7 @@ l'effort. À défaut :
 Cette liste est **la** liste de l'ouverture : le CONTEXTE, l'index et les messages d'ouverture
 y renvoient.
 
-L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir, dernier JOURNAL), pas dans
+L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir[% if 'groupe' not in modules %], dernier JOURNAL[% endif %]), pas dans
 sa mémoire ni dans un résumé.
 
 **Une A compactée passe la main.** Une A dont la conversation a été compactée — l'historique

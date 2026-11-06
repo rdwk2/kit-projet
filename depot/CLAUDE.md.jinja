@@ -99,7 +99,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 8. ▌ **Jamais de commit direct sur `main`.**
 [% if 'groupe' in modules %]   Une tâche = une branche (`«type»/«sujet»`, ex. `feat/calcul-du-stock`) = une pull request, relue par un
    camarade (`CONTRIBUTING.md`). Messages de commit et titres de PR préfixés :
-[% else %]   Une tâche = une branche ; on fusionne par une pull request quand [% if langage == 'python' %]`just check`[% else %]la vérification[% endif %] est vert
+[% else %]   Une tâche = une branche ; on fusionne par une pull request quand [% if langage == 'python' %]`just check` est vert[% else %]la vérification est verte[% endif %]
    (marche à suivre : `README.md`). Messages de commit préfixés :
 [% endif %]   `feat:` `fix:` `docs:` `test:` `refactor:` `build:` `ci:` `chore:`.
 [%- else -%]
@@ -145,13 +145,25 @@ elle est évaluée. Si une tâche te conduit à mélanger les deux, tu t'arrête
 - **Petits commits, un concept chacun.** Si un diff dépasse ~300 lignes, la tâche était
   probablement mal découpée : signale-le dans la PR.
 - **Ne termine pas une session sur du code cassé** : répare, ou annule et note où tu en es.
+[% if 'groupe' in modules -%]
+- ▌ **Ta PR ne touche pas à `docs/JOURNAL.md`** : un responsable y écrit une entrée par livraison
+  (`docs/LIVRAISONS.md`).
+[% elif debutant -%]
+- ▌ **`docs/JOURNAL.md` est facultatif** : une entrée à la fin d'une session qui compte.
+[% else -%]
 - **Une entrée dans `docs/JOURNAL.md`** à la fin de chaque session de travail : date, ce
   qui a été fait, la conclusion, où c'est rangé.
+[% endif -%]
 - **Le README décrit `main`** : une PR qui rend l'une de ses phrases fausse la corrige.
+[% if debutant and 'groupe' not in modules -%]
+- ▌ **Facultatif** : une fiche dans `docs/decisions/` pour une décision structurante, une ligne dans
+  `docs/PIEGES.md` pour un piège payé une fois.
+[% else -%]
 - **Une décision structurante = un fichier dans `docs/decisions/`** (gabarit
   `0000-template.md`), avec les options écartées et pourquoi.
 - **Avant de toucher à ce qui est fragile, lis `docs/PIEGES.md`** : chaque piège y a déjà été
   payé une fois.
+[% endif -%]
 
 ---
 
@@ -188,7 +200,7 @@ tests/              les tests (petits jeux de données inventés, dans tests/fix
 [% endif -%]
 docs/
   ROADMAP.md        le plan, par jalons
-  JOURNAL.md        une entrée par session de travail
+  JOURNAL.md        [% if 'groupe' in modules %]une entrée par livraison[% elif debutant %]facultatif : une entrée par session qui compte[% else %]une entrée par session de travail[% endif %]
   PIEGES.md         les pièges déjà payés
   decisions/        une fiche par décision structurante
 [% if 'groupe' in modules %]  RELIRE_UNE_PR.md  comment relire la PR d'un camarade

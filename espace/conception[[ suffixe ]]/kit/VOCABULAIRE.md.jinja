@@ -53,7 +53,7 @@
 | **Sous-jalon** | Un lot, vu depuis la roadmap : il porte le numéro du jalon, suivi d'une lettre. | `[[ prefixe_jalon ]]3a`. |
 | **ROADMAP** | `docs/ROADMAP.md` : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
 | **BACKLOG** | `BACKLOG.md` : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
-| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | Une entrée par session. |
+| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | [% if 'groupe' in modules %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
 | **Tranche verticale** | Un petit morceau qui marche de bout en bout. | Lire un fichier, calculer, afficher une valeur. |
 | **Artefact** | Un document produit puis relu : un brief, un plan, un cadrage. | « un artefact mérite plus d'effort qu'une conversation ». |
 | **Contrat** | Ce qu'un type ou une fonction promet à ceux qui s'en servent. | « ce type refuse toute valeur infinie ». |

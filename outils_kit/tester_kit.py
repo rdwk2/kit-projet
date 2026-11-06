@@ -113,7 +113,8 @@ PY_TYPED = "src/projet_essai/py.typed"
 # Ce qu'un préréglage pour débuter n'a pas, et ce qu'il a à la place.
 SANS_DEBUTANT = {"pyproject.toml": ["hypothesis", "TID251", "pyarrow", "\nstrict = true"],
                  ".github/workflows/ci.yml": ["extras"], "justfile": ["strict"],
-                 "CLAUDE.md": ["Un objet invalide", "mode strict", "(`hypothesis`)"]}
+                 "CLAUDE.md": ["Un objet invalide", "mode strict", "(`hypothesis`)",
+                               "à la fin de chaque session de travail"]}
 AVEC_DEBUTANT = {"pyproject.toml": ["TID252", "check_untyped_defs = true"],
                  "CLAUDE.md": ["accepté d'office", "pas exigé"]}
 AVEC_COMPLET = {"pyproject.toml": ["hypothesis", "TID251", "strict = true"],
@@ -188,7 +189,10 @@ SCENARIOS: list[dict] = [
     {"nom": "depot-groupe", "data": {"couche": "depot", "preset": "groupe-scolaire"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_GROUPE,
      "absents": DEPOT_DONNEES + DEPOT_ANALYSE + [PY_TYPED], "python": True, "souple": True,
-     "contient": AVEC_DEBUTANT, "sans": SANS_DEBUTANT},
+     # une entrée de JOURNAL par PR ferait un conflit à chaque fusion
+     "contient": {**AVEC_DEBUTANT, "docs/JOURNAL.md": ["**Une entrée par livraison**"],
+                  "docs/LIVRAISONS.md": ["docs/JOURNAL.md"], "CONTRIBUTING.md": ["docs/JOURNAL.md"]},
+     "sans": {**SANS_DEBUTANT, "docs/JOURNAL.md": ["par session"]}},
     {"nom": "depot-perso-standard", "data": {"couche": "depot", "preset": "perso-standard"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON + [PY_TYPED],
      "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE, "python": True,

@@ -232,7 +232,9 @@ Dernière sous-section, **les documents** :
 - `CLAUDE.md` (règles, commandes, structure) ;
 - les lignes de `BACKLOG.md`, comptées — cochées, réécrites, neuves : ce sont les limites
   connues[% if 'relectures' in modules %], que C ne doit pas reprendre en constats[% endif %] ;
+[% if 'groupe' not in modules -%]
 - l'entrée de `docs/JOURNAL.md` ;
+[% endif -%]
 - **README** : soit les phrases du README que la PR rend fausses ou
   incomplètes, avec leur texte de remplacement, soit « README relu, inchangé ».
 [%- if 'donnees-privees' in modules %]
@@ -329,7 +331,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   et la non-régression faite en conception, sous la règle des données.
 [%- endif %]
 - **Après la fusion** : ce qui reste à lancer, avec les commandes données par la conception ; ce
-  qu'elle en fait (une PR suivante, le `docs/JOURNAL.md`).
+  qu'elle en fait (une PR suivante[% if 'groupe' not in modules %], le `docs/JOURNAL.md`[% endif %]).
 - **Où vont les fichiers** : ce qui se dépose, et où ; rien du prototype dans le dossier que
   reçoit la session.
 - Ce qui se relaie à une autre piste, et quand.

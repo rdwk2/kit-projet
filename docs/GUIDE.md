@@ -28,7 +28,7 @@ Le préréglage choisit les modules : les fonctions que le kit ajoute. Tu pourra
 |---|---|---|:-:|:-:|:-:|:-:|
 | *socle du dépôt* | dépôt | `CLAUDE.md`, `AGENTS.md`, `README.md`, `BACKLOG.md`, `docs/` | ✓ | ✓ | ✓ | ✓ |
 | *Python* (question « langage ») | dépôt | uv, just, ruff, mypy, pytest, CI : `just check` vert dès la génération | ✓ | ✓ | ✓ | ✓ |
-| `groupe` | dépôt | `CONTRIBUTING.md` pour débutants, modèle de PR, livraisons par tags | | ✓ | | |
+| ▌ `groupe` | dépôt | `CONTRIBUTING.md` pour débutants, modèle de PR, livraisons par tags ; le `JOURNAL` s'écrit à chaque livraison, pas à chaque PR | | ✓ | | |
 | `donnees-privees` | dépôt | Données hors du dépôt, protégées de Claude Code par un hook | | | | ✓ |
 | `analyse-donnees` | dépôt | Pour un projet qui analyse des données : une charte (les règles que l'analyse s'impose avant de commencer) et la liste des questions posées aux données | | | | à cocher |
 | *socle de l'espace IA* | espace IA | Le minimum pour une conversation de conception : son dossier, ses scripts, ses modèles de documents | facultatif | facultatif | ✓ | ✓ |
