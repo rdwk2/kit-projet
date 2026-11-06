@@ -21,10 +21,12 @@ Ce que vérifie chaque scénario :
 - update (dépôt) : une nouveauté du kit arrive, une modification locale reste ;
 - extraction entre pistes : le CONTEXTE généré suit le plan fixe d'extraire_piste.py ;
 - chaque renvoi à une entrée de kit/MACHINE.md existe ;
+- `CLAUDE.md` a ses huit règles, avec leurs numéros, dans tous les préréglages ;
 - un préréglage ne cite aucun fichier qu'il n'a pas, et refuse une piste sans le module pistes ;
 - un `racine` en `~/…` donne un chemin absolu aux scripts ;
 - avec --complet : uv sync, uv sync --locked et just check dans chaque dépôt Python généré,
-  avec un module qui écrit comme un mathématicien (`A`, `X`, `l`, lettres grecques).
+  avec un module qui écrit comme un mathématicien (`A`, `X`, `l`, lettres grecques) et, pour
+  débuter, une fonction sans annotations.
 Code de sortie 0 si tout passe.
 """
 
@@ -80,6 +82,14 @@ def total(l: list[float]) -> float:
     return sum(l)
 '''
 
+MODULE_SOUPLE = '''"""Une fonction sans annotations : mypy en mode souple l'accepte."""
+
+
+def carre(x):
+    """Renvoie le carré de x."""
+    return x * x
+'''
+
 BASE = {
     "projet": "Projet d'essai",
     "slug": "projet-essai",
@@ -97,8 +107,18 @@ DEPOT_SOCLE = [
 ]
 DEPOT_PYTHON = [
     "pyproject.toml", "justfile", ".python-version", "src/projet_essai/__init__.py",
-    "src/projet_essai/py.typed", "tests/test_socle.py", ".github/workflows/ci.yml",
+    "tests/test_socle.py", ".github/workflows/ci.yml",
 ]
+PY_TYPED = "src/projet_essai/py.typed"
+# Ce qu'un préréglage pour débuter n'a pas, et ce qu'il a à la place.
+SANS_DEBUTANT = {"pyproject.toml": ["hypothesis", "TID251", "pyarrow", "\nstrict = true"],
+                 ".github/workflows/ci.yml": ["extras"], "justfile": ["strict"],
+                 "CLAUDE.md": ["Un objet invalide", "mode strict", "(`hypothesis`)"]}
+AVEC_DEBUTANT = {"pyproject.toml": ["TID252", "check_untyped_defs = true"],
+                 "CLAUDE.md": ["accepté d'office", "pas exigé"]}
+AVEC_COMPLET = {"pyproject.toml": ["hypothesis", "TID251", "strict = true"],
+                ".github/workflows/ci.yml": ["extras"], "CLAUDE.md": ["Un objet invalide", "mode strict"]}
+SANS_COMPLET = {"pyproject.toml": ["check_untyped_defs"], "CLAUDE.md": ["accepté d'office"]}
 DEPOT_DONNEES = [
     ".env.example", ".claude/settings.json", "scripts/hooks/proteger_donnees.py",
 ]
@@ -163,20 +183,27 @@ def espace_expert(s: str = "") -> list[str]:
 SCENARIOS: list[dict] = [
     {"nom": "depot-solo-leger", "data": {"couche": "depot", "preset": "solo-leger"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON,
-     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE, "python": True, "update": True},
+     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE + [PY_TYPED], "python": True, "souple": True,
+     "update": True, "contient": AVEC_DEBUTANT, "sans": SANS_DEBUTANT},
     {"nom": "depot-groupe", "data": {"couche": "depot", "preset": "groupe-scolaire"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_GROUPE,
-     "absents": DEPOT_DONNEES + DEPOT_ANALYSE, "python": True},
+     "absents": DEPOT_DONNEES + DEPOT_ANALYSE + [PY_TYPED], "python": True, "souple": True,
+     "contient": AVEC_DEBUTANT, "sans": SANS_DEBUTANT},
+    {"nom": "depot-perso-standard", "data": {"couche": "depot", "preset": "perso-standard"},
+     "presents": DEPOT_SOCLE + DEPOT_PYTHON + [PY_TYPED],
+     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE, "python": True,
+     "contient": AVEC_COMPLET, "sans": SANS_COMPLET},
     {"nom": "depot-perso-complet", "data": {"couche": "depot", "preset": "perso-complet",
      # une description longue : le dépôt généré doit quand même passer `just check` (E501)
      "description": "Une description volontairement longue, comme celle d'un vrai projet pour un client, "
                     "qui dépasse largement la longueur de ligne de ruff une fois dans la docstring."},
-     "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_DONNEES + ["tests/test_proteger_donnees.py"],
-     "absents": DEPOT_GROUPE + DEPOT_ANALYSE, "python": True},
+     "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_DONNEES + [PY_TYPED, "tests/test_proteger_donnees.py"],
+     "absents": DEPOT_GROUPE + DEPOT_ANALYSE, "python": True,
+     "contient": AVEC_COMPLET, "sans": SANS_COMPLET},
     {"nom": "depot-autre-analyse", "data": {"couche": "depot", "preset": "personnalise",
                                              "modules_choisis": ["analyse-donnees"], "langage": "autre"},
      "presents": DEPOT_SOCLE + DEPOT_ANALYSE,
-     "absents": DEPOT_PYTHON + DEPOT_DONNEES + DEPOT_GROUPE},
+     "absents": DEPOT_PYTHON + [PY_TYPED] + DEPOT_DONNEES + DEPOT_GROUPE},
     {"nom": "espace-solo-leger", "data": {"couche": "espace", "preset": "solo-leger"},
      "presents": espace_socle() + ESPACE_RACINE,
      "absents": espace_relectures() + espace_archives() + espace_expert() + espace_pistes()
@@ -296,6 +323,16 @@ def verifier_renvois(dest: Path) -> list[str]:
                 if renvoi not in connues:
                     erreurs.append(f"renvoi sans entrée : {f.relative_to(dest).as_posix()}:{n}: {renvoi}")
     return erreurs
+
+
+def verifier_regles(dest: Path) -> list[str]:
+    """`CLAUDE.md` promet des numéros stables : les règles 1 à 8 sont là, dans tous les préréglages."""
+    claude = dest / "CLAUDE.md"
+    if not claude.is_file():
+        return []
+    partie = claude.read_text(encoding="utf-8").split("## Règles dures")[1].split("\n---")[0]
+    numeros = re.findall(r"^(\d+)\. ", partie, re.M)
+    return [] if numeros == list("12345678") else [f"règles de CLAUDE.md : {numeros}"]
 
 
 def verifier_jamais_cite(dest: Path, noms: list[str]) -> list[str]:
@@ -473,11 +510,13 @@ def verifier_recopy(dest: Path) -> list[str]:
     return erreurs
 
 
-def verifier_python(dest: Path) -> list[str]:
+def verifier_python(dest: Path, souple: bool) -> list[str]:
     if not shutil.which("uv") or not shutil.which("just"):
         return ["--complet demande uv et just dans le PATH"]
     # Du code de maths doit passer : majuscules, `l`, lettres grecques.
     (dest / "src" / "projet_essai" / "exemple_maths.py").write_text(MODULE_MATHS, encoding="utf-8", newline="\n")
+    if souple:
+        (dest / "src" / "projet_essai" / "exemple_souple.py").write_text(MODULE_SOUPLE, encoding="utf-8", newline="\n")
     # --locked : ce que lance la CI au premier envoi.
     for cmd in (["git", "init", "-q"], ["uv", "sync", "-q"], ["uv", "sync", "-q", "--locked"], ["just", "check"]):
         r = subprocess.run(cmd, cwd=dest, capture_output=True, text=True)
@@ -525,6 +564,7 @@ def main() -> int:
             erreurs += verifier_textes(dest, sc.get("contient", {}), sc.get("sans", {}))
             erreurs += verifier_contenu(dest)
             erreurs += verifier_renvois(dest)
+            erreurs += verifier_regles(dest)
             erreurs += verifier_jamais_cite(dest, sc.get("jamais_cite", []))
             if "refus" in sc:
                 erreurs += verifier_refus(racine, {**sc["data"], **sc["refus"]})
@@ -535,7 +575,7 @@ def main() -> int:
             if sc.get("update"):
                 erreurs += verifier_update(racine, sc["data"])
             if args.complet and sc.get("python"):
-                erreurs += verifier_python(dest)
+                erreurs += verifier_python(dest, sc.get("souple", False))
         except Exception as exc:  # noqa: BLE001 — un scénario qui plante est un échec, pas un arrêt
             erreurs.append(f"{type(exc).__name__}: {exc}{lieu_erreur(exc)}")
         bilan.append((sc["nom"], erreurs))

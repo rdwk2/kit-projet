@@ -37,6 +37,8 @@ _exclude:
   - "[% if langage != 'python' %]/tests[% endif %]"
   - "[% if langage != 'python' %].github/workflows[% endif %]"
   - "[% if langage != 'python' and 'groupe' not in modules %]/.github[% endif %]"
+  # ── couche depot : préréglages pour débuter
+  - "[% if debutant %]py.typed[% endif %]"
   # ── couche depot : module donnees-privees
   - "[% if 'donnees-privees' not in modules %].env.example*[% endif %]"
   - "[% if 'donnees-privees' not in modules %]/.claude[% endif %]"
@@ -216,6 +218,12 @@ modules:
   when: false
   default: >-
     [% if preset == 'solo-leger' %][][% elif preset == 'groupe-scolaire' %][groupe][% elif preset == 'perso-standard' %][relectures, pistes][% elif preset == 'perso-complet' %][donnees-privees, relectures, archives, mutation, expert, pistes][% else %][[ modules_choisis | tojson ]][% endif %]
+
+# Valeur calculée (jamais posée) : ces préréglages reçoivent un dépôt allégé.
+debutant:
+  type: bool
+  when: false
+  default: "[[ preset in ['solo-leger', 'groupe-scolaire'] ]]"
 
 # ─── Couche depot ───────────────────────────────────────────────────────────
 paquet:

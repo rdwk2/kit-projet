@@ -284,7 +284,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   dire un échec dans le corps d'un test, pas à la collecte.
 [%- if langage == 'python' %]
   En Python : `python -B` et `__pycache__` vidé (sinon un `.pyc` périmé fait un faux vert),
-  `--hypothesis-seed=0`, `-p no:cacheprovider`.
+  [% if not debutant %]`--hypothesis-seed=0`, [% endif %]`-p no:cacheprovider`.
 [%- endif %]
 - **Les équivalences déclarées** (E1…), chacune avec l'argument qui la prouve, après un
   balayage des entrées où elle pourrait jouer. La session les joue aussi, constate qu'aucun test ne

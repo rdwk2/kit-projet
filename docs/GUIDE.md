@@ -38,6 +38,11 @@ Le préréglage choisit les modules : les fonctions que le kit ajoute. Tu pourra
 | `expert` | espace IA | Passes expertes et sessions à part | | | | ✓ |
 | ▌ `pistes` | espace IA | Plusieurs axes de travail sur le même dépôt (§ 5) | | | ✓ | ✓ |
 
+▌ **Solo léger et Groupe scolaire reçoivent un dépôt allégé** : un `CLAUDE.md` plus court, `mypy` en mode
+souple, et les tests de propriété facultatifs (`uv add --dev hypothesis` les ajoute). Standard et Complet
+gardent les règles complètes et `mypy` strict. Pour durcir un projet : `strict = true` dans
+`pyproject.toml`.
+
 ▌ **En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une trentaine de fichiers
 qu'un débutant n'a pas à lire. Dans un groupe, les camarades n'ont besoin que du dépôt.
 

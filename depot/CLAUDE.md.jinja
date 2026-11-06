@@ -24,6 +24,9 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
    inventées, et commitées. L'agent de code ne lit ni n'écrit rien sous `[[ var_donnees ]]` :
    sous Claude Code, le hook de `.claude/settings.json` le refuse ; tout autre agent doit s'y
    tenir sans filet. Les commandes sur les données réelles sont lancées par l'humain.
+[%- elif debutant -%]
+1. ▌ **Aucun secret ni donnée privée dans le dépôt** : ni identifiant, ni token, ni `.env`, ni donnée réelle
+   qui identifie quelqu'un, nulle part, commits et PR compris. Les tests utilisent des données inventées.
 [%- else -%]
 1. **Aucun secret ni donnée privée dans le dépôt.**
    Pas d'identifiants, de tokens, de fichier `.env`, ni de données réelles qui identifient
@@ -31,6 +34,12 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
    descriptions de PR. Les tests utilisent des données inventées.
 [%- endif %]
 
+[% if debutant -%]
+2. ▌ **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.** Si tu n'y arrives pas,
+   tu t'arrêtes et tu le dis : aucun contournement sans le signaler et en donner la raison.
+
+3. ▌ **Tu ne fais que ce qui est demandé.** Toute autre idée va dans `BACKLOG.md`, en une ligne.
+[%- else -%]
 2. **[% if langage == 'python' %]`just check`[% else %]«La commande de vérification du projet»[% endif %] doit être vert avant tout commit.**
    Si tu n'arrives pas à le rendre vert, tu t'arrêtes et tu le dis. Tu ne contournes pas
    (pas d'avertissement réduit au silence[% if langage == 'python' %], pas de `# type: ignore` posé pour faire taire[% endif %], pas de
@@ -39,33 +48,61 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
 3. **Tu ne fais que ce qui est demandé.**
    Toute autre idée, amélioration, refactoring ou bug repéré en passant va dans
    `BACKLOG.md` — une ligne, et rien d'autre. Tu ne l'implémentes pas.
+[%- endif %]
 
+[% if debutant -%]
+4. ▌ **Toute logique a un test.** Un calcul sans test n'est pas fini. Un jeu d'essai a au moins
+   deux éléments, à valeurs distinctes. Pour un invariant simple, un test de propriété est
+   bienvenu, pas exigé.
+[%- else -%]
 4. **Toute logique a un test.** Un calcul sans test n'est pas fini. Pour les invariants
    (monotonie, bornes, conservation, comportement aux limites), privilégier les **tests de
    propriété**[% if langage == 'python' %] (`hypothesis`)[% endif %] aux seuls tests par l'exemple ; un jeu d'essai a au moins
    deux éléments, à valeurs distinctes.
+[%- endif %]
 
+[% if debutant -%]
+5. ▌ **Pas de nouvelle dépendance sans accord.**
+   Tu la proposes, avec la raison, et tu attends.[% if langage == 'python' %] Seul le socle scientifique (numpy,
+   scipy, matplotlib) est accepté d'office : il s'ajoute par `uv add`.[% endif %]
+[%- else -%]
 5. **Pas de nouvelle dépendance sans accord.**
    Tu la proposes, avec la raison et ce que ça coûterait de s'en passer, et tu attends. Une
    dépendance ajoutée en douce est un bug.
+[%- endif %]
 
 [% if 'donnees-privees' in modules -%]
 6. **Le brut est immuable.**
    On ne modifie jamais un fichier brut (`raw/` sous `[[ var_donnees ]]`). Tout ce qui est en
    aval doit être entièrement régénérable à partir du brut. Si une lecture est fausse, on
    relit le brut — on ne re-télécharge pas.
+[%- elif debutant -%]
+6. ▌ **Ce qui est généré se régénère, ne se corrige pas à la main.** Un fichier produit par un script
+   se corrige dans sa source.
 [%- else -%]
 6. **Ce qui est généré se régénère, ne se corrige pas à la main.**
    Un fichier produit par un script (documentation générée, figure, données dérivées) se
    corrige dans sa source, puis se régénère.
 [%- endif %]
 
+[% if debutant -%]
+7. ▌ **Le calcul vit dans [% if langage == 'python' %]`src/`[% else %]la bibliothèque du projet[% endif %].** Un script ou un notebook ne fait que l'appeler.
+[%- else -%]
 7. **Pas de logique métier dans l'interface[% if 'analyse-donnees' in modules %], ni dans un notebook[% endif %].**
    L'interface appelle la bibliothèque ; si elle calcule quelque chose, c'est que ça manque
    dans `src/`.[% if 'analyse-donnees' in modules %] Un notebook peut calculer pour explorer, mais ce calcul est jetable : **tout
    chiffre rapporté** (compte rendu, décision, tableau de bord) vient d'une fonction testée de
    `src/`.[% endif %]
+[%- endif %]
 
+[% if debutant -%]
+8. ▌ **Jamais de commit direct sur `main`.**
+[% if 'groupe' in modules %]   Une tâche = une branche (`«type»/«sujet»`, ex. `feat/calcul-du-stock`) = une pull request, relue par un
+   camarade (`CONTRIBUTING.md`). Messages de commit et titres de PR préfixés :
+[% else %]   Une tâche = une branche ; on fusionne par une pull request quand [% if langage == 'python' %]`just check`[% else %]la vérification[% endif %] est vert
+   (marche à suivre : `README.md`). Messages de commit préfixés :
+[% endif %]   `feat:` `fix:` `docs:` `test:` `refactor:` `build:` `ci:` `chore:`.
+[%- else -%]
 8. **Jamais de commit direct sur `main`.**
    Une tâche = une branche (`«jalon»/«sujet»`, ex. `[[ prefixe_jalon | lower ]]2/lecture-fichier`[% if 'groupe' in modules %] ; ou `«type»/«sujet»`,
    ex. `feat/calcul-du-stock`, voir `CONTRIBUTING.md`[% endif %]) = une pull request (un jalon :
@@ -76,6 +113,7 @@ Les numéros sont stables : on y renvoie par « règle 3 ».
    (ex. `[[ prefixe_jalon ]]1 — Lecture des fichiers`).[% endif %] Avec « Squash and merge », ce titre
    devient le message du commit sur `main` : la liste des PR est la table des matières du
    projet.
+[%- endif %]
 
 ---
 
@@ -174,18 +212,27 @@ qui l'a créé.»
 ## Conventions
 
 [% if langage == 'python' -%]
+[% if debutant -%]
+- ▌ Python [[ python_version ]]+, annotations de type sur les fonctions publiques ; `ruff` pour le lint et
+  le formatage. `mypy` vérifie les types sans exiger d'annotation partout, et accepte les
+  bibliothèques sans types (scipy, pandas…). La notation mathématique est permise (`A`, `X`, `l`,
+  `σ`, `α`).
+[% else -%]
 - Python [[ python_version ]]+, annotations de type partout, `mypy` en mode strict ; `ruff`
   pour le lint et le formatage. Deux souplesses pour le code scientifique. Importer une
   bibliothèque sans types (scipy, pandas…) n'arrête pas `mypy`, sans `# type: ignore` ; une
   fonction annotée convertit ce qu'elle en renvoie (`float(…)`). La notation mathématique est
   permise (`A`, `X`, `l`, `σ`, `α`).
 [% endif -%]
+[% endif -%]
 - Noms dans le code : une seule langue pour tout le projet (par défaut l'anglais) ; commentaires
   et documentation en français.
 - **Unités explicites dans les noms** : `length_m`, `duration_s`, `mass_kg`. Une variable
   d'unité ambiguë est un bug en attente. Les conversions se font **aux frontières** (lecture
   de fichier, affichage), jamais au milieu d'un calcul.
+[% if not debutant -%]
 - **Un objet invalide ne peut pas exister** : les contrats (schémas de données) se valident
   à la construction, et le message d'erreur dit quel champ, quelle valeur, quelle règle.
 - Les paramètres d'un modèle sont **déclaratifs** (un schéma, pas des constantes
   éparpillées).
+[% endif -%]

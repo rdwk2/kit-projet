@@ -30,7 +30,7 @@ jobs:
 
       - name: just check
         run: just check
-
+[% if not debutant %]
       # Quand le projet aura des extras optionnels : un second passage avec tous
       # les extras (les tests qui en dépendent se sautent au premier passage par
       # pytest.importorskip).
@@ -38,3 +38,4 @@ jobs:
       #   run: |
       #     uv run --locked --all-extras pytest
       #     uv run --locked --all-extras mypy
+[% endif -%]
