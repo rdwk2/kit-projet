@@ -158,12 +158,12 @@ elle est évaluée. Si une tâche te conduit à mélanger les deux, tu t'arrête
 [% if debutant and 'groupe' not in modules -%]
 - ▌ **Facultatif** : une fiche dans `docs/decisions/` pour une décision structurante, une ligne dans
   `docs/PIEGES.md` pour un piège payé une fois.
-[% else -%]
+[%- else -%]
 - **Une décision structurante = un fichier dans `docs/decisions/`** (gabarit
   `0000-template.md`), avec les options écartées et pourquoi.
 - **Avant de toucher à ce qui est fragile, lis `docs/PIEGES.md`** : chaque piège y a déjà été
   payé une fois.
-[% endif -%]
+[%- endif %]
 
 ---
 
