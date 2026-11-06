@@ -15,6 +15,7 @@ Ce que vérifie le banc, une fois pour tout le kit :
 Ce que vérifie chaque scénario :
 - les fichiers attendus sont là, les fichiers exclus n'y sont pas ;
 - aucun délimiteur de gabarit ne reste ([[ … ]], [% … %], [# … #]) et aucun fichier .jinja ;
+- un filet `---` a une ligne vide avant lui : sinon, Markdown fait un titre du paragraphe ;
 - les scripts d'outils/ se compilent et répondent à --help ;
 - les passages qui dépendent des réponses (dépôt public ou privé) sont les bons ;
 - recopy : un fichier vivant modifié est gardé, un fichier du kit effacé revient ;
@@ -294,6 +295,18 @@ def verifier_structure(dest: Path, presents: list[str], absents: list[str]) -> l
     return erreurs
 
 
+def verifier_filets(rel: str, texte: str) -> list[str]:
+    """Une condition mal fermée peut manger la ligne vide d'avant un filet, sans rien casser d'autre."""
+    erreurs, dans_code, avant = [], False, ""
+    for n, ligne in enumerate(texte.splitlines(), 1):
+        if ligne.lstrip().startswith("```"):
+            dans_code = not dans_code
+        elif not dans_code and ligne == "---" and avant.strip():
+            erreurs.append(f"filet collé au texte : {rel}:{n}")
+        avant = ligne
+    return erreurs
+
+
 def verifier_contenu(dest: Path) -> list[str]:
     erreurs = []
     for d in sorted(dest.rglob("*")):
@@ -311,6 +324,8 @@ def verifier_contenu(dest: Path) -> list[str]:
             continue
         if f.name.endswith(".yml") and "copier-answers" in f.name:
             continue
+        if f.suffix == ".md":
+            erreurs += verifier_filets(rel, texte)
         for n, ligne in enumerate(texte.splitlines(), 1):
             if DELIMITEURS.search(ligne):
                 erreurs.append(f"délimiteur restant : {rel}:{n}: {ligne.strip()[:90]}")
