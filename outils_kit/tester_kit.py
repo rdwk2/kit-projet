@@ -116,7 +116,8 @@ SANS_DEBUTANT = {"pyproject.toml": ["hypothesis", "TID251", "pyarrow", "\nstrict
                  "CLAUDE.md": ["Un objet invalide", "mode strict", "(`hypothesis`)",
                                "à la fin de chaque session de travail"]}
 AVEC_DEBUTANT = {"pyproject.toml": ["TID252", "check_untyped_defs = true"],
-                 "CLAUDE.md": ["accepté d'office", "pas exigé"]}
+                 "CLAUDE.md": ["accepté d'office", "pas exigé"],
+                 "docs/ROADMAP.md": ["Les trois principes qui gouvernent l'ordre", "**Tranches verticales** :"]}
 AVEC_COMPLET = {"pyproject.toml": ["hypothesis", "TID251", "strict = true"],
                 ".github/workflows/ci.yml": ["extras"], "CLAUDE.md": ["Un objet invalide", "mode strict"]}
 SANS_COMPLET = {"pyproject.toml": ["check_untyped_defs"], "CLAUDE.md": ["accepté d'office"]}
@@ -215,9 +216,13 @@ SCENARIOS: list[dict] = [
         OUTIL_PISTES],
      "jamais_cite": CITES_PISTES,
      # sans relectures : une clôture courte, et les 7 titres que lit extraire_piste.py
-     "contient": {"conception/CONTEXTE.md": ["**Prochaine étape**", "## 7. Prochaine séance"]},
+     "contient": {"conception/CONTEXTE.md": ["**Prochaine étape**", "## 7. Prochaine séance"],
+                  "conception/kit/gabarits/BRIEF_JALON.md": ["(facultatif)"],
+                  "conception/kit/IDIOMES_DEV.md": ["le niveau *socle* seul"]},
      "sans": {"conception/CONTEXTE.md": ["Ce qu'a fait", "États d'avant", "METHODE.md` en entier"],
               "conception/kit/gabarits/OUVERTURES_A.md": ["METHODE.md` en entier"],
+              # hypothesis n'est pas installé : pytest s'arrêterait sur cette option
+              "conception/kit/gabarits/BRIEF_JALON.md": ["--hypothesis-seed"],
               "conception/kit/prompts/PREMIERE_A.md": ["METHODE.md` ; le § 0"]},
      "refus": {"piste": "analyse"}},
     {"nom": "espace-perso-standard", "data": {"couche": "espace", "preset": "perso-standard", "public": True},
