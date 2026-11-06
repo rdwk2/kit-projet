@@ -67,6 +67,8 @@ dans un projet.
 - Dans la documentation, chaque bloc de commandes rappelle ce qu'il faut remplacer sur sa première ligne.
 - Noms de fichiers naturels : la présence se règle dans `_exclude`, pas dans les noms. Pas de
   `| : * ? " < >` dans un nom (Windows).
+- **`debutant`** vaut vrai en Solo léger et en Groupe scolaire : une variante pour débuter se met dans un
+  `[% if debutant %]`, sans toucher au texte de Standard et Complet.
 - **Barre `▌`** en marge : marque un paragraphe changé, le temps d'une relecture.
   `uv run outils_kit/retirer_barres.py` les retire.
 - **Schémas** : peu de boîtes, texte court, police de 22 px ; un lecteur ne peut pas zoomer. La source

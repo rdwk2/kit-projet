@@ -8,9 +8,13 @@ En clair : **A** conçoit avec [[ humain ]] et n'écrit pas de code ; [% if 'rel
 > une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
-> **À lire en entier à l'ouverture de toute conversation A**, avant `CONTEXTE.md`. [% if 'relectures' in modules %]B, C et
-> l'agent de code ne le lisent pas : leurs briefs et `CLAUDE.md` leur suffisent.[% else %]L'agent de
-> code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.[% endif %]
+[% if 'relectures' in modules -%]
+> **À lire en entier à l'ouverture de toute conversation A**, avant `CONTEXTE.md`. B, C et
+> l'agent de code ne le lisent pas : leurs briefs et `CLAUDE.md` leur suffisent.
+[%- else -%]
+> **À l'ouverture de toute conversation A, lire le § 0**, avant `CONTEXTE.md` ; le reste, quand il
+> sert. L'agent de code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.
+[%- endif %]
 >
 > Ce fichier porte les règles communes à tous les projets générés par ce kit, avec leur
 > « pourquoi ». Le `CONTEXTE.md` de chaque piste ne porte que ce qui est propre au projet
@@ -380,7 +384,7 @@ au moins autant de soin — et d'effort — que la session de code.
 
 ## 8. Modèle d'IA et effort
 
-Politique détaillée : `kit/MODELES_ET_EFFORTS.md` (lire son § 0 à l'ouverture). Ici, « modèle »
+Politique détaillée : `kit/MODELES_ET_EFFORTS.md` (lire son § 0 [% if 'relectures' in modules %]à l'ouverture[% else %]avant un passage de main[% endif %]). Ici, « modèle »
 veut dire modèle d'IA. Les règles qui ne bougent pas :
 
 - **On choisit à l'ouverture, en visant le moment le plus dur de la conversation, et on n'y
@@ -442,9 +446,10 @@ un seul sujet**, même longue : là, le fil du raisonnement *est* la valeur.
 `OUVERTURES_A«n».md` (gabarit `kit/gabarits/OUVERTURES_A.md`), qui donne aussi le modèle et
 l'effort. À défaut :
 
-> *Projet [[ projet ]], piste [[ piste ]]. Lis `conception[[ suffixe ]]/kit/METHODE.md` en
+> *Projet [[ projet ]], piste [[ piste ]]. [% if 'relectures' in modules %]Lis `conception[[ suffixe ]]/kit/METHODE.md` en
 > entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis `CONTEXTE.md` en entier et les ★ de
-> `kit/LECONS.md`[% if piste != 'principale' %], puis
+> `kit/LECONS.md`[% else %]Lis le § 0 de `conception[[ suffixe ]]/kit/METHODE.md`, puis `CONTEXTE.md`
+> en entier[% endif %][% if piste != 'principale' %], puis
 > `kit/PISTES.md`[% endif %], et applique-les. Si `kit/perso/` existe, lis-le aussi : il complète ces règles et il prime.
 > Puis, selon la mission, `docs/ROADMAP.md` et `docs/decisions/` dans
 > le miroir. [ce qu'on fait aujourd'hui]*
@@ -452,7 +457,7 @@ l'effort. À défaut :
 Cette liste est **la** liste de l'ouverture : le CONTEXTE, l'index et les messages d'ouverture
 y renvoient.
 
-L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir, dernier JOURNAL), pas dans
+L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir[% if 'groupe' not in modules %], dernier JOURNAL[% endif %]), pas dans
 sa mémoire ni dans un résumé.
 
 **Une A compactée passe la main.** Une A dont la conversation a été compactée — l'historique
@@ -472,12 +477,20 @@ dans `passations/CONTEXTE_avant_A«n».md` (une copie par clôture). Puis :
    de la machine), et le dit à [[ humain ]] ;
 3. elle ne **retire ni ne résume** rien des §§ 1, 2, 3 et 6 sans l'accord explicite [[ de_humain ]] ;
    une règle devenue fausse se corrige par une note datée, à côté du texte d'origine ;
+[% if 'relectures' in modules -%]
 4. elle met à jour la table des matières si elle ajoute, renomme ou déplace une sous-section ;
 5. si [[ humain ]] maintient le kit, ou si l'enseignant le demande, ce qui vaut au-delà du projet
    (une règle, une leçon, un piège d'outillage, un gabarit amélioré) va **aussi** dans
    `REMONTEES_KIT.md` (§ 12) ; sinon, à ignorer ;
 6. elle écrit le message d'ouverture de l'A suivante, `OUVERTURES_A«n+1».md`, avec modèle et
    effort, et ce [[ que_humain ]] fait avant de l'ouvrir.
+[%- else -%]
+4. elle écrit le message d'ouverture de l'A suivante, `OUVERTURES_A«n+1».md`, en quelques lignes : où
+   on en est, ce qu'elle fait, modèle et effort. Elle finit par les commandes [[ de_humain ]].
+
+Si [[ humain ]] maintient le kit, ou si l'enseignant le demande, ce qui vaut au-delà du projet va
+**aussi** dans `REMONTEES_KIT.md` (§ 12).
+[%- endif %]
 
 **Le CONTEXTE a un plafond** (environ 60 Ko). Au-delà, il devient un coût fixe à chaque
 ouverture : l'historique et le détail des jalons fusionnés partent [% if 'archives' in modules %]aux archives
@@ -494,12 +507,14 @@ réduit le périmètre, pas le soin.
 
 | Fichier du kit | Contenu | Quand le lire |
 |---|---|---|
-| `kit/MODELES_ET_EFFORTS.md` | politique de modèle et d'effort, réglages actifs (§ 0) | § 0 à l'ouverture ; le reste avant un passage de main |
-| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ à l'ouverture ; le thème concerné avant d'écrire un brief, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/MODELES_ET_EFFORTS.md` | politique de modèle et d'effort, réglages actifs (§ 0) | [% if 'relectures' in modules %]§ 0 à l'ouverture ; le reste avant un passage de main[% else %]avant un passage de main[% endif %] |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | [% if 'relectures' in modules %]les ★ à l'ouverture ; le thème concerné[% else %]les ★ et le thème concerné[% endif %] avant d'écrire un brief, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
 | `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | avant de donner une commande à [[ humain ]] |
 | `kit/VOCABULAIRE.md` | les termes du workflow | à la demande |
 | `kit/IDIOMES_DEV.md` | les idiomes de développement repérés | en écrivant un brief ; pour expliquer du code à [[ humain ]] |
+[% if 'pistes' in modules -%]
 | `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | à l'ouverture d'une A d'une piste parallèle ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+[% endif -%]
 [% if 'archives' in modules -%]
 | `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire | à chaque clôture |
 [% endif -%]

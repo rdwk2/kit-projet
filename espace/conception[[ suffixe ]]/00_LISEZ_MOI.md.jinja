@@ -11,7 +11,7 @@ voit.
 
 **Où en est le projet.** «Trois à cinq lignes, réécrites à chaque clôture : les jalons fusionnés
 (`main` = «commit») ; le jalon en cours et son étape (cadrage, brief révision «r», plan, PR #«n» en
-relecture…) ; ce qui attend une décision [[ de_humain ]] ; les autres pistes et leurs PR ouvertes.» Détail :
+relecture…) ; ce qui attend une décision [[ de_humain ]][% if 'pistes' in modules %] ; les autres pistes et leurs PR ouvertes[% endif %].» Détail :
 `CONTEXTE.md`, §§ 4, 5 et 7.
 
 **Entrée de reprise** : `kit/METHODE.md`, § 10 ; les autres fichiers du kit au moment dit
@@ -24,13 +24,15 @@ Ils se rafraîchissent à chaque mise à jour du kit (`copier recopy`) et ne se 
 
 | Fichier | Contenu | Quand le lire |
 |---|---|---|
-| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | **à l'ouverture**, en entier, avant `CONTEXTE.md` |
-| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | **à l'ouverture** (§ 0) ; le reste avant un passage de main |
-| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ **à l'ouverture** ; le thème concerné **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | [% if 'relectures' in modules %]**à l'ouverture**, en entier, avant `CONTEXTE.md`[% else %]le § 0 **à l'ouverture**, avant `CONTEXTE.md` ; le reste, quand il sert[% endif %] |
+| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | [% if 'relectures' in modules %]**à l'ouverture** (§ 0) ; le reste avant un passage de main[% else %]**avant un passage de main**[% endif %] |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | [% if 'relectures' in modules %]les ★ **à l'ouverture** ; le thème concerné[% else %]les ★ et le thème concerné[% endif %] **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
 | `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | **avant de donner des commandes** à [[ humain ]] |
 | `kit/VOCABULAIRE.md` | les termes du workflow et du kit | **à la demande** |
 | `kit/IDIOMES_DEV.md` | les idiomes de développement, par niveau | **avant le premier brief** qui crée du code ; pour expliquer du code à [[ humain ]] |
+[% if 'pistes' in modules -%]
 | `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | **à l'ouverture** si cette piste n'est pas la principale ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+[% endif -%]
 [% if 'archives' in modules -%]
 | `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire, la copie d'avant | à chaque clôture, **avant de donner des commandes** d'archivage |
 [% endif -%]

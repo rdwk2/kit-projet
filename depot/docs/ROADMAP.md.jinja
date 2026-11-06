@@ -8,6 +8,12 @@
 
 ## Les trois principes qui gouvernent l'ordre
 
+[% if debutant -%]
+1. **Tranches verticales** : à chaque jalon, quelque chose marche de bout en bout.
+2. **Les formes de données d'abord** : ce qui circule entre deux morceaux du code se décide avant de
+   les écrire.
+3. **La mesure avant les réglages** : on sait mesurer si ça marche avant de raffiner.
+[%- else -%]
 **1. Tranches verticales, pas couches horizontales.**
 On ne fait pas « toute la lecture », puis « tout le modèle », puis « tout l'affichage ». On fait
 un chemin fin de bout en bout, puis on l'épaissit. À chaque palier, quelque chose marche et
@@ -21,6 +27,7 @@ deux briques en parallèle.
 **3. La mesure avant les paramètres.**
 Le moyen de mesurer si ça marche existe **avant** qu'on raffine. Un paramètre ou un effet qui
 ne fait pas progresser la mesure ne rentre pas — ou rentre avec une justification écrite.
+[%- endif %]
 
 ---
 

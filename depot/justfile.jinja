@@ -15,7 +15,7 @@ lint:
     uv run ruff check .
     uv run ruff format --check .
 
-# Typage strict (cibles définies dans pyproject.toml : src/ et tests/)
+# Typage[% if not debutant %] strict[% endif %] (cibles définies dans pyproject.toml : src/ et tests/)
 types:
     uv run mypy
 

@@ -15,15 +15,19 @@ Ce que vérifie le banc, une fois pour tout le kit :
 Ce que vérifie chaque scénario :
 - les fichiers attendus sont là, les fichiers exclus n'y sont pas ;
 - aucun délimiteur de gabarit ne reste ([[ … ]], [% … %], [# … #]) et aucun fichier .jinja ;
+- un filet `---` a une ligne vide avant lui : sinon, Markdown fait un titre du paragraphe ;
 - les scripts d'outils/ se compilent et répondent à --help ;
 - les passages qui dépendent des réponses (dépôt public ou privé) sont les bons ;
 - recopy : un fichier vivant modifié est gardé, un fichier du kit effacé revient ;
 - update (dépôt) : une nouveauté du kit arrive, une modification locale reste ;
 - extraction entre pistes : le CONTEXTE généré suit le plan fixe d'extraire_piste.py ;
 - chaque renvoi à une entrée de kit/MACHINE.md existe ;
+- `CLAUDE.md` a ses huit règles, avec leurs numéros, dans tous les préréglages ;
+- un préréglage ne cite aucun fichier qu'il n'a pas, et refuse une piste sans le module pistes ;
 - un `racine` en `~/…` donne un chemin absolu aux scripts ;
 - avec --complet : uv sync, uv sync --locked et just check dans chaque dépôt Python généré,
-  avec un module qui écrit comme un mathématicien (`A`, `X`, `l`, lettres grecques).
+  avec un module qui écrit comme un mathématicien (`A`, `X`, `l`, lettres grecques) et, pour
+  débuter, une fonction sans annotations.
 Code de sortie 0 si tout passe.
 """
 
@@ -79,6 +83,14 @@ def total(l: list[float]) -> float:
     return sum(l)
 '''
 
+MODULE_SOUPLE = '''"""Une fonction sans annotations : mypy en mode souple l'accepte."""
+
+
+def carre(x):
+    """Renvoie le carré de x."""
+    return x * x
+'''
+
 BASE = {
     "projet": "Projet d'essai",
     "slug": "projet-essai",
@@ -96,8 +108,20 @@ DEPOT_SOCLE = [
 ]
 DEPOT_PYTHON = [
     "pyproject.toml", "justfile", ".python-version", "src/projet_essai/__init__.py",
-    "src/projet_essai/py.typed", "tests/test_socle.py", ".github/workflows/ci.yml",
+    "tests/test_socle.py", ".github/workflows/ci.yml",
 ]
+PY_TYPED = "src/projet_essai/py.typed"
+# Ce qu'un préréglage pour débuter n'a pas, et ce qu'il a à la place.
+SANS_DEBUTANT = {"pyproject.toml": ["hypothesis", "TID251", "pyarrow", "\nstrict = true"],
+                 ".github/workflows/ci.yml": ["extras"], "justfile": ["strict"],
+                 "CLAUDE.md": ["Un objet invalide", "mode strict", "(`hypothesis`)",
+                               "à la fin de chaque session de travail"]}
+AVEC_DEBUTANT = {"pyproject.toml": ["TID252", "check_untyped_defs = true"],
+                 "CLAUDE.md": ["accepté d'office", "pas exigé"],
+                 "docs/ROADMAP.md": ["Les trois principes qui gouvernent l'ordre", "**Tranches verticales** :"]}
+AVEC_COMPLET = {"pyproject.toml": ["hypothesis", "TID251", "strict = true"],
+                ".github/workflows/ci.yml": ["extras"], "CLAUDE.md": ["Un objet invalide", "mode strict"]}
+SANS_COMPLET = {"pyproject.toml": ["check_untyped_defs"], "CLAUDE.md": ["accepté d'office"]}
 DEPOT_DONNEES = [
     ".env.example", ".claude/settings.json", "scripts/hooks/proteger_donnees.py",
 ]
@@ -115,13 +139,10 @@ def espace_socle(s: str = "") -> list[str]:
         f"{c}/passations/LISEZ_MOI.md",
         f"{c}/kit/METHODE.md", f"{c}/kit/MODELES_ET_EFFORTS.md", f"{c}/kit/LECONS.md",
         f"{c}/kit/MACHINE.md", f"{c}/kit/VOCABULAIRE.md", f"{c}/kit/IDIOMES_DEV.md",
-        f"{c}/kit/PISTES.md",
         f"{c}/kit/gabarits/LISEZ_MOI.md", f"{c}/kit/gabarits/BRIEF_JALON.md",
         f"{c}/kit/gabarits/OUVERTURES_A.md", f"{c}/kit/gabarits/CONSIGNE_CODE.md",
         f"{c}/kit/gabarits/FEU_VERT_PLAN.md", f"{c}/kit/gabarits/CORRECTIFS.md",
         f"{c}/kit/gabarits/ARBITRAGE.md", f"{c}/kit/gabarits/REVUE_PR.md",
-        f"{c}/kit/gabarits/RELAIS.md", f"{c}/kit/gabarits/REPONSE_RELAIS.md",
-        f"{c}/kit/gabarits/MESSAGE_FUSION_PISTE.md", f"{c}/kit/gabarits/NOTE_PISTE.md",
         f"{c}/kit/prompts/PREMIERE_A.md", f"{c}/kit/prompts/CONSOLIDATION_KIT.md",
         f"{c}/kit/prompts/SESSION_EXPLICATION.md",
         f"v_for_cowork{s}/LISEZ_MOI.md",
@@ -130,9 +151,11 @@ def espace_socle(s: str = "") -> list[str]:
 
 ESPACE_RACINE = [
     "00_LISEZ_MOI_ESPACE.md", "outils/espace.py", "outils/diff_pr.py", "outils/miroir.py",
-    "outils/compte_rendu_pr.py", "outils/revue_pr.py", "outils/extraire_piste.py",
-    "outils/tete_pr.py",
+    "outils/compte_rendu_pr.py", "outils/revue_pr.py", "outils/tete_pr.py",
 ]
+OUTIL_PISTES = "outils/extraire_piste.py"
+# Ce qu'un projet sans le module pistes ne cite nulle part : il n'a pas ces fichiers.
+CITES_PISTES = ["PISTES.md", "NOTE_PISTE", "RELAIS.md", "MESSAGE_FUSION_PISTE", "extraire_piste"]
 
 
 def espace_relectures(s: str = "") -> list[str]:
@@ -142,6 +165,12 @@ def espace_relectures(s: str = "") -> list[str]:
         f"{c}/kit/gabarits/ANNEXE_B.md", f"{c}/kit/gabarits/ANNEXE_C.md",
         f"{c}/kit/gabarits/DEPART_B.md", f"{c}/kit/gabarits/DEMARRAGE_C.md",
     ]
+
+
+def espace_pistes(s: str = "") -> list[str]:
+    g = f"conception{s}/kit/gabarits"
+    return [f"conception{s}/kit/PISTES.md", f"{g}/RELAIS.md", f"{g}/REPONSE_RELAIS.md",
+            f"{g}/MESSAGE_FUSION_PISTE.md", f"{g}/NOTE_PISTE.md"]
 
 
 def espace_archives(s: str = "") -> list[str]:
@@ -157,35 +186,58 @@ def espace_expert(s: str = "") -> list[str]:
 SCENARIOS: list[dict] = [
     {"nom": "depot-solo-leger", "data": {"couche": "depot", "preset": "solo-leger"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON,
-     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE, "python": True, "update": True},
+     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE + [PY_TYPED], "python": True, "souple": True,
+     "update": True, "contient": AVEC_DEBUTANT, "sans": SANS_DEBUTANT},
     {"nom": "depot-groupe", "data": {"couche": "depot", "preset": "groupe-scolaire"},
      "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_GROUPE,
-     "absents": DEPOT_DONNEES + DEPOT_ANALYSE, "python": True},
+     "absents": DEPOT_DONNEES + DEPOT_ANALYSE + [PY_TYPED], "python": True, "souple": True,
+     # une entrée de JOURNAL par PR ferait un conflit à chaque fusion
+     "contient": {**AVEC_DEBUTANT, "docs/JOURNAL.md": ["**Une entrée par livraison**"],
+                  "docs/LIVRAISONS.md": ["docs/JOURNAL.md"], "CONTRIBUTING.md": ["docs/JOURNAL.md"]},
+     "sans": {**SANS_DEBUTANT, "docs/JOURNAL.md": ["par session"]}},
+    {"nom": "depot-perso-standard", "data": {"couche": "depot", "preset": "perso-standard"},
+     "presents": DEPOT_SOCLE + DEPOT_PYTHON + [PY_TYPED],
+     "absents": DEPOT_DONNEES + DEPOT_GROUPE + DEPOT_ANALYSE, "python": True,
+     "contient": AVEC_COMPLET, "sans": SANS_COMPLET},
     {"nom": "depot-perso-complet", "data": {"couche": "depot", "preset": "perso-complet",
      # une description longue : le dépôt généré doit quand même passer `just check` (E501)
      "description": "Une description volontairement longue, comme celle d'un vrai projet pour un client, "
                     "qui dépasse largement la longueur de ligne de ruff une fois dans la docstring."},
-     "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_DONNEES + ["tests/test_proteger_donnees.py"],
-     "absents": DEPOT_GROUPE + DEPOT_ANALYSE, "python": True},
+     "presents": DEPOT_SOCLE + DEPOT_PYTHON + DEPOT_DONNEES + [PY_TYPED, "tests/test_proteger_donnees.py"],
+     "absents": DEPOT_GROUPE + DEPOT_ANALYSE, "python": True,
+     "contient": AVEC_COMPLET, "sans": SANS_COMPLET},
     {"nom": "depot-autre-analyse", "data": {"couche": "depot", "preset": "personnalise",
                                              "modules_choisis": ["analyse-donnees"], "langage": "autre"},
      "presents": DEPOT_SOCLE + DEPOT_ANALYSE,
-     "absents": DEPOT_PYTHON + DEPOT_DONNEES + DEPOT_GROUPE},
+     "absents": DEPOT_PYTHON + [PY_TYPED] + DEPOT_DONNEES + DEPOT_GROUPE},
     {"nom": "espace-solo-leger", "data": {"couche": "espace", "preset": "solo-leger"},
      "presents": espace_socle() + ESPACE_RACINE,
-     "absents": espace_relectures() + espace_archives() + espace_expert()
-     + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md", "outils/clone_c.py", "outils/archiver.py"]},
+     "absents": espace_relectures() + espace_archives() + espace_expert() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md", "outils/clone_c.py", "outils/archiver.py",
+        OUTIL_PISTES],
+     "jamais_cite": CITES_PISTES,
+     # sans relectures : une clôture courte, et les 7 titres que lit extraire_piste.py
+     "contient": {"conception/CONTEXTE.md": ["**Prochaine étape**", "## 7. Prochaine séance"],
+                  "conception/kit/gabarits/BRIEF_JALON.md": ["(facultatif)"],
+                  "conception/kit/IDIOMES_DEV.md": ["le niveau *socle* seul"]},
+     "sans": {"conception/CONTEXTE.md": ["Ce qu'a fait", "États d'avant", "METHODE.md` en entier"],
+              "conception/kit/gabarits/OUVERTURES_A.md": ["METHODE.md` en entier"],
+              # hypothesis n'est pas installé : pytest s'arrêterait sur cette option
+              "conception/kit/gabarits/BRIEF_JALON.md": ["--hypothesis-seed"],
+              "conception/kit/prompts/PREMIERE_A.md": ["METHODE.md` ; le § 0"]},
+     "refus": {"piste": "analyse"}},
     {"nom": "espace-perso-standard", "data": {"couche": "espace", "preset": "perso-standard", "public": True},
-     "presents": espace_socle() + ESPACE_RACINE + espace_relectures()
-     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py"],
+     "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
      "absents": espace_archives() + espace_expert() + ["conception/kit/MUTATION.md", "outils/archiver.py"],
-     # dépôt public : les parades anonymes sont données
-     "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"]},
+     # dépôt public : les parades anonymes sont données ; avec relectures, la clôture complète
+     "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"],
+                  "conception/CONTEXTE.md": ["Ce qu'a fait la", "États d'avant"]},
      "sans": {"conception/kit/MACHINE.md": ["Le dépôt est privé"]}},
     {"nom": "espace-perso-complet", "data": {"couche": "espace", "preset": "perso-complet"},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_archives()
-     + espace_expert() + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md",
-                          "outils/clone_c.py", "outils/archiver.py"],
+     + espace_expert() + espace_pistes() + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md",
+                                            "outils/clone_c.py", "outils/archiver.py", OUTIL_PISTES],
      "absents": [], "recopy": True,
      # dépôt privé (défaut) : pas de parade anonyme
      "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "Le dépôt est privé"]},
@@ -193,9 +245,20 @@ SCENARIOS: list[dict] = [
      # puis une piste « analyse » dans la même racine
      "piste": {"data": {"couche": "espace", "preset": "perso-complet", "piste": "analyse"},
                "presents": espace_socle("_analyse") + espace_relectures("_analyse")
-               + espace_archives("_analyse") + espace_expert("_analyse")
+               + espace_archives("_analyse") + espace_expert("_analyse") + espace_pistes("_analyse")
                + [".copier-answers.espace_analyse.yml"],
                "absents": []}},
+    # Le module pistes sans relectures : extraire_piste.py doit lire le CONTEXTE de ce préréglage.
+    {"nom": "espace-pistes-seules", "data": {"couche": "espace", "preset": "personnalise",
+                                              "modules_choisis": ["pistes"]},
+     "presents": espace_socle() + ESPACE_RACINE + espace_pistes() + [OUTIL_PISTES],
+     "absents": espace_relectures() + espace_archives() + espace_expert()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py"],
+     "piste": {"data": {"couche": "espace", "preset": "personnalise", "modules_choisis": ["pistes"],
+                        "piste": "analyse"},
+               "presents": espace_socle("_analyse") + espace_pistes("_analyse")
+               + [".copier-answers.espace_analyse.yml"],
+               "absents": espace_relectures("_analyse")}},
 ]
 
 
@@ -232,6 +295,18 @@ def verifier_structure(dest: Path, presents: list[str], absents: list[str]) -> l
     return erreurs
 
 
+def verifier_filets(rel: str, texte: str) -> list[str]:
+    """Une condition mal fermée peut manger la ligne vide d'avant un filet, sans rien casser d'autre."""
+    erreurs, dans_code, avant = [], False, ""
+    for n, ligne in enumerate(texte.splitlines(), 1):
+        if ligne.lstrip().startswith("```"):
+            dans_code = not dans_code
+        elif not dans_code and ligne == "---" and avant.strip():
+            erreurs.append(f"filet collé au texte : {rel}:{n}")
+        avant = ligne
+    return erreurs
+
+
 def verifier_contenu(dest: Path) -> list[str]:
     erreurs = []
     for d in sorted(dest.rglob("*")):
@@ -249,6 +324,8 @@ def verifier_contenu(dest: Path) -> list[str]:
             continue
         if f.name.endswith(".yml") and "copier-answers" in f.name:
             continue
+        if f.suffix == ".md":
+            erreurs += verifier_filets(rel, texte)
         for n, ligne in enumerate(texte.splitlines(), 1):
             if DELIMITEURS.search(ligne):
                 erreurs.append(f"délimiteur restant : {rel}:{n}: {ligne.strip()[:90]}")
@@ -270,6 +347,37 @@ def verifier_renvois(dest: Path) -> list[str]:
                 if renvoi not in connues:
                     erreurs.append(f"renvoi sans entrée : {f.relative_to(dest).as_posix()}:{n}: {renvoi}")
     return erreurs
+
+
+def verifier_regles(dest: Path) -> list[str]:
+    """`CLAUDE.md` promet des numéros stables : les règles 1 à 8 sont là, dans tous les préréglages."""
+    claude = dest / "CLAUDE.md"
+    if not claude.is_file():
+        return []
+    partie = claude.read_text(encoding="utf-8").split("## Règles dures")[1].split("\n---")[0]
+    numeros = re.findall(r"^(\d+)\. ", partie, re.M)
+    return [] if numeros == list("12345678") else [f"règles de CLAUDE.md : {numeros}"]
+
+
+def verifier_jamais_cite(dest: Path, noms: list[str]) -> list[str]:
+    """Un fichier qu'un préréglage n'a pas n'y est cité nulle part : un renvoi ne mène pas dans le vide."""
+    erreurs = []
+    for f in sorted(dest.rglob("*")):
+        if not f.is_file() or f.suffix not in {".md", ".py"} or ".git" in f.parts:
+            continue
+        for n, ligne in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            erreurs += [f"cite un fichier absent : {f.relative_to(dest).as_posix()}:{n}: {nom}"
+                        for nom in noms if nom in ligne]
+    return erreurs
+
+
+def verifier_refus(racine: Path, data: dict) -> list[str]:
+    """Une piste sans le module pistes est refusée, avec un message qui dit quoi faire."""
+    try:
+        generer(racine / "refus", data)
+    except Exception as exc:  # noqa: BLE001 — Copier lève selon la version ; seul le message compte
+        return [] if "module pistes" in str(exc) else [f"refus sans explication : {exc}"]
+    return ["une piste est acceptée sans le module pistes"]
 
 
 def verifier_chemins(dest: Path) -> list[str]:
@@ -426,11 +534,13 @@ def verifier_recopy(dest: Path) -> list[str]:
     return erreurs
 
 
-def verifier_python(dest: Path) -> list[str]:
+def verifier_python(dest: Path, souple: bool) -> list[str]:
     if not shutil.which("uv") or not shutil.which("just"):
         return ["--complet demande uv et just dans le PATH"]
     # Du code de maths doit passer : majuscules, `l`, lettres grecques.
     (dest / "src" / "projet_essai" / "exemple_maths.py").write_text(MODULE_MATHS, encoding="utf-8", newline="\n")
+    if souple:
+        (dest / "src" / "projet_essai" / "exemple_souple.py").write_text(MODULE_SOUPLE, encoding="utf-8", newline="\n")
     # --locked : ce que lance la CI au premier envoi.
     for cmd in (["git", "init", "-q"], ["uv", "sync", "-q"], ["uv", "sync", "-q", "--locked"], ["just", "check"]):
         r = subprocess.run(cmd, cwd=dest, capture_output=True, text=True)
@@ -478,6 +588,10 @@ def main() -> int:
             erreurs += verifier_textes(dest, sc.get("contient", {}), sc.get("sans", {}))
             erreurs += verifier_contenu(dest)
             erreurs += verifier_renvois(dest)
+            erreurs += verifier_regles(dest)
+            erreurs += verifier_jamais_cite(dest, sc.get("jamais_cite", []))
+            if "refus" in sc:
+                erreurs += verifier_refus(racine, {**sc["data"], **sc["refus"]})
             erreurs += verifier_outils(dest)
             erreurs += verifier_chemins(dest)
             if sc.get("recopy"):
@@ -485,7 +599,7 @@ def main() -> int:
             if sc.get("update"):
                 erreurs += verifier_update(racine, sc["data"])
             if args.complet and sc.get("python"):
-                erreurs += verifier_python(dest)
+                erreurs += verifier_python(dest, sc.get("souple", False))
         except Exception as exc:  # noqa: BLE001 — un scénario qui plante est un échec, pas un arrêt
             erreurs.append(f"{type(exc).__name__}: {exc}{lieu_erreur(exc)}")
         bilan.append((sc["nom"], erreurs))

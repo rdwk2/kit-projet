@@ -28,7 +28,7 @@ Le préréglage choisit les modules : les fonctions que le kit ajoute. Tu pourra
 |---|---|---|:-:|:-:|:-:|:-:|
 | *socle du dépôt* | dépôt | `CLAUDE.md`, `AGENTS.md`, `README.md`, `BACKLOG.md`, `docs/` | ✓ | ✓ | ✓ | ✓ |
 | *Python* (question « langage ») | dépôt | uv, just, ruff, mypy, pytest, CI : `just check` vert dès la génération | ✓ | ✓ | ✓ | ✓ |
-| `groupe` | dépôt | `CONTRIBUTING.md` pour débutants, modèle de PR, livraisons par tags | | ✓ | | |
+| `groupe` | dépôt | `CONTRIBUTING.md` pour débutants, modèle de PR, livraisons par tags ; le `JOURNAL` s'écrit à chaque livraison, pas à chaque PR | | ✓ | | |
 | `donnees-privees` | dépôt | Données hors du dépôt, protégées de Claude Code par un hook | | | | ✓ |
 | `analyse-donnees` | dépôt | Pour un projet qui analyse des données : une charte (les règles que l'analyse s'impose avant de commencer) et la liste des questions posées aux données | | | | à cocher |
 | *socle de l'espace IA* | espace IA | Le minimum pour une conversation de conception : son dossier, ses scripts, ses modèles de documents | facultatif | facultatif | ✓ | ✓ |
@@ -36,8 +36,14 @@ Le préréglage choisit les modules : les fonctions que le kit ajoute. Tu pourra
 | `archives` | espace IA | Archives de la conception | | | | ✓ |
 | `mutation` | espace IA | Vérifier que les tests détectent une erreur | | | | ✓ |
 | `expert` | espace IA | Passes expertes et sessions à part | | | | ✓ |
+| `pistes` | espace IA | Plusieurs axes de travail sur le même dépôt (§ 5) | | | ✓ | ✓ |
 
-**En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une quarantaine de fichiers
+**Solo léger et Groupe scolaire reçoivent un dépôt allégé** : un `CLAUDE.md` plus court, `mypy` en mode
+souple, et les tests de propriété facultatifs (`uv add --dev hypothesis` les ajoute). Standard et Complet
+gardent les règles complètes et `mypy` strict. Pour durcir un projet : `strict = true` dans
+`pyproject.toml`.
+
+**En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une trentaine de fichiers
 qu'un débutant n'a pas à lire. Dans un groupe, les camarades n'ont besoin que du dépôt.
 
 Dans les commandes, « Standard » s'écrit `perso-standard`, et « Complet », `perso-complet`.
@@ -178,10 +184,13 @@ est dans `conception/kit/METHODE.md`, et le principe dans [le workflow expliqué
 ## 5. Ajouter une piste parallèle
 
 Une piste est un axe de travail qui avance en parallèle, avec ses propres conversations : par exemple, un
-moteur de calcul d'un côté, et l'exploitation de ses résultats de l'autre. Lis d'abord
-`conception/kit/PISTES.md` : souvent, une seule A suffit.
+moteur de calcul d'un côté, et l'exploitation de ses résultats de l'autre.
 
-Sinon, pour une piste que tu appelles `ma-piste`, en minuscules :
+Il faut le module `pistes`. Standard et Complet l'ont. Sinon, ajoute-le d'abord (§ 6), et écris les
+mêmes `preset` et `modules_choisis` dans `mon-projet.yml` : le kit refuse une piste sans ce module.
+
+Lis ensuite `conception/kit/PISTES.md` : souvent, une seule A suffit. Sinon, pour une piste que tu
+appelles `ma-piste`, en minuscules :
 
 ```bash
 # À remplacer : ~/dev, mon-projet et ma-piste
@@ -237,11 +246,11 @@ uvx copier recopy --defaults --overwrite -a .copier-answers.espace.yml
 ```
 
 **Ajouter un module** : relance la commande de la couche concernée, avec la liste complète des modules
-voulus. Par exemple, pour l'espace IA :
+voulus, y compris ceux que tu as déjà : Standard vaut `[relectures, pistes]`. Par exemple, pour l'espace IA :
 
 ```bash
 # Depuis la racine de l'espace IA. À remplacer : la liste des modules
-uvx copier recopy --defaults --overwrite -a .copier-answers.espace.yml --data preset=personnalise --data "modules_choisis=[relectures, archives]"
+uvx copier recopy --defaults --overwrite -a .copier-answers.espace.yml --data preset=personnalise --data "modules_choisis=[relectures, pistes, archives]"
 ```
 
 Les fichiers du module arrivent ; les fichiers vivants ne bougent pas : dis-le à l'A suivante.

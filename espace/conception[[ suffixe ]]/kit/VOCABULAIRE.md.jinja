@@ -53,15 +53,17 @@
 | **Sous-jalon** | Un lot, vu depuis la roadmap : il porte le numéro du jalon, suivi d'une lettre. | `[[ prefixe_jalon ]]3a`. |
 | **ROADMAP** | `docs/ROADMAP.md` : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
 | **BACKLOG** | `BACKLOG.md` : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
-| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | Une entrée par session. |
+| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | [% if 'groupe' in modules %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
 | **Tranche verticale** | Un petit morceau qui marche de bout en bout. | Lire un fichier, calculer, afficher une valeur. |
 | **Artefact** | Un document produit puis relu : un brief, un plan, un cadrage. | « un artefact mérite plus d'effort qu'une conversation ». |
 | **Contrat** | Ce qu'un type ou une fonction promet à ceux qui s'en servent. | « ce type refuse toute valeur infinie ». |
 | **Invariant** | Une propriété vraie pour tout objet valide. | « la série commence à zéro ». |
 | **Vérité terrain** | Ce qu'on observe dans le réel, sans passer par le modèle. | Une mesure, un usage réel. |
-| **Piste** | Une ligne de travail parallèle dans le même dépôt, avec sa propre conversation de conception, ses dossiers et son `CONTEXTE.md` (`kit/PISTES.md`). | `conception_analyse/`, jalons `AN1`, `AN2`… |
+| **Piste** | Une ligne de travail parallèle dans le même dépôt, avec sa propre conversation de conception, ses dossiers et son `CONTEXTE.md`[% if 'pistes' in modules %] (`kit/PISTES.md`)[% endif %]. | `conception_analyse/`, jalons `AN1`, `AN2`… |
+[% if 'pistes' in modules -%]
 | **Référence** (piste de) | La piste qui existait déjà quand une autre s'ouvre, en général `principale`. | L'A de référence, le CONTEXTE de référence. |
 | **Point de contact** | Un fichier ou un sujet commun à deux pistes, qui demande de se coordonner (`kit/PISTES.md`, § 5). | `CLAUDE.md`, le `justfile`, la CI. |
+[% endif -%]
 | **Cadrage** | Le document qui précède le premier brief d'un jalon : les mesures (M), les questions posées à [[ humain ]] (Q) et ses décisions (§ D). | `«NN»_CADRAGE_«jalon».md`, révision «r», tranchée. |
 | **Découpage** | Le partage d'un jalon en lots, avec les décisions qui le justifient. | Un jalon en cinq PR, chacune avec son « fini quand ». |
 | **Brief** | La consigne écrite pour l'agent de code : autoportante, avec ses critères d'acceptation, ses scénarios et ses contre-épreuves. | `«NN»_BRIEF_«jalon».md`. |
@@ -127,8 +129,8 @@
 
 ## 5. La vie des conversations
 
-Quatre mots voisins : la **relève** remplace une A par une neuve ; la **passation** transmet des
-pièces ; le **relais** est un message entre deux pistes ; le **passage de main** (§ 7) est le moment
+[% if 'pistes' in modules %]Quatre[% else %]Trois[% endif %] mots voisins : la **relève** remplace une A par une neuve ; la **passation** transmet des
+pièces ; [% if 'pistes' in modules %]le **relais** est un message entre deux pistes ; [% endif %]le **passage de main** (§ 7) est le moment
 où A lance une autre session.
 
 | Terme | Définition | Exemple |
@@ -143,8 +145,10 @@ où A lance une autre session.
 | **Passation** | La transmission d'une conversation à une autre (message, paquet) ; par extension, le dossier `passations/` où vivent ces pièces et la copie d'avant. | [% if 'relectures' in modules %]Le paquet d'une C, le départ de B.[% else %]Le message d'ouverture de l'A suivante.[% endif %] |
 | **Tenue** (notes de tenue) | Les notes de travail d'une A, déposées au fil de l'eau, reprises dans le CONTEXTE à la clôture. | `«outils du jalon»/tenue_A«n»/notes_A«n».md`. |
 | **Outils du jalon** | Le dossier de travail d'un jalon en conception : révisions, prototype, mesures, notes de tenue. | `«outils du jalon»/`, retiré quand le jalon est fusionné. |
+[% if 'pistes' in modules -%]
 | **Relais** | Un message numéroté entre deux conceptions qui ne se parlent pas, transmis par [[ humain ]] (`kit/PISTES.md`). | Un accord sur un fichier commun aux deux pistes. |
 | **Extrait** | Une copie générée de sections d'un fichier, donnée à une autre piste par un script qui ne fait que lire. | Les sections de méthode du CONTEXTE d'une piste, pour l'autre. |
+[% endif -%]
 | **Paquet** | Le dossier de pièces préparé pour une session (code, relecture, expert). | `passations/«nom»/`, avec son `DEMARRAGE.md`. |
 | **Préparateur** | Le script qui construit un paquet. | Il recopie à l'octet le brief, le plan[% if 'relectures' in modules %] et l'annexe[% endif %]. |
 | **Démarrage** | Le premier message d'une session de relecture, avec ses commandes. | « Lis paquet/DEMARRAGE.md et exécute-le. » |

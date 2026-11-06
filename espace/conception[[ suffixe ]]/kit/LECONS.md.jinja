@@ -4,10 +4,17 @@
 > une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
+[% if 'relectures' in modules -%]
 > **Les ★ se lisent à l'ouverture de toute conversation A** (la conversation de conception),
 > après `kit/METHODE.md` ; le thème concerné, avant d'écrire l'artefact correspondant. B, C (les
 > relectures) et l'agent de code ne lisent pas ce fichier : ce qui les concerne est déjà dans
 > leurs briefs et dans `CLAUDE.md`. Les mots du kit sont définis dans `kit/VOCABULAIRE.md`.
+[%- else -%]
+> **Les ★ se lisent avant le premier brief d'une conversation A** (la conversation de conception) ;
+> le thème concerné, avant d'écrire l'artefact correspondant. L'agent de code ne lit pas ce fichier : ce
+> qui le concerne est déjà dans son brief et dans `CLAUDE.md`. Les mots du kit sont définis dans
+> `kit/VOCABULAIRE.md`.
+[%- endif %]
 >
 > Chaque leçon est une règle à l'impératif, née d'un incident réel sur un premier projet. Les règles générales du
 > workflow sont dans `kit/METHODE.md` : une leçon qui ne fait que les confirmer y renvoie au
@@ -32,7 +39,9 @@
 | REL-C | Relecture C et diff | écrire l'annexe de la relecture de PR |
 | ARB | Arbitrage des constats et correctifs | arbitrer ; écrire les correctifs et le feu vert |
 | GIT | Git, GitHub, PR | préparer une fusion ; vérifier une PR |
+[% if 'pistes' in modules -%]
 | PIS | Pistes parallèles | toucher un point de contact avec une autre piste |
+[% endif -%]
 | REE | Contrôles réels sur données | préparer ou comparer un contrôle réel |
 | GAR | Garde-fous | poser ou modifier un hook, une clôture, une règle de lint |
 | CTX | Contexte, compaction, relève | après une compaction ; à chaque point stable |
@@ -83,7 +92,7 @@ clôture, point 3) :
   dans « Leçons remplacées », en fin de fichier, avec la note *« Remplacée le «date» (kit
   «version») par «ID» : «raison». »* Son identifiant n'est jamais réutilisé.
 
-### Les ★ — à l'ouverture
+### Les ★ — [% if 'relectures' in modules %]à l'ouverture[% else %]avant le premier brief[% endif %]
 
 MET-1 une récidive se corrige par un mécanisme · MES-1 chiffrer sur une implémentation
 jetable · MES-2 mesurer sur le réel avant d'affirmer · BRF-1 rien du prototype chez l'agent ·
@@ -525,6 +534,7 @@ décision (`kit/METHODE.md` § 2).*
   Parce que : un marqueur de conflit dans la configuration faisait échouer le hook, qui refusait alors chaque outil de l'agent, abandon de fusion compris ; refait depuis le verrou de `main`, le verrou aurait pris des versions sorties depuis la relecture.\
   Niveau : avancé
 
+[% if 'pistes' in modules -%]
 ## PIS — Pistes parallèles
 
 *Ouvrir et mener une piste : `kit/PISTES.md`. Ces leçons valent dès que deux pistes partagent un
@@ -562,6 +572,7 @@ dépôt.*
   Parce que : le dernier point d'un relais n'est jamais arrivé, le texte transmis s'arrêtant au précédent ; on ne l'a appris qu'à la réponse au relais suivant.\
   Niveau : avancé
 
+[% endif -%]
 ## REE — Contrôles réels sur données
 
 - **REE-1** — **Jouer tout essai hors CI d'abord sur `main`, comme témoin, dans un environnement débarrassé de ce qui masquerait le défaut.**\

@@ -70,7 +70,7 @@
 > Branche `«branche»`, «k» commits (brief, § 9), la vérification complète de `CLAUDE.md` verte avant
 > chacun ; «ce qui ne doit pas changer : les sorties existantes, les tests existants (§ 8.1)».
 >
-> À la fin, joue chaque contre-épreuve du § 8.3, une à une, dans ton arbre de travail[% if langage == 'python' %], sans cache de
+> À la fin, [% if 'relectures' in modules %]joue chaque contre-épreuve du § 8.3[% else %]si le brief a un § 8.3, joue chacune de ses contre-épreuves[% endif %], une à une, dans ton arbre de travail[% if langage == 'python' %], sans cache de
 > bytecode (`python -B`, `__pycache__` vidé)[% endif %], et restaure après chacune (`git diff` vide). Écris leur
 > table dans ton dernier message, avec, pour chacune, le test qui a rougi ; une équivalence se joue
 > aussi, ne fait rien rougir, et se déclare avec la raison du brief. N'ouvre la PR qu'avec tout cela

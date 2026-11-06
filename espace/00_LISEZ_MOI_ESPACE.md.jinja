@@ -33,10 +33,10 @@ partage. Une conversation ne lit que ce qu'on lui connecte. Un mot inconnu : `co
 | `sessions/«nom»/` | le dossier d'une session à part (inventaire, recherche, note de méthode) : son prompt et ses pièces ; le rapport revient dans `conception/passations/` | la session, seule |
 [% endif -%]
 | `outils/` | les scripts [[ que_humain ]] lance (`uv run outils/….py`) | personne |
-
+[% if 'pistes' in modules %]
 Pistes supplémentaires (si une piste parallèle est ouverte, `conception/kit/PISTES.md`) :
 `conception_«piste»/`, `v_for_cowork_«piste»/`[% if 'archives' in modules %], `archives_conception_«piste»/`[% endif %].
-
+[% endif %]
 ## Qui connecte quoi — la frontière fait le travail
 
 Connecter un dossier, c'est donner accès à ce dossier, et à lui seul. Le geste dépend de l'outil :
@@ -84,8 +84,8 @@ Le détail : `docs/GUIDE.md` du kit, § 1.
 
 ## Commandes [[ de_humain ]] les plus courantes
 
-Toutes depuis la racine de l'espace (`cd [[ racine ]]`) ; ajouter `--piste «nom»` pour une
-piste supplémentaire. La liste complète, propre au projet, est au § 2 de
+Toutes depuis la racine de l'espace (`cd [[ racine ]]`)[% if 'pistes' in modules %] ; ajouter `--piste «nom»` pour une
+piste supplémentaire[% endif %]. La liste complète, propre au projet, est au § 2 de
 `conception/CONTEXTE.md`.
 
 | Quand | Commande |
@@ -113,11 +113,14 @@ remontées, `passations/`) ne sont jamais touchés :
 ```bash
 cd [[ racine ]]
 uvx copier recopy --defaults --overwrite -a .copier-answers.espace.yml
+[% if 'pistes' in modules -%]
 # piste supplémentaire : -a .copier-answers.espace_«piste».yml
+[% endif -%]
 ```
 
 ## Ajouter une piste parallèle
 
+[% if 'pistes' in modules -%]
 Lire d'abord `conception/kit/PISTES.md` (quand c'est utile, et quand s'en passer), puis :
 
 ```bash
@@ -125,3 +128,6 @@ cd [[ racine ]]
 uvx copier copy --data-file «fichier de réponses» --data couche=espace --data piste=«nom» «chemin du kit» [[ racine ]]
 # «fichier de réponses» : le fichier de réponses du projet, ex. [[ slug ]].yml ; «chemin du kit» : le dossier du kit, ou son URL git
 ```
+[% else -%]
+Une piste parallèle demande le module `pistes` : `docs/GUIDE.md` du kit, § 5.
+[% endif -%]

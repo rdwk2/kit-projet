@@ -68,7 +68,7 @@
 - `«fichier de tests»` : «les cas» — chaque valeur attendue écrite en dur, calculée à la main,
   avec sa tolérance ; les cas limites (vide, un, deux, égaux, la borne exacte).
 
-### 8.3 Contre-épreuves
+### 8.3 Contre-épreuves[% if not ('relectures' in modules) %] (facultatif)[% endif %]
 
 Chaque ligne : retirer ou inverser une vérification du code, et le test qui doit rougir.
 
@@ -232,7 +232,9 @@ Dernière sous-section, **les documents** :
 - `CLAUDE.md` (règles, commandes, structure) ;
 - les lignes de `BACKLOG.md`, comptées — cochées, réécrites, neuves : ce sont les limites
   connues[% if 'relectures' in modules %], que C ne doit pas reprendre en constats[% endif %] ;
+[% if 'groupe' not in modules -%]
 - l'entrée de `docs/JOURNAL.md` ;
+[% endif -%]
 - **README** : soit les phrases du README que la PR rend fausses ou
   incomplètes, avec leur texte de remplacement, soit « README relu, inchangé ».
 [%- if 'donnees-privees' in modules %]
@@ -284,7 +286,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   dire un échec dans le corps d'un test, pas à la collecte.
 [%- if langage == 'python' %]
   En Python : `python -B` et `__pycache__` vidé (sinon un `.pyc` périmé fait un faux vert),
-  `--hypothesis-seed=0`, `-p no:cacheprovider`.
+  [% if not debutant %]`--hypothesis-seed=0`, [% endif %]`-p no:cacheprovider`.
 [%- endif %]
 - **Les équivalences déclarées** (E1…), chacune avec l'argument qui la prouve, après un
   balayage des entrées où elle pourrait jouer. La session les joue aussi, constate qu'aucun test ne
@@ -329,7 +331,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   et la non-régression faite en conception, sous la règle des données.
 [%- endif %]
 - **Après la fusion** : ce qui reste à lancer, avec les commandes données par la conception ; ce
-  qu'elle en fait (une PR suivante, le `docs/JOURNAL.md`).
+  qu'elle en fait (une PR suivante[% if 'groupe' not in modules %], le `docs/JOURNAL.md`[% endif %]).
 - **Où vont les fichiers** : ce qui se dépose, et où ; rien du prototype dans le dossier que
   reçoit la session.
 - Ce qui se relaie à une autre piste, et quand.
