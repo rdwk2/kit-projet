@@ -100,6 +100,8 @@ _skip_if_exists:
   - "00_LISEZ_MOI_ESPACE.md"
   - "conception*/00_LISEZ_MOI.md"
   - "conception*/CONTEXTE.md"
+  - "conception*/LECONS_PROJET.md"
+  - "conception*/MACHINE_PROJET.md"
   - "conception*/REMONTEES_KIT.md"
   - "conception*/INVENTAIRE_ARCHIVES.md"
   - "conception*/passations/**"

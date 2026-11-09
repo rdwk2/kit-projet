@@ -26,7 +26,8 @@ from pathlib import Path, PurePosixPath
 
 import espace
 
-VIVANTS = {"CONTEXTE.md", "00_LISEZ_MOI.md", "INVENTAIRE_ARCHIVES.md", "REMONTEES_KIT.md", "passations"}
+VIVANTS = {"CONTEXTE.md", "LECONS_PROJET.md", "MACHINE_PROJET.md", "00_LISEZ_MOI.md", "INVENTAIRE_ARCHIVES.md",
+           "REMONTEES_KIT.md", "passations"}
 """Ce qui ne part jamais en entier (et le dossier kit/, rafraîchi par copier recopy).
 `passations` part pièce par pièce, jamais d'un bloc."""
 

@@ -1,0 +1,296 @@
+# Tenir le noyau — relève, clôture, formats
+
+> **Gabarit** — ne se copie pas : il dit comment réécrire `CONTEXTE.md`, le noyau.
+> *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
+> amélioration va dans `REMONTEES_KIT.md`.*
+> **Quand le lire** : la section utile, à chaque relève et à chaque clôture (`kit/METHODE.md`, § 10).
+> Les formats des leçons et des notes machine sont en tête de `LECONS_PROJET.md` et `MACHINE_PROJET.md`.
+
+## Message de relève
+
+Dans `OUVERTURES_A«n+1».md`, **1,5 Ko au plus** :
+
+> Projet [[ projet ]], piste [[ piste ]]. Tu es la «n+1»ᵉ A, une étape : «étape». «Modèle», effort «effort». Lis
+> `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque « à l'ouverture », rien
+> d'autre. Vérifie `main` et le miroir à `«sha»`. Ta mission : § 7, avec les lectures de l'étape. Si ta conversation a été
+> résumée automatiquement, dis-le en tête de ton message.
+
+## En-tête
+
+<!--
+TENUE DE L'EN-TÊTE
+- « Dernière mise à jour » : la dernière clôture et la précédente, pas plus. Format :
+  « _Dernière mise à jour : «date», à «heure» — clôture de la «n»ᵉ A : «état en une phrase» ;
+  «ce [[ que_humain ]] lance ensuite». Avant : «date», à «heure» — clôture de la «n−1»ᵉ A : «…»._ »
+  [% if 'relectures' in modules %]Les clôtures plus anciennes ne sont qu'au § 7, « États d'avant ».[% else %]Les clôtures plus anciennes ne sont que dans les copies d'avant (`passations/`).[% endif %]
+  (Pourquoi : sans plafond, cette ligne grossit à chaque clôture.)
+- Toute heure se lit sur une horloge au moment de l'écrire (outil de la conversation, ou `date`),
+  jamais de mémoire.
+-->
+
+## § 1. Où sont les choses
+
+<!-- Le § 1 est un index, pas un journal : une ligne par emplacement. Un chemin qui change garde
+l'ancien en note datée dans sa cellule. Ajouter ici tout emplacement propre au projet (ancien
+projet, exports, sauvegardes), avec qui le lit et comment. -->
+
+## § 2. Qui fait quoi
+
+<!-- Une dérogation = une règle d'un fichier du kit qui ne s'applique pas, ou s'applique
+autrement, dans ce projet. Elle est décidée par [[ humain ]] et s'écrit ici, jamais dans le fichier du
+kit, qui serait écrasé à la mise à jour suivante (`kit/METHODE.md`, § 12). Si elle vaut
+au-delà du projet, elle part aussi dans `REMONTEES_KIT.md`. Une dérogation qui prend fin
+reçoit une note datée ; elle ne s'efface pas. -->
+
+Format d'une dérogation :
+
+```markdown
+- **D«n» — «règle visée : fichier du kit, §»** · décidée par [[ humain ]] le «date» (« «sa phrase» ») · écrite par la «k»ᵉ A
+  - Ce qui change ici : «…»
+  - Pourquoi, dans ce projet : «…»
+  - Jusqu'à quand : «toujours | jusqu'à «événement»» · remontée : «R«m» dans `REMONTEES_KIT.md` | aucune»
+```
+
+<!-- Tenue : une commande neuve propre au projet s'ajoute en bas du tableau, avec sa date et
+l'A qui l'a écrite ; une commande qui change garde l'ancienne forme en note datée. Une
+commande donnée pour l'agent de code doit aussi marcher dans le terminal de [[ humain ]]
+(`kit/MACHINE.md`, PS-3, PS-4). -->
+[% if piste != 'principale' %]
+
+<!-- Tenue : chaque relais et sa réponse se résument ici en une ligne, avec leur empreinte ; le
+texte entier est dans `conception[[ suffixe ]]/relais/` (gabarits `RELAIS.md`, `REPONSE_RELAIS.md`,
+`MESSAGE_FUSION_PISTE.md`). Une ligne close se condense avec l'accord [[ de_humain ]]. Les extraits reçus
+et leurs empreintes se notent au § 1 (`kit/PISTES.md`, § 10.4). -->
+[% endif %]
+
+## § 4. État d'avancement
+
+<!--
+RÈGLES DU § 4
+- Une entrée par jalon, dans l'ordre des jalons ; sous elle, une puce par PR. Un jalon se
+  découpe en plusieurs PR quand un seul diff dépasserait le seuil de taille de `CLAUDE.md`.
+- Titre en gras : « **[[ prefixe_jalon ]]«n» — «titre» : «état»** ». États : cadré ; découpé en «k» PR ;
+  en cours ; brief en révision «r» ; en PR #«p» ; fusionné ; complet (toutes ses PR fusionnées
+  et le « Fini quand » de la ROADMAP atteint).
+- **Au plus cinq lignes par PR fusionnée**, champs dans cet ordre : fusion (commit, date, arbre
+  identique à la tête relue, tests) ; brief, révision, empreinte ; agent, modèle, effort ;
+  relectures ; arbitrage, correctifs, revue ; « Suite ». Le détail (têtes relues, comptes,
+  constats) est dans [% if 'groupe' not in modules %]le JOURNAL du dépôt, dans [% endif %]`passations/ARBITRAGE_PR-«p».md`[% if 'archives' in modules %] et, une fois
+  archivé, dans `archives_conception[[ suffixe ]]/`[% endif %]. (Pourquoi : sans plafond, une entrée de PR
+  grossit vite, et ce fichier devient un coût fixe à chaque ouverture.)
+- Une avancée en cours de conversation s'écrit en note datée, en italique, sous l'entrée :
+  « *Note du «date» («n»ᵉ A) : …* ». Quand l'état d'un jalon change de titre, l'ancien reste
+  une fois : « *Titre d'avant («date») : « … »* ».
+- Les PR d'une autre piste qui touchent des fichiers communs s'inscrivent ici, plus courtes,
+  avec l'avis donné.
+- L'état d'un artefact hors dépôt que le code lit (un format de données, un registre) s'écrit
+  avec le jalon qui le change : « reste au format «k» jusqu'à «la prochaine commande [[ de_humain ]]» ».
+- Les fichiers de référence se citent avec leur empreinte courte (`«8 caractères»…`) : l'A
+  suivante vérifie avant de s'y fier.
+- Le noyau ne garde que le jalon en cours ; les jalons fusionnés partent [% if 'archives' in modules %]aux archives (`kit/ARCHIVES.md`)[% else %]dans un fichier d'historique à part, qu'aucune A ne lit par défaut[% endif %].
+-->
+
+Format d'une entrée :
+
+```markdown
+**[[ prefixe_jalon ]]«n» — «titre» : «état»** («date de l'état» ; ouvert par la «k»ᵉ A le «date» ; décision [[ de_humain ]] du «date»).
+«Ce que le jalon livre, en deux lignes.» Cadrage `«fichier»` (révision «r», `«empreinte»…`), tranché
+par [[ humain ]] le «date». Découpage : «k» PR.
+*Titre d'avant («date») : « … ».*
+
+- **[[ prefixe_jalon ]]«n»-«i» — «titre» : fusionné, PR #«p»** (*Squash and merge* `«sha»` sur `main`, «date» ; arbre identique à la tête relue ; «N» tests).
+  Brief `«fichier»`, révision «r» (`«empreinte»…`) ; Code : «modèle» `«effort»`.
+[% if 'relectures' in modules %]  Relectures : B «passes, constats retenus» ; C «complète ou bornée, verdict» (`RELECTURE_PR-«p».md`).
+[% endif -%]
+  Arbitrage `ARBITRAGE_PR-«p».md` ; correctifs «quoi ; `src/` touché ou non» ; revue `REVUE_PR-«p».md`.
+  **Suite** : «…» (§ 7).
+- **[[ prefixe_jalon ]]«n»-«i+1» — «titre» : «état»** («ce qui est fait, ce qui attend, et quoi»).
+
+*Note du «date» («k»ᵉ A) : «avancée depuis la clôture précédente».*
+
+**«Artefact hors dépôt»** : «son état, et ce qui le fera changer».
+```
+
+## § 5. Points ouverts
+
+<!--
+RÈGLES DU § 5
+- Un tableau à deux colonnes. « Quand » = le déclencheur : un jalon (« **[[ prefixe_jalon ]]3** »), un besoin
+  (« **Besoin ultérieur** »), un rythme (« **Au fil des PR** »), une clôture motivée (« **Clos pour
+  [[ prefixe_jalon ]]3** (décision, [[ humain ]], date) »), ou un thème suivi, avec l'auteur et la date de la ligne. « Quoi »
+  = un titre en gras, le point, ses pièces. (Pourquoi : un point sans déclencheur ne se reprend
+  jamais ; un point traité avant son déclencheur devient du travail spéculatif.)
+- **Au plus cinq lignes par point.** Une avancée s'ajoute en note datée ; au-delà de cinq lignes,
+  la ligne se réécrit (« *réécrit le «date» par la «k»ᵉ A* ») : elle ne garde que l'état et le
+  prochain geste, l'historique reste dans la copie d'avant. (Pourquoi : des notes empilées font
+  des lignes trop longues, que plus personne ne relit.)
+- Une ligne se clôt par « **close** » dans une note, et se retire à la clôture suivante en le
+  disant à [[ humain ]]. Une consigne durable qui s'y trouve passe d'abord aux §§ 1, 2, ou à `LECONS_PROJET.md` et `MACHINE_PROJET.md`.
+- Le § 5 ne porte pas les idées de modélisation (`BACKLOG.md`, dans le dépôt)[% if 'archives' in modules %] ni la liste de ce
+  qui reste à archiver (`INVENTAIRE_ARCHIVES.md`, « Restés en conception »)[% endif %] : il y renvoie.
+-->
+
+## § 7. Prochaine séance
+
+[% if 'relectures' in modules -%]
+<!--
+RÈGLES DU § 7
+- Réécrite à chaque clôture : c'est la seule chose qui ne se retrouve nulle part ailleurs.
+- Ordre des blocs : lecture d'ouverture ; état de clôture (date, heure, `main` et miroir, PR
+  ouvertes, ce qui tourne chez B, Code ou C, ce qui a été donné à [[ humain ]], fait ou non,
+  compaction, relève, suite) ; « État d'avant » et « États d'avant » (une ligne par clôture) ;
+  « Ce qu'a fait » de la dernière A et de l'avant-dernière — la plus ancienne se retire à la
+  clôture : elle est dans la copie d'avant ; « Dans `v_for_cowork[[ suffixe ]]` » ; la mission de l'A
+  suivante ; « Ensuite ».
+- « Ce qu'a fait » : une puce par étape, chacune avec son heure ; toujours « Ouverture » (état
+  vérifié : `main` distant, miroir, empreintes[% if 'archives' in modules %], archivage précédent fait[% endif %]) et « Clôture » ;
+  « Compaction » à chaque fois (« aucune » compris) ; les accès accordés par [[ humain ]] pour la
+  conversation ; « Notes » : ce qui ne survit pas à la conversation, et comment le reconstruire.
+- Ce qui a été donné à [[ humain ]], sans savoir si c'est fait, s'écrit comme tel (« fait ou non :
+  à vérifier »).
+- La mission : des étapes numérotées, « chaque étape quand [[ humain ]] la lance » ; pour chacune, ce qu'il
+  faut lire, le fichier modèle à suivre (le dernier du même type, par son chemin), les pièges
+  connus (renvois aux §§ 3 et 6, et au kit) ; puis « Points à garder en tête » et « Réglages ».
+- **« Ensuite » ne décrit que le jalon en cours** : l'état des jalons en trois lignes, puis les
+  pièces de travail du jalon en cours. Ce qui est archivé n'est décrit que dans
+  [% if 'archives' in modules %]`INVENTAIRE_ARCHIVES.md`[% else %]l'index du dossier[% endif %]. (Pourquoi : un inventaire des pièces de chaque A, gardé depuis les
+  premiers jalons, finit par occuper des centaines de lignes que personne ne lit.)
+-->
+[%- else -%]
+<!--
+RÈGLES DU § 7
+- Réécrite à chaque clôture : c'est la seule chose qui ne se retrouve nulle part ailleurs.
+- Trois blocs : l'état, les points ouverts, la prochaine étape. Pas d'historique : il reste dans la
+  copie d'avant.
+- Ce qui a été donné à [[ humain ]], sans savoir si c'est fait, s'écrit comme tel (« fait ou non :
+  à vérifier »).
+-->
+[%- endif %]
+
+### Le squelette, à remplir
+
+[% if 'relectures' in modules -%]
+**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
+(«dernière fusion» ; PR ouvertes : «aucune | #«p», tête `«sha»`»). «L'artefact en cours : fichier,
+révision, empreinte, où il en est.» «Ce qui tourne chez B, Code ou C, et ce qui a été donné
+à [[ humain ]] (fait ou non : à vérifier).» Compaction : «aucune | oui, «quand»». «Relève proposée à
+«heure», acceptée par [[ humain ]] à «heure».» **Suite** : «[[ humain ]] lance … ; puis ouverture de la «n+1»ᵉ A avec
+`OUVERTURES_A«n+1».md`».
+
+*État d'avant :* **«date», à «heure» — clôture de la «n−1»ᵉ A : «résumé»**.
+(États d'avant : «date», clôture de la «n−2»ᵉ A, «résumé» ; «…».)
+La copie d'avant cette clôture, `passations/CONTEXTE_avant_A«n».md` (`«empreinte»…`), porte
+« Ce qu'a fait la «n−2»ᵉ A », retiré à cette clôture.
+
+### Ce qu'a fait la «n»ᵉ A («sujet»)
+
+- **Ouverture** («date», «heure», avec le message d'`OUVERTURES_A«n».md`) : état vérifié («`main`
+  distant = `«sha»` ; miroir ; empreintes[% if 'archives' in modules %] ; archivage précédent fait[% endif %]»).
+- **«Étape»** («heure») : «ce qui a été fait, produit (fichier, empreinte), décidé par [[ humain ]] (sa
+  phrase, son heure)».
+- **Accès accordés pour la conversation** : «dossier, lecture ou suppression, «heure»» ; «copies
+  de données faites, supprimées à la clôture».
+- **Compaction** : «aucune | une fois, «quand» ; état revérifié dans les fichiers».
+- **Relève** proposée à «heure», acceptée par [[ humain ]] à «heure».
+- **Clôture** («date», «heure») : copie d'avant `passations/CONTEXTE_avant_A«n».md` ; §§ 4, 5, 7
+  réécrits («ce qui a été retiré, dit à [[ humain ]]») ; «ajouts aux §§ 1, 2, 3, 6» ; «remontées
+  R«m» dans `REMONTEES_KIT.md`» ; `OUVERTURES_A«n+1».md`, `00_LISEZ_MOI.md`[% if 'archives' in modules %],
+  `INVENTAIRE_ARCHIVES.md`, `passations/A_ARCHIVER_A«n».txt`[% endif %].
+- **Notes** : `«dossier de travail»/tenue_A«n»/`. Ce qui ne survit pas à la conversation (`«…»`) :
+  «comment tout se reconstruit».
+
+### Ce qu'a fait la «n−1»ᵉ A («sujet»)
+
+«Le même bloc, repris de la clôture précédente ; il se retire à la clôture suivante.»
+
+### Dans `v_for_cowork[[ suffixe ]]` (ce que voient A et B, et le sous-dossier de l'agent de code)
+
+Contenu au «date», «heure» :
+
+- `06_BRIEF_RELECTURE_PR.md` et `06_ANNEXE_PR-«n».md` : «annexe close | ouverte» (`«empreinte»…`) ;
+  à réécrire pour «…» ;
+- `07_BRIEF_RELECTURE_ARTEFACT.md` et son annexe `07_ANNEXE_«jalon»_PASSE«x».md` (`«empreinte»…`) ; à
+  réécrire pour «…» ;
+- `RELECTURE_«BRIEF ou PLAN»-«jalon».md` : le rapport de B en cours, s'il n'est pas encore rangé ;
+  `B/«jalon»/` : ses outils, le diff des révisions du brief ;
+- `«jalon»/` : `BRIEF_«jalon».md`, révision «r» (`«empreinte»…`), et les pièces qu'il joint ; le
+  dossier que la session de code recevra, sans rien du prototype de la conception ;
+- `[[ slug ]]/` : le miroir, à `«sha»`.
+
+### «Jalon» — mission de la «n+1»ᵉ A
+
+**Où on en est («date», «heure»)** : «trois lignes : `main`, l'artefact en cours et son empreinte,
+ce qui attend».
+
+**Mission de la «n+1»ᵉ A**, chaque étape quand [[ humain ]] la lance :
+
+1. **Lire** «les pièces, dans l'ordre, chacune par son chemin».
+2. **«Reconstruire»** «l'état de travail hors du dossier partagé (prototype, mesures) : la commande ou
+   le mode d'emploi qui le refait, et l'empreinte attendue».
+3. **«Étape»** : «ce qu'il faut faire ; le gabarit ou le fichier modèle à suivre ; les pièges connus».
+4. «…».
+
+**Points à garder en tête** :
+
+- «rappel durable», «renvoi» ;
+- chaque bloc de commandes pour [[ humain ]] commence par `cd [[ racine ]]` (ou un autre chemin absolu) et
+  dit pour quel shell ;
+- toute heure se lit sur une horloge au moment de l'écrire (outil de la conversation, ou `date`),
+  jamais de mémoire ;
+- après une compaction, proposer la relève dès le compte rendu suivant (`kit/METHODE.md`, § 10).
+
+**Réglages** (table du § 0 du noyau) : A «modèle» `«effort»` ; B
+«modèle» `«effort»` ; Code «modèle» `«effort»` («effort des correctifs») ; C «modèle»
+`«effort»`.
+
+### Ensuite
+
+**«Jalon en cours»** : «état en une ligne» ; **«jalon suivant»** : «quand, et ce qui le
+déclenche» ; jalons complets : «liste».
+
+Pièces de travail du jalon en cours : «chemins en conception, rôle de chacun, quand il part».
+Chemins qui ne survivent pas à la conversation (`«…»`) : perdus avec elle.
+[%- else -%]
+**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
+(«dernière fusion» ; PR ouvertes : «aucune | #«p»»). «Ce qui a été donné à [[ humain ]] (fait ou non : à
+vérifier).»
+
+**Points ouverts** : «ceux du § 5 qui comptent pour la suite, ou « aucun »».
+
+**Prochaine étape** : «ce que fait la «n+1»ᵉ A, et ce [[ que_humain ]] lance avant» ; ouverture avec
+`OUVERTURES_A«n+1».md`.
+[%- endif %]
+
+---
+
+## Liste de clôture
+
+<!-- Aide-mémoire de l'A qui clôt, dans l'ordre. La règle elle-même : `kit/METHODE.md`, § 10. -->
+
+[% if 'relectures' in modules -%]
+1. Copier ce fichier tel quel dans `passations/CONTEXTE_avant_A«n».md`, empreinte notée, avant
+   toute modification.
+2. Réécrire le § 4 (états, notes datées, au plus cinq lignes par PR fusionnée).
+3. Réécrire le § 5 (lignes closes retirées et dites à [[ humain ]] ; au plus cinq lignes par point ;
+   consignes durables d'abord aux §§ 1 ou 2, à `LECONS_PROJET.md` ou `MACHINE_PROJET.md`).
+4. Réécrire le § 7 (état de clôture ; « État d'avant » ; « Ce qu'a fait » des deux dernières A ;
+   « Dans `v_for_cowork[[ suffixe ]]` » ; mission de l'A suivante ; « Ensuite », le jalon en cours seulement).
+5. Ajouter aux §§ 1 et 2, à `LECONS_PROJET.md` et à `MACHINE_PROJET.md` ce qui a été appris ; ce qui vaut au-delà du projet, aussi dans
+   `REMONTEES_KIT.md` (facultatif pour qui ne maintient pas le kit) ; le dire à [[ humain ]].
+6. Mettre à jour l'en-tête (« Dernière mise à jour », deux clôtures au plus) et l'index du § 0 ;
+   faire lancer `outils/mesurer_noyau.py` : VERT.
+7. Vérifier que les rapports de relecture sont rangés dans `passations/`.
+8. Écrire `OUVERTURES_A«n+1».md` (`kit/gabarits/OUVERTURES_A.md`) et tenir `00_LISEZ_MOI.md`[% if 'archives' in modules %] ;
+   écrire `INVENTAIRE_ARCHIVES.md` et `passations/A_ARCHIVER_A«n».txt` (`kit/ARCHIVES.md`)[% endif %].
+9. Supprimer les copies de données faites pendant la conversation.
+10. Finir le compte rendu à [[ humain ]] par ses commandes, dans l'ordre[% if 'archives' in modules %] : l'archivage, puis[% else %] :[% endif %] l'ouverture
+    de l'A suivante (message, dossiers à connecter, modèle et effort).
+[%- else -%]
+1. Copier ce fichier tel quel dans `passations/CONTEXTE_avant_A«n».md`, avant toute modification.
+2. Réécrire les §§ 4, 5 et 7 ; ajouter aux §§ 1 et 2, à `LECONS_PROJET.md` et à `MACHINE_PROJET.md` ce qui a été appris ; le dire à [[ humain ]] ;
+   faire lancer `outils/mesurer_noyau.py` : VERT.
+3. Écrire `OUVERTURES_A«n+1».md` (`kit/gabarits/OUVERTURES_A.md`) et tenir `00_LISEZ_MOI.md`[% if 'archives' in modules %] ;
+   écrire `INVENTAIRE_ARCHIVES.md` et `passations/A_ARCHIVER_A«n».txt` (`kit/ARCHIVES.md`)[% endif %].
+4. Finir le compte rendu à [[ humain ]] par ses commandes, dans l'ordre[% if 'archives' in modules %] : l'archivage, puis[% else %] :[% endif %] l'ouverture
+   de l'A suivante (message, dossiers à connecter, modèle et effort).
+[%- endif %]
