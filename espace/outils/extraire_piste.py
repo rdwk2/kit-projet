@@ -1,8 +1,8 @@
 # /// script
 # requires-python = ">=3.10"
 # ///
-"""Extrait les règles propres au projet d'une piste (§§ 1, 2, 3 et 6 de son CONTEXTE.md)
-pour une autre piste ; ne recopie jamais son état (§§ 4, 5 et 7).
+"""Extrait les règles propres au projet d'une piste (§§ 1, 2, 3 et 6 de son CONTEXTE.md, avec
+LECONS_PROJET.md et MACHINE_PROJET.md) pour une autre piste ; ne recopie jamais son état (§§ 4, 5 et 7).
 
     uv run outils/extraire_piste.py --vers analyse                    (depuis la piste principale)
     uv run outils/extraire_piste.py --vers principale --depuis analyse
@@ -52,12 +52,15 @@ PLAN = {
 """Les titres de niveau 2 de CONTEXTE.md, fixes et identiques dans toutes les pistes."""
 
 EXTRAITES = {
-    1: ("OU_SONT_LES_CHOSES", "à l'ouverture"),
-    2: ("QUI_FAIT_QUOI", "à l'ouverture"),
+    1: ("OU_SONT_LES_CHOSES", "quand un chemin de l'autre piste sert (§ 0 du noyau de la piste)"),
+    2: ("QUI_FAIT_QUOI", "avant de déroger au kit ou de lancer une commande propre au projet (§ 0 du noyau de la piste)"),
     3: ("LECONS", "avant le premier brief de la piste ; ensuite, quand son empreinte change"),
     6: ("MACHINE", f"avant de donner une commande à {espace.HUMAIN}"),
 }
 """Les sections recopiées (règles propres au projet). Jamais 4, 5 ni 7 : c'est l'état."""
+
+VIVANTS = {3: "LECONS_PROJET.md", 6: "MACHINE_PROJET.md"}
+"""Le texte de ces sections vit dans ces fichiers : il est recopié à leur suite, s'ils existent."""
 
 LISEZ_MOI = "LISEZ_MOI.md"
 TEMPORAIRE = ".extraire_tmp"
@@ -242,6 +245,11 @@ def main() -> None:
         for e in erreurs:
             print(f"  - {e}", file=sys.stderr)
         sys.exit(1)
+    for n, nom in VIVANTS.items():
+        vivant = source.parent / nom
+        if vivant.is_file():
+            contenu = vivant.read_text(encoding="utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
+            lignes[n] = corps_de_section(lignes[n]).split("\n") + contenu.split("\n")
 
     maintenant = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M")
     modifiee = datetime.fromtimestamp(source.stat().st_mtime).astimezone().strftime("%Y-%m-%d %H:%M")
