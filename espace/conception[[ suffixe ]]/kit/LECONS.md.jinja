@@ -5,8 +5,8 @@
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
 [% if 'relectures' in modules -%]
-> **Les ★ se lisent à l'ouverture de toute conversation A** (la conversation de conception),
-> après `kit/METHODE.md` ; le thème concerné, avant d'écrire l'artefact correspondant. B, C (les
+> **Les ★ se lisent avant le premier brief d'une conversation A** (la conversation de conception) ;
+> le thème concerné, par son code, avant d'écrire l'artefact correspondant. B, C (les
 > relectures) et l'agent de code ne lisent pas ce fichier : ce qui les concerne est déjà dans
 > leurs briefs et dans `CLAUDE.md`. Les mots du kit sont définis dans `kit/VOCABULAIRE.md`.
 [%- else -%]
@@ -68,7 +68,7 @@
 
 ### Faire remonter une leçon née dans un projet
 
-1. **Dans le projet, à la clôture.** L'A écrit la leçon au § 3 de `CONTEXTE.md` (règle de
+1. **Dans le projet, à la clôture.** L'A écrit la leçon dans `LECONS_PROJET.md` (règle de
    clôture, `kit/METHODE.md` § 10) : la règle en gras, puis l'incident et ses références
    (PR, constat, décision), puis ce qu'on fait désormais.
 2. **Vers le kit, en même temps.** Si la leçon vaut au-delà du projet, l'A ajoute une ligne
@@ -86,13 +86,13 @@
 Une leçon devenue fausse ne se réécrit jamais en silence (`kit/METHODE.md` § 10, règle de
 clôture, point 3) :
 
-- dans `CONTEXTE.md`, une note datée en italique sous le texte d'origine, qui reste :
+- dans `LECONS_PROJET.md`, une note datée en italique sous le texte d'origine, qui reste :
   *« Note du «AAAA-MM-JJ» («n»ᵉ A) : remplacée par «…», parce que «…». »* ;
 - dans ce fichier, à la consolidation, la leçon garde son identifiant et son texte, et passe
   dans « Leçons remplacées », en fin de fichier, avec la note *« Remplacée le «date» (kit
   «version») par «ID» : «raison». »* Son identifiant n'est jamais réutilisé.
 
-### Les ★ — [% if 'relectures' in modules %]à l'ouverture[% else %]avant le premier brief[% endif %]
+### Les ★ — avant le premier brief
 
 MET-1 une récidive se corrige par un mécanisme · MES-1 chiffrer sur une implémentation
 jetable · MES-2 mesurer sur le réel avant d'affirmer · BRF-1 rien du prototype chez l'agent ·

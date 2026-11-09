@@ -51,9 +51,9 @@ automatiquement : «non | oui, «quand»».*
 1. **Ouvrir une conversation neuve**, dossiers connectés (ceux auxquels elle a accès) :
    `[[ racine ]]/conception[[ suffixe ]]` et `[[ racine ]]/v_for_cowork[[ suffixe ]]`, rien d'autre. Si ton
    outil ne connecte pas de dossier, ouvre ton agent dans le premier, et donne-lui accès au second.
-   **Réglages** : **«modèle», `«effort»`** — recommandé : la ligne « A — conception » du § 0 de
-   `kit/MODELES_ET_EFFORTS.md` (une conversation qui finit par un cadrage, un brief ou un arbitrage ;
-   conversation légère : un cran plus bas) ; alternative : «alternative» ;
+   **Réglages** : **«modèle», `«effort»`** — recommandé : la table des réglages du § 0 de
+   `CONTEXTE.md` (`xhigh` pour un cadrage, un brief ou un arbitrage ; `high` pour une relève, un
+   rangement, une clôture) ; alternative : «alternative» ;
    raison : «raison» ; dérogation : «aucune | dérogation». On choisit à l'ouverture et on n'y
    touche plus.
 
@@ -64,10 +64,8 @@ automatiquement : «non | oui, «quand»».*
 > Projet [[ projet ]], piste [[ piste ]]. Tu es la «n»ᵉ A (conception). «L'état en deux phrases :
 > ce qui est complet, `main` = `«sha»`, le jalon en cours.» Ta mission : «les étapes, dans l'ordre».
 >
-> [% if 'relectures' in modules %]Lis `conception[[ suffixe ]]/kit/METHODE.md` en entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis
-> `CONTEXTE.md` en entier et les ★ de `kit/LECONS.md`[% else %]Lis le § 0 de `conception[[ suffixe ]]/kit/METHODE.md`, puis
-> `CONTEXTE.md` en entier[% endif %][% if piste != 'principale' %], puis `kit/PISTES.md`[% endif %], et applique-les ; puis «les pièces de la mission : le cadrage, les notes,
-> et dans le miroir `docs/ROADMAP.md` et les fiches de décision, avec leurs sections». Ta mission est au
+> Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque « à l'ouverture », rien d'autre
+> en entier, et applique-les ; «les pièces de la mission se lisent à l'étape qui les touche, par section : le § 7 les liste». Ta mission est au
 > § 7 du CONTEXTE, [% if 'relectures' in modules %]« «jalon» — mission de la «n»ᵉ A »[% else %]« Prochaine étape »[% endif %].
 >
 > Si ta conversation a été résumée automatiquement, dis-le en tête de ton message, et propose-moi de
