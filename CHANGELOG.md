@@ -1,5 +1,30 @@
 # Changements de kit-projet
 
+## 0.5.0 — 2026-11-10
+
+Une conversation A ne lit plus 86 Ko avant de commencer. L'ouverture devient un noyau borné, et le reste se lit à
+la demande, par section. Vide, elle fait 13 à 17 Ko selon le préréglage, pour un budget de 32 Ko.
+
+- **Le noyau.** `CONTEXTE.md` se lit en entier, avec ce que son nouveau § 0 marque « à l'ouverture » : le § 0 de
+  `kit/METHODE.md` et la tête « En vigueur » de `kit/MACHINE.md`. Son index dit quoi lire, quand et comment, et
+  remplace la table des matières et la lecture du § 0 de `kit/MODELES_ET_EFFORTS.md`. Les sept titres restent.
+- **Ce qui sort du noyau.** Le tableau généré des commandes part dans `kit/COMMANDES.md`, les règles, les formats et
+  le squelette de clôture dans `kit/gabarits/CLOTURE_CONTEXTE.md`. Les leçons et les notes machine du projet ont deux
+  fichiers vivants, `LECONS_PROJET.md` et `MACHINE_PROJET.md`, repris par `outils/extraire_piste.py`.
+- **Outils.** `outils/lire_section.py` lit une section, `outils/mesurer_noyau.py` échoue au-delà du budget (25 Ko pour
+  le noyau, 32 Ko pour l'ouverture), `outils/verifier_deplacement.py` prouve qu'un découpage n'a perdu aucune ligne.
+- **Relève et clôture.** Une A neuve à chaque étape stable, avec une relève légère et un message de 1,5 Ko au plus.
+  La clôture complète a lieu à la fusion d'une PR, en fin de jalon, ou toutes les trois A. Le noyau ne prend une
+  ligne qu'en en rendant une.
+- **Effort.** Très élevé pour arbitrer, cadrer ou écrire un brief, élevé pour une relève, un rangement, une clôture,
+  une publication ou un relais, jamais `max` par défaut pour une A.
+- **Rapports de B et C.** Ils commencent par un tableau des constats, que l'A lit avant le détail.
+- **Banc.** Il mesure l'ouverture de chaque espace généré, et vérifie qu'un CONTEXTE gonflé fait échouer la mesure.
+- **Mettre à jour un projet.** `copier recopy` rafraîchit `kit/` et `outils/`, et crée les deux fichiers vivants,
+  mais il ne touche pas à `CONTEXTE.md`. Un projet existant garde donc l'ancienne forme, et `mesurer_noyau.py` y
+  échoue. Pour passer au noyau : copie `CONTEXTE.md` dans `passations/`, reprends le § 0 d'un espace neuf, déplace le
+  § 3 dans `LECONS_PROJET.md` et le § 6 dans `MACHINE_PROJET.md`, puis contrôle avec `verifier_deplacement.py`.
+
 ## 0.4.0 — 2026-11-06
 
 Un débutant reçoit moins. Solo léger et Groupe scolaire s'allègent ; Standard et Complet ne changent pas :
