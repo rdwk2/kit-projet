@@ -6,13 +6,46 @@
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
 > **Ce fichier rassemble les pièges fréquents** des outils du kit (uv, just, git, gh, les agents
-> de code), surtout sous Windows, avec leur parade. Une découverte propre à ta machine se note au
-> § 6 de `CONTEXTE.md`. Si `kit/perso/` existe, lis-le aussi : il complète ce fichier et il prime.
+> de code), surtout sous Windows, avec leur parade. Une découverte propre à ta machine se note dans
+> `MACHINE_PROJET.md`. Si `kit/perso/` existe, lis-le aussi : il complète ce fichier et il prime.
 >
-> **Quand le lire** : au moment du besoin, et avant de donner une commande à [[ humain ]].
+> **Quand le lire** : « En vigueur » à l'ouverture d'une A ; le reste au moment du besoin, et avant de
+> donner une commande à [[ humain ]].
+
+## En vigueur
+
+Résumé, corrigé à chaque ajout d'entrée dans le kit. Style : mots-clés. « → » = parade ; le détail est
+sous l'identifiant, plus bas.
+
+**Toute commande pour [[ humain ]]** : le bloc commence par `cd` sur un chemin absolu et dit son shell ; un
+script d'`outils/` existe → c'est lui la recette. Une entrée se revérifie avant de s'y appuyer.
+
+**Windows, PowerShell 5.1**
+- Une redirection abîme les octets → PS-1, CMD-1 ; `Tee-Object` écrit en UTF-16 → PS-2.
+- Pas de `sha256sum` → PS-3 ; le `.env` n'existe pas dans le terminal → PS-4, UV-6.
+- Sortie de Python vers un fichier → PS-5 ; `NativeCommandError` en tête d'une sortie → PS-6.
+- Chemins longs → SYS-1 ; veille, capot fermé → SYS-3 ; annoncer une durée mesurée → SYS-5.
+
+**Verrous** : `Remove-Item` depuis le dossier → VER-1 ; dossier tenu par une conversation → VER-2 ; verrou
+git laissé dans un miroir → VER-3.
+
+**Antivirus** : HTTPS intercepté → AV-1, AV-2 ; interpréteur neuf bloqué → AV-3.
+
+**Python, uv, just** : `text=True` lit en cp1252 → PY-1 ; version non épinglée → PY-7 ; `.venv` recopié ou
+dossier déplacé → UV-2, UV-3 ; antislashs dans le `.env` → JU-1.
+
+**GitHub** : `gh` absent du `PATH` → GH-1 ; ce qu'une conversation voit de GitHub → GH-4.
+
+**Agents** : un agent voit toute la machine par défaut → WSL-1 ; un hook en échec bloque tous les outils
+→ CL-7 ; le shell de Claude Code avale les antislashs → CL-4.
+
+**macOS, Linux** : `~` dans un `.env` → ML-1 ; empreinte d'un fichier → ML-3 ; casse des noms → ML-4.
+
+---
 
 ## Table des matières
 
+- En vigueur
 - Comment lire ce fichier
 - Partie I — Les outils, surtout sous Windows
   - 1. Système (SYS) · 2. Verrous de fichiers et de dossiers (VER) · 3. Antivirus (AV)
@@ -58,7 +91,7 @@ Les champs `«…»` se remplissent à l'usage ; un `<…>` décrit la forme d'u
   - Symptôme : les durées annoncées à [[ humain ]] sont fausses (« une demi-heure » pour une heure).
   - Cause : un `just check` complet peut prendre longtemps selon les extras et la taille de la suite ;
     l'agent de code en lance un par commit.
-  - Parade : mesurer, noter la durée au § 6 du CONTEXTE du projet, et annoncer une durée mesurée,
+  - Parade : mesurer, noter la durée dans `MACHINE_PROJET.md`, et annoncer une durée mesurée,
     à raison d'un `just check` par commit.
 
 ## 2. Verrous de fichiers et de dossiers (VER)
