@@ -570,7 +570,9 @@ def main() -> int:
     global SOURCE
     # Sous Windows, un antivirus peut bloquer un python.exe neuf dans %TEMP% (kit/MACHINE.md, AV-3) :
     # les projets d'essai se créent à côté du kit.
-    racine = Path(tempfile.mkdtemp(prefix="essai_kit_", dir=KIT.parent if os.name == "nt" else None))
+    # Sous macOS, le dossier temporaire passe par un lien (/var → /private/var) : sans resolve(),
+    # `copier update` compare ce chemin à celui, résolu, que donne git, et plante.
+    racine = Path(tempfile.mkdtemp(prefix="essai_kit_", dir=KIT.parent if os.name == "nt" else None)).resolve()
     SOURCE = preparer_source(racine)
     bilan: list[tuple[str, list[str]]] = [("kit", verifier_schemas() + verifier_termes())]
     for sc in SCENARIOS:
