@@ -1,0 +1,89 @@
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""Mesure le noyau (CONTEXTE.md) et la lecture d'ouverture d'une A ; code 1 au-delà du budget.
+
+    uv run outils/mesurer_noyau.py                  (à chaque relève et à chaque clôture)
+    uv run outils/mesurer_noyau.py --piste analyse
+
+La lecture d'ouverture = le noyau, plus les lignes du tableau entre <!-- ouverture:debut --> et
+<!-- ouverture:fin --> (colonne 1 : `fichier` ; colonne 2 : début du titre de la section, ou
+« entier »), plus un forfait pour le message de relève.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from pathlib import Path
+
+import espace
+from _commun import JETONS_PAR_KO, octets, sections, sortie_utf8
+
+BUDGET_NOYAU_KO = [[ budget_noyau_ko ]]
+BUDGET_OUVERTURE_KO = [[ budget_ouverture_ko ]]
+MESSAGE_KO = 1.5
+LIGNE = re.compile(r"^\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|")
+
+
+def taille_ko(chemin: Path, section: str) -> float | None:
+    """La taille d'un fichier entier ou d'une section ; None si l'un ou l'autre manque."""
+    if not chemin.is_file():
+        return None
+    texte = chemin.read_text(encoding="utf-8")
+    if section.lower().startswith("entier"):
+        return len(texte.encode("utf-8")) / 1024
+    lignes, secs = sections(texte)
+    trouvees = [s for s in secs if s[1].lower().startswith(section.lower())]
+    return octets(lignes[trouvees[0][2] : trouvees[0][3]]) / 1024 if trouvees else None
+
+
+def main() -> None:
+    sortie_utf8()
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--piste", help="piste (défaut : principale)")
+    args = p.parse_args()
+
+    dossier = espace.conception(args.piste)
+    source = dossier / "CONTEXTE.md"
+    if not source.is_file():
+        sys.exit(f"{source} introuvable.")
+    noyau = source.read_text(encoding="utf-8")
+    t_noyau = len(noyau.encode("utf-8")) / 1024
+    lignes: list[tuple[str, str, float | None]] = [("CONTEXTE.md", "entier", t_noyau)]
+    erreurs = []
+    bloc = re.search(r"<!-- ouverture:debut -->(.*?)<!-- ouverture:fin -->", noyau, re.S)
+    if not bloc:
+        erreurs.append("marqueurs d'ouverture absents du § 0 de CONTEXTE.md")
+    else:
+        for ligne in bloc.group(1).split("\n"):
+            m = LIGNE.match(ligne)
+            if m:
+                lignes.append((m.group(1), m.group(2), taille_ko(dossier / m.group(1), m.group(2))))
+    lignes.append(("(message de relève)", "forfait", MESSAGE_KO))
+
+    total = 0.0
+    print(f"{'fichier':40s} {'section':28s} {'Ko':>7s} {'jetons':>8s}")
+    for fichier, section, ko in lignes:
+        if ko is None:
+            erreurs.append(f"introuvable : {fichier} / {section}")
+            print(f"{fichier[:40]:40s} {section[:28]:28s}  ABSENT")
+            continue
+        total += ko
+        print(f"{fichier[:40]:40s} {section[:28]:28s} {ko:7.1f} {ko * JETONS_PAR_KO / 1000:7.1f}k")
+    print(f"{'TOTAL ouverture':69s} {total:7.1f} {total * JETONS_PAR_KO / 1000:7.1f}k")
+
+    for nom, valeur, budget in (("noyau", t_noyau, BUDGET_NOYAU_KO), ("ouverture", total, BUDGET_OUVERTURE_KO)):
+        etat = "DÉPASSÉ" if valeur > budget else ("attention (plus de 90 %)" if valeur > 0.9 * budget else "ok")
+        print(f"budget {nom} : {valeur:.1f} / {budget:.0f} Ko — {etat}")
+        if valeur > budget:
+            erreurs.append(f"budget {nom} dépassé : {valeur:.1f} > {budget:.0f} Ko — rendre une ligne avant d'en ajouter")
+    if erreurs:
+        print("\nÉCHEC :\n- " + "\n- ".join(erreurs))
+        sys.exit(1)
+    print("\nVERT")
+
+
+if __name__ == "__main__":
+    main()

@@ -284,6 +284,17 @@ suffixe:
   when: false
   default: "[% if couche == 'espace' and piste != 'principale' %]_[[ piste ]][% endif %]"
 
+# Budgets de la lecture d'ouverture d'une A, en Ko (outils/mesurer_noyau.py) : calculés, jamais posés.
+budget_noyau_ko:
+  type: float
+  when: false
+  default: 25
+
+budget_ouverture_ko:
+  type: float
+  when: false
+  default: 32
+
 # La version du kit qui génère : le tag git (ex. v0.1.0), lu dans les réponses de Copier.
 version_kit:
   type: str
