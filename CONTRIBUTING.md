@@ -46,6 +46,7 @@ ne sont pas contrôlés.
 | `espace/` | La couche espace IA : ce qui finit autour du dépôt, une fois par piste |
 | `docs/` | La documentation du kit, ses schémas (`docs/schemas/*.mmd`) et ses règles GitHub (`docs/regles/`) |
 | `outils_kit/tester_kit.py` | Le banc d'essai : génère chaque préréglage et vérifie le résultat |
+| `outils_kit/comparer_rendus.py` | Compare le rendu de chaque scénario du banc à celui d'une version publiée |
 | `CHANGELOG.md` | Les versions : une version = un tag git `v«X.Y.Z»` |
 
 Copier ne copie que le sous-dossier de la couche demandée (`_subdirectory`) : le reste n'arrive jamais
@@ -89,6 +90,11 @@ garde la valeur `perso-standard`, et « Complet », `perso-complet`.
    ```bash
    uv run outils_kit/tester_kit.py            # structure, délimiteurs, scripts, recopy, renvois
    uv run outils_kit/tester_kit.py --complet  # + uv sync et just check dans les dépôts générés
+   ```
+   Un changement qui ne doit rien changer aux projets existants, comme une option dont la valeur par
+   défaut redonne le texte actuel, se prouve contre le dernier tag :
+   ```bash
+   uv run outils_kit/comparer_rendus.py       # chaque scénario, octet pour octet, sans les fichiers de réponses
    ```
 4. Une entrée dans `CHANGELOG.md`, un commit, un tag :
    ```bash

@@ -1,5 +1,11 @@
 # Changements de kit-projet
 
+## 0.6.0 (en cours)
+
+- **Comparaison des rendus.** `outils_kit/comparer_rendus.py` génère chaque scénario du banc depuis un tag et depuis
+  le kit actuel, et compare les deux octet par octet. Il prouve qu'un changement additif ne touche pas aux projets
+  existants.
+
 ## 0.5.0 — 2026-11-10
 
 Une conversation A ne lit plus 86 Ko avant de commencer. L'ouverture devient un noyau borné, et le reste se lit à
