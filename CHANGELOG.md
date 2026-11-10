@@ -12,7 +12,13 @@
   écrire dedans. Le § 2 de `CONTEXTE.md` reçoit un tableau « Le dépôt, tel qu'il existe ». La première A propose
   deux ouvertures : découvrir le dépôt et proposer ce qui manque, ou attendre la première mission.
   `outils/clone_c.py` lance la commande de vérification du dépôt au lieu de `just check`.
-- **Mettre à jour un projet.** Rien ne change : `origine` vaut `kit` par défaut, et le rendu est identique à celui
+- **Membre d'un groupe.** Une nouvelle question, `role`, vaut `pilote` par défaut : la personne qui tient le
+  projet, tranche et fusionne. Avec `membre`, l'espace ne couvre que les tâches confiées et les relectures
+  demandées. L'humain tranche dans leur périmètre, et les responsables du dépôt relisent et fusionnent
+  (`kit/VOCABULAIRE.md`, `kit/METHODE.md`, `REVUE_PR`, `COMMANDES`). La première A découvre le dépôt ou attend
+  la première tâche, et ce qui manque devient une proposition au groupe. Le GUIDE ne déconseille plus l'espace
+  à un membre qui le veut.
+- **Mettre à jour un projet.** Rien ne change : `origine` vaut `kit` et `role` vaut `pilote` par défaut, et le rendu est identique à celui
   de la 0.5.0 (`outils_kit/comparer_rendus.py`).
 
 ## 0.5.0 — 2026-11-10

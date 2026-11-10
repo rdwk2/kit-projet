@@ -151,7 +151,7 @@ brief, et les comptes de tests.
 [% endif %]
 ## 1. But du lot, et de cette PR
 
-- **Ce que demande [% if origine != 'existant' %]la ROADMAP[% elif doc_plan %]le plan ([[ md_plan ]])[% else %]la mission confiée[% endif %]**, cité : «la phrase du jalon» ; ce qui existe aujourd'hui, et ce qui
+- **Ce que demande [% if membre %]la tâche confiée[% elif origine != 'existant' %]la ROADMAP[% elif doc_plan %]le plan ([[ md_plan ]])[% else %]la mission confiée[% endif %]**, cité : «la phrase du jalon» ; ce qui existe aujourd'hui, et ce qui
   manque.
 - **Cette PR livre**, numéroté, en trois à cinq lignes : «1. … 2. …» ; et ce qu'elle ne livre pas.
 - **Après la PR, hors de la session** : ce [[ que_humain ]] lance, ce que la conception vérifie (§ 10), ce qui
@@ -263,7 +263,7 @@ Dernière sous-section, **les documents** :
 - les lignes de [[ md_backlog ]], comptées — cochées, réécrites, neuves : ce sont les limites
   connues[% if 'relectures' in modules %], que C ne doit pas reprendre en constats[% endif %] ;
 [% endif -%]
-[% if 'groupe' not in modules and doc_journal -%]
+[% if not en_groupe and doc_journal -%]
 - l'entrée de [[ md_journal ]] ;
 [% endif -%]
 - **README** : soit les phrases du README que la PR rend fausses ou
@@ -362,7 +362,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   et la non-régression faite en conception, sous la règle des données.
 [%- endif %]
 - **Après la fusion** : ce qui reste à lancer, avec les commandes données par la conception ; ce
-  qu'elle en fait (une PR suivante[% if 'groupe' not in modules and doc_journal %], le [[ md_journal ]][% endif %]).
+  qu'elle en fait (une PR suivante[% if not en_groupe and doc_journal %], le [[ md_journal ]][% endif %]).
 - **Où vont les fichiers** : ce qui se dépose, et où ; rien du prototype dans le dossier que
   reçoit la session.
 - Ce qui se relaie à une autre piste, et quand.

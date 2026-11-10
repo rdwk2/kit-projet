@@ -130,6 +130,15 @@ origine:
     "Un dépôt qui existe déjà, fait sans le kit (perso ou de groupe)": existant
   default: kit
 
+role:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Ton rôle dans le projet"
+  choices:
+    "Je tiens le projet : je tranche, et je fusionne les PR": pilote
+    "Je contribue à un projet de groupe : je prends les tâches qu'on me confie, d'autres fusionnent": membre
+  default: pilote
+
 projet:
   type: str
   help: "Nom lisible du projet (ex. : Mon projet)"
@@ -433,7 +442,19 @@ cmd_verif:
 cadrage_neuf:
   type: bool
   when: false
-  default: "[[ origine != 'existant' ]]"
+  default: "[[ origine != 'existant' and role != 'membre' ]]"
+
+# Un membre de groupe : l'intégration revient aux responsables du dépôt.
+membre:
+  type: bool
+  when: false
+  default: "[[ role == 'membre' ]]"
+
+# La relecture et la fusion passent par d'autres : module groupe du dépôt, ou membre d'un groupe.
+en_groupe:
+  type: bool
+  when: false
+  default: "[[ 'groupe' in modules or role == 'membre' ]]"
 
 suffixe:
   type: str

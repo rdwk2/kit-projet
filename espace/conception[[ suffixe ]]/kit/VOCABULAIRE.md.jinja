@@ -19,7 +19,7 @@
 | **C** | La relecture de PR. Une session neuve relit le code d'une PR, dans son poste, sans avoir vu A. | `RELECTURE_PR-«n».md`. |
 [% endif -%]
 | **Code** | L'agent de code au travail sur une tâche. Lui seul écrit dans le dépôt. | « Code lit le brief et propose un plan. » |
-| **[[ humain ]]** (l'humain) | La personne qui tient le projet. Elle tranche, lance les commandes, transporte les messages et fusionne. | Une décision d'architecture lui revient. |
+| **[[ humain ]]** (l'humain) | [% if membre %]Une personne qui contribue au projet de groupe. Elle prend les tâches qui lui sont confiées et tranche dans leur périmètre, lance les commandes, transporte les messages. L'intégration revient aux responsables du dépôt.[% else %]La personne qui tient le projet. Elle tranche, lance les commandes, transporte les messages et fusionne.[% endif %] | Une décision d'architecture lui revient. |
 | **Mainteneur du kit** | La personne qui tient kit-projet lui-même. Ce n'est pas forcément l'humain du projet. | Dans une classe : l'enseignant. |
 | **Agent de code** | Une IA qui lit et modifie directement les fichiers d'un dossier, et qui lance des commandes. | Claude Code, Codex… |
 | **Outil de conversation** | Un outil où l'on discute avec une IA. Selon l'outil, elle a accès à des dossiers, ou seulement aux fichiers joints. | Cowork, ou tout outil où l'on choisit les dossiers accessibles. |
@@ -53,7 +53,7 @@
 | **Sous-jalon** | Un lot, vu depuis la roadmap : il porte le numéro du jalon, suivi d'une lettre. | `[[ prefixe_jalon ]]3a`. |
 | **ROADMAP** | [[ md_plan ]] : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
 | **BACKLOG** | [[ md_backlog ]] : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
-| **JOURNAL** | [[ md_journal ]] : l'historique du projet, ce qui a été fait et décidé. | [% if 'groupe' in modules %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
+| **JOURNAL** | [[ md_journal ]] : l'historique du projet, ce qui a été fait et décidé. | [% if en_groupe %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
 | **Tranche verticale** | Un petit morceau qui marche de bout en bout. | Lire un fichier, calculer, afficher une valeur. |
 | **Artefact** | Un document produit puis relu : un brief, un plan, un cadrage. | « un artefact mérite plus d'effort qu'une conversation ». |
 | **Contrat** | Ce qu'un type ou une fonction promet à ceux qui s'en servent. | « ce type refuse toute valeur infinie ». |

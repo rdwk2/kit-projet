@@ -9,10 +9,11 @@
 > toi et n'écrit pas de code ; l'agent de code l'écrit. La première A fait le **cadrage** (jalon
 > [[ prefixe_jalon ]]0) : décider quoi construire avant la première ligne de code. Pas de code, des décisions.
 [%- else -%]
-> À coller dans une conversation neuve, une fois l'espace généré autour de ton dépôt. A réfléchit
+> À coller dans une conversation neuve, une fois l'espace généré autour [% if membre %]du dépôt du groupe[% else %]de ton dépôt[% endif %]. A réfléchit
 > avec toi et n'écrit pas de code ; l'agent de code l'écrit. Le dépôt existe déjà : la première A
 > commence par te demander comment ouvrir — **découvrir le dépôt** avec toi (jalon [[ prefixe_jalon ]]0), ou
-> **attendre ta première mission**. Pas de code, des décisions.
+> **attendre ta première mission**. Pas de code, des décisions.[% if membre %] Tu es membre du groupe :
+> cet espace ne couvre que les tâches qui te sont confiées, et les relectures qu'on te demande.[% endif %]
 [%- endif %]
 >
 > Un mot inconnu (PR, branche, fusion, jalon…) ? `kit/VOCABULAIRE.md` ; pour git, son § 8.
@@ -68,9 +69,14 @@ Pour les installer : `docs/GUIDE.md` du kit.
 >
 > Ta mission : le **cadrage** du projet (jalon [[ prefixe_jalon ]]0), sans code.
 [%- else -%]
+[% if origine == 'existant' -%]
 > Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : le dépôt, qui existait avant l'espace et
 > n'a pas été généré par le kit. Le § 2 de `CONTEXTE.md` dit ce qu'il a ([[ md_regles ]], la commande de
 > vérification, les documents) ; ce qui y reste en «…» est à remplir avec moi.
+[%- else -%]
+> Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : le dépôt du groupe, généré par le kit ;
+> [[ md_regles ]], `README.md` et [[ md_plan ]] disent ses règles et son plan.
+[%- endif %]
 >
 > Commence par me demander laquelle de ces deux ouvertures je veux.
 >
@@ -79,18 +85,27 @@ Pour les installer : `docs/GUIDE.md` du kit.
 >    historique récent (`git --no-optional-locks log --oneline -20`) — puis explique-moi en une page
 >    ce que tu y vois : ce que fait le projet, comment il est rangé, comment on le vérifie, ce qui
 >    paraît fragile.
+[% if membre -%]
+> 2. Pose-moi les questions qui manquent — les tâches qui me sont confiées et par qui, ce que le
+>    groupe a déjà décidé, ce que je tranche moi-même et ce qui revient au groupe, les conventions — une
+>    série courte à la fois, avec ta recommandation.
+> 3. Note ce qui servirait au workflow et manque au dépôt, comme **propositions au groupe**, que je
+>    porterai : rien ne s'applique au dépôt sans son accord.
+[%- else -%]
 > 2. Pose-moi les questions qui manquent — le but, ce qui compterait comme réussi, ce qui
 >    m'appartient, les conventions — une série courte à la fois, avec ta recommandation.
 > 3. Propose ce qui servirait au workflow et manque au dépôt[% if not (doc_plan and doc_backlog and doc_decisions and doc_journal and doc_pieges) %] ([[ [('un plan par jalons' if not doc_plan else ''), ('un backlog' if not doc_backlog else ''), ('des fiches de décision' if not doc_decisions else ''), ('un journal des livraisons' if not doc_journal else ''), ('une liste des pièges' if not doc_pieges else '')] | select | join(', ') ]])[% endif %][% if regles_agent %], et les compléments de [[ md_regles ]] (ce qui m'appartient, conventions)[% else %], et un fichier de règles pour l'agent de code[% endif %], sous forme
 >    de texte prêt à appliquer : l'agent de code l'appliquera dans une PR « [[ prefixe_jalon ]]0 — Cadrage ».
 >    Rien n'est obligatoire : ce que je refuse reste absent, et les textes du kit le disent.
+[%- endif %]
 > 4. Remplis `CONTEXTE.md` : § 1 (vérifie chaque chemin ; demande-moi ceux que tu ne vois pas),
->    § 2 (le tableau « Le dépôt, tel qu'il existe », ses «…» compris, et les commandes propres au
+>    § 2 ([% if origine == 'existant' %]le tableau « Le dépôt, tel qu'il existe », ses «…» compris, et [% endif %]les commandes propres au
 >    projet), §§ 4, 5 et 7, en style compact.
 >
-> **Attendre la première mission** : remplis seulement le § 1 de `CONTEXTE.md` et le tableau « Le
-> dépôt, tel qu'il existe » du § 2, en me demandant ce que tu ne vois pas, puis attends que je te
-> confie une tâche ; elle deviendra le jalon [[ prefixe_jalon ]]1.
+> **Attendre la première mission** : remplis seulement le § 1 de `CONTEXTE.md`[% if origine == 'existant' %] et le tableau « Le
+> dépôt, tel qu'il existe » du § 2[% endif %], en me demandant ce que tu ne vois pas, puis attends que [% if membre %]je t'apporte
+> la première tâche que le groupe me confie[% else %]je te
+> confie une tâche[% endif %] ; elle deviendra le jalon [[ prefixe_jalon ]]1.
 [%- endif %]
 [% if cadrage_neuf -%]
 > 1. Me poser les questions qui décident de tout — le but, pour qui, ce qui compterait comme
@@ -132,14 +147,19 @@ Pour les installer : `docs/GUIDE.md` du kit.
 - `CONTEXTE.md` rempli, et `OUVERTURES_A2.md` (gabarit `kit/gabarits/OUVERTURES_A.md`) : le message
   qui ouvrira la conversation suivante. La deuxième A écrit le brief du premier jalon.
 [%- else -%]
+[% if membre -%]
+- **Découvrir le dépôt** : tes propositions, à porter au groupe. Ce qu'il accepte et te confie devient
+  une tâche comme une autre : brief, consigne pour l'agent de code, PR, relecture par les responsables.
+[% else -%]
 - **Découvrir le dépôt** : ce que tu as accepté d'ajouter → une consigne pour l'agent de code
   (`kit/gabarits/CONSIGNE_CODE.md`), puis une PR de documentation. Ouvre ton agent dans
   `[[ depot_travail ]]`, colle la consigne, relis la PR, fusionne-la. Un document ajouté au dépôt
   revient dans les textes du kit quand tu régénères l'espace avec les réponses à jour.
+[% endif -%]
 - `CONTEXTE.md` rempli, et `OUVERTURES_A2.md` (gabarit `kit/gabarits/OUVERTURES_A.md`) : le message
   qui ouvrira la conversation suivante. La deuxième A écrit le brief de ta première mission.
 [%- endif %]
-[% if 'groupe' in modules %]
+[% if 'groupe' in modules and not membre %]
 **Projet de groupe** : le cadrage se décide avec le groupe, qui désigne la personne qui tient
 l'espace. La première A aide cette personne à préparer la réunion (questions, proposition de
 ROADMAP et de répartition), puis à écrire ce qui a été décidé ; les camarades ne lisent que le

@@ -75,7 +75,7 @@ RÈGLES DU § 4
 - **Au plus cinq lignes par PR fusionnée**, champs dans cet ordre : fusion (commit, date, arbre
   identique à la tête relue, tests) ; brief, révision, empreinte ; agent, modèle, effort ;
   relectures ; arbitrage, correctifs, revue ; « Suite ». Le détail (têtes relues, comptes,
-  constats) est dans [% if 'groupe' not in modules and doc_journal %]le JOURNAL du dépôt, dans [% endif %]`passations/ARBITRAGE_PR-«p».md`[% if 'archives' in modules %] et, une fois
+  constats) est dans [% if not en_groupe and doc_journal %]le JOURNAL du dépôt, dans [% endif %]`passations/ARBITRAGE_PR-«p».md`[% if 'archives' in modules %] et, une fois
   archivé, dans `archives_conception[[ suffixe ]]/`[% endif %]. (Pourquoi : sans plafond, une entrée de PR
   grossit vite, et ce fichier devient un coût fixe à chaque ouverture.)
 - Une avancée en cours de conversation s'écrit en note datée, en italique, sous l'entrée :

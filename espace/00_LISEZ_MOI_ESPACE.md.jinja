@@ -6,7 +6,12 @@
 - **C** : une session neuve qui relit le code d'une PR, sans avoir vu A.
 [% endif -%]
 - **Code** : l'agent de code (Claude Code, Codex…). Lui seul écrit dans le dépôt.
+[% if membre -%]
+- **Toi**, [[ humain ]] : tu prends les tâches que le groupe te confie, tu tranches dans leur périmètre, tu
+  lances les commandes, tu transportes les messages. Les responsables du dépôt relisent et fusionnent.
+[%- else -%]
 - **Toi**, [[ humain ]] : tu tranches, tu lances les commandes, tu transportes les messages, tu fusionnes.
+[%- endif %]
 
 Deux dossiers frères séparent ces rôles : `conception/` pour A seule, `v_for_cowork/` pour ce qui se
 partage. Une conversation ne lit que ce qu'on lui connecte. Un mot inconnu : `conception/kit/VOCABULAIRE.md`.
@@ -99,7 +104,7 @@ piste supplémentaire[% endif %]. La liste complète, propre au projet, est au �
 [% if 'mutation' in modules -%]
 | Tête de la PR pour le balayage de A | `uv run outils/tete_pr.py «n»` → `conception/passations/TETE_PR-«n».tar` |
 [% endif -%]
-| Avant la fusion | `uv run outils/revue_pr.py «n»` (commentaire écrit par A), puis *Squash and merge* sur GitHub |
+| Avant la fusion | `uv run outils/revue_pr.py «n»` (commentaire écrit par A), puis [% if membre %]demande la relecture : les responsables fusionnent[% else %]*Squash and merge* sur GitHub[% endif %] |
 [% if 'archives' in modules -%]
 | Archivage (liste écrite par A) | `uv run outils/archiver.py conception/passations/A_ARCHIVER_«étape».txt`, relu, puis avec `--executer` |
 [% endif -%]

@@ -28,7 +28,7 @@ GITHUB = "[[ github ]]"
 """Dépôt GitHub, propriétaire/nom."""
 
 HUMAIN = "[[ humain ]]"
-"""La personne qui tient le projet : les textes générés par ces scripts la nomment."""
+"""La personne qui tient [% if role == 'membre' %]cet espace (un membre du groupe)[% else %]le projet[% endif %] : les textes générés par ces scripts la nomment."""
 
 DEPOT_TRAVAIL = Path(r"[[ depot_travail ]]").expanduser()
 """Copie de travail où tourne l'agent de code de la piste principale (ces scripts n'y écrivent

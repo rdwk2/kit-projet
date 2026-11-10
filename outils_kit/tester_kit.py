@@ -305,6 +305,27 @@ SCENARIOS: list[dict] = [
               "conception/kit/gabarits/BRIEF_JALON.md": ["CLAUDE.md", "just check", "docs/JOURNAL.md",
                                                          "docs/decisions/", "`BACKLOG.md`"],
               "conception/kit/gabarits/DEMARRAGE_C.md": ["just check", "est rouge"]}},
+    # Un membre d'un groupe, sur un dépôt généré par le kit : il ne fusionne pas, et ne propose rien seul.
+    {"nom": "espace-membre", "data": {"couche": "espace", "preset": "perso-standard", "role": "membre"},
+     "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
+     "absents": espace_archives() + espace_expert(),
+     "contient": {"conception/kit/VOCABULAIRE.md": ["Une personne qui contribue au projet de groupe",
+                                                    "Une entrée par livraison."],
+                  "00_LISEZ_MOI_ESPACE.md": ["Les responsables du dépôt relisent et fusionnent.",
+                                             "demande la relecture : les responsables fusionnent"],
+                  "conception/kit/METHODE.md": ["**En groupe, comme membre.**", "un autre membre du groupe relit",
+                                                "| 11 | Fusion | les responsables |"],
+                  "conception/kit/prompts/PREMIERE_A.md": ["**propositions au groupe**", "le dépôt du groupe, généré",
+                                                           "la première tâche que le groupe me confie"],
+                  "conception/kit/gabarits/BRIEF_JALON.md": ["Ce que demande la tâche confiée"],
+                  "conception/kit/gabarits/REVUE_PR.md": ["les responsables fusionnent"]},
+     "sans": {"00_LISEZ_MOI_ESPACE.md": ["tu fusionnes"],
+              "conception/kit/VOCABULAIRE.md": ["La personne qui tient le projet"],
+              "conception/kit/prompts/PREMIERE_A.md": ["Proposer la ROADMAP", "fusionne-la", "RELIRE_UNE_PR",
+                                                       "Le dépôt, tel qu'il existe"],
+              "conception/kit/METHODE.md": ["RELIRE_UNE_PR", "dernier JOURNAL"],
+              "conception/kit/gabarits/BRIEF_JALON.md": ["l'entrée de `docs/JOURNAL.md`"]}},
 ]
 
 
