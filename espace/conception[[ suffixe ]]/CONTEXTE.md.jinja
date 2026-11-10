@@ -97,7 +97,7 @@ qu'une consigne) : `kit/METHODE.md`, § 3.
 |---|---|
 | Copie de travail (l'agent de code seul y écrit) | `[[ depot_travail ]]` |
 | Miroir du dépôt (lecture seule ; `git pull` par [[ humain ]] après chaque fusion) | `[[ racine ]]/v_for_cowork[[ suffixe ]]/[[ slug ]]/` |
-| GitHub | `https://github.com/[[ github ]]` — `main` protégée[% if langage == 'python' %], CI obligatoire[% endif %] (réglage sur GitHub : `docs/GUIDE.md` du kit, « Après la génération ») |
+| GitHub | `https://github.com/[[ github ]]` — `[[ branche_principale ]]` protégée[% if langage == 'python' %], CI obligatoire[% endif %] (réglage sur GitHub : `docs/GUIDE.md` du kit, « Après la génération ») |
 | Conception (A seule) | `[[ racine ]]/conception[[ suffixe ]]/` : ce fichier, `LECONS_PROJET.md`, `MACHINE_PROJET.md`, `kit/`, `passations/`, `00_LISEZ_MOI.md`, `REMONTEES_KIT.md` |
 | Dossier vu par A[% if 'relectures' in modules %] et B[% endif %] (l'agent de code : un sous-dossier ; [% if 'relectures' in modules %]C : jamais, elle reçoit un paquet[% else %]une relecture neuve : un paquet[% endif %]) | `[[ racine ]]/v_for_cowork[[ suffixe ]]/` : le miroir, [% if 'relectures' in modules %]les briefs `06_` et `07_` et leurs annexes, [% endif %]un sous-dossier par jalon (`BRIEF_«jalon».md` et ses pièces), les diffs `pr-«n».diff` |
 | Outils [[ de_humain ]] | `[[ racine ]]/outils/`, lancés par `uv run outils/«script».py` depuis `[[ racine ]]` |
@@ -140,7 +140,25 @@ dans ce projet, et ses commandes propres. Formats : `kit/gabarits/CLOTURE_CONTEX
 ### Dérogations au kit
 
 *Aucune pour l'instant.*
+[% if origine == 'existant' %]
+### Le dépôt, tel qu'il existe
 
+Le dépôt n'a pas été généré par le kit. Ce que les textes du kit attribuent au `CLAUDE.md` du kit (ce qui
+appartient à l'humain, conventions, vérification) se lit ici ; la première A complète les «…».
+
+| Quoi | Dans ce dépôt |
+|---|---|
+| Branche principale | `[[ branche_principale ]]` |
+| Règles de l'agent de code | [% if regles_agent %]`[[ regles_agent ]]`[% else %]aucun fichier : les règles du projet sont dans ce tableau[% endif %] |
+| Vérification complète | [% if commande_verif %]`[[ commande_verif ]]`, à la racine du dépôt[% else %]«aucune commande : ce qui vérifie le dépôt, et comment»[% endif %] |
+| Plan, backlog | [% if doc_plan %]`[[ doc_plan ]]`[% else %]pas de plan[% endif %] ; [% if doc_backlog %]`[[ doc_backlog ]]`[% else %]pas de backlog[% endif %] |
+| Décisions, journal, pièges | [% if doc_decisions %]`[[ doc_decisions ]]`[% else %]pas de fiches[% endif %] ; [% if doc_journal %]`[[ doc_journal ]]`[% else %]pas de journal[% endif %] ; [% if doc_pieges %]`[[ doc_pieges ]]`[% else %]pas de liste[% endif %] |
+| Ce qui appartient à [[ humain ]] | «ce que tranche [[ humain ]], et personne d'autre : architecture, modèle, métrique, données personnelles…» |
+| Conventions | «branches, messages de commit, taille d'une PR, langue des textes» |
+
+Un document absent n'est pas une faute : un texte du kit qui le cite écrit « (absent de ce dépôt) ». Une fois
+le document ajouté, régénère l'espace avec les réponses à jour (`docs/GUIDE.md` du kit, « Greffer l'espace sur un dépôt existant »).
+[% endif %]
 ### Commandes [[ de_humain ]]
 
 Le tableau généré : `kit/COMMANDES.md`. Ici, seulement les commandes propres au projet.
@@ -198,7 +216,7 @@ Les seules lignes déclenchées maintenant (règles : `kit/gabarits/CLOTURE_CONT
 | **Archivages différés** | «`passations/A_ARCHIVER_A«n».txt` à lancer par [[ humain ]], «m» éléments ; le précédent fait, vérifié le «date» à «heure»». |
 [% endif %]
 
-Les idées de modélisation sont dans `BACKLOG.md`, dans le dépôt — pas ici. Ce qui se reprend
+Les idées de modélisation sont dans [% if doc_backlog %][[ md_backlog ]], dans le dépôt[% else %]«là où le projet les range : un backlog, des tickets»[% endif %] — pas ici. Ce qui se reprend
 d'un ancien projet : «fichier, s'il y en a un».
 
 ---

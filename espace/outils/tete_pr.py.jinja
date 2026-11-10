@@ -6,7 +6,7 @@ conception/passations/TETE_PR-<n>.tar, avec sa fiche TETE_PR-<n>.txt (commit, ar
 
     uv run outils/tete_pr.py 42 [--piste analyse]
 
-Pourquoi : A ne voit que le miroir, qui ne porte que `main` (jamais de `git fetch` dedans) ; or
+Pourquoi : A ne voit que le miroir, qui ne porte que `[[ branche_principale ]]` (jamais de `git fetch` dedans) ; or
 le balayage de mutation (kit/MUTATION.md, si le module est actif) et certaines vérifications
 d'annexe se font sur la tête de la PR. A extrait l'archive dans son propre espace de travail et
 vérifie l'arbre (le format tar garde les modes de fichiers, que le zip perd).

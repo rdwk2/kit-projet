@@ -5,6 +5,15 @@
 - **Comparaison des rendus.** `outils_kit/comparer_rendus.py` génère chaque scénario du banc depuis un tag et depuis
   le kit actuel, et compare les deux octet par octet. Il prouve qu'un changement additif ne touche pas aux projets
   existants.
+- **L'espace autour d'un dépôt existant.** Une nouvelle question, `origine`, accepte un dépôt fait sans le kit
+  (`docs/GUIDE.md`, § 3.3). Copier demande alors sa branche principale, le fichier de règles de l'agent, la commande
+  qui vérifie le dépôt et les documents qu'il a déjà, avec leur chemin. Les textes de l'espace citent ces fichiers
+  à la place de ceux du kit. Un document absent est marqué « (absent de ce dépôt) », et aucune consigne ne fait
+  écrire dedans. Le § 2 de `CONTEXTE.md` reçoit un tableau « Le dépôt, tel qu'il existe ». La première A propose
+  deux ouvertures : découvrir le dépôt et proposer ce qui manque, ou attendre la première mission.
+  `outils/clone_c.py` lance la commande de vérification du dépôt au lieu de `just check`.
+- **Mettre à jour un projet.** Rien ne change : `origine` vaut `kit` par défaut, et le rendu est identique à celui
+  de la 0.5.0 (`outils_kit/comparer_rendus.py`).
 
 ## 0.5.0 — 2026-11-10
 

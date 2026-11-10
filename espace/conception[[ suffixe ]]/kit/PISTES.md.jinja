@@ -43,7 +43,7 @@
   transportent, et seulement au niveau complet, par un script : **jamais son état** (§§ 4, 5, 7).
 - **[[ humain ]] est le seul canal entre les deux A.** Un relais est un fichier ; il dit la réponse
   attendue ; une demande d'accord joint le diff exact des fichiers communs et une fusion d'essai.
-- **La PR qui fusionne en second fusionne `main` dans sa branche**, sans rebase d'une branche
+- **La PR qui fusionne en second fusionne `[[ branche_principale ]]` dans sa branche**, sans rebase d'une branche
   déjà relue, et garde les deux côtés des conflits.
 
 ```mermaid
@@ -63,7 +63,7 @@ flowchart TB
   end
   H(("[[ humain ]]"))
   OUT["outils (jamais connecté)<br/>extraire_piste.py"]
-  GH[("GitHub : main")]
+  GH[("GitHub : [[ branche_principale ]]")]
   subgraph PN["Nouvelle piste"]
     AN(["A de la piste"])
 [% if 'relectures' in modules -%]
@@ -179,7 +179,7 @@ niveau 2 renommé ou ajouté arrête l'extraction (§ 4.1).
 
 **Partagé** (un seul exemplaire, régi par le § 5) :
 
-- dans le dépôt : `CLAUDE.md`, la ROADMAP, le `JOURNAL`, le `BACKLOG`, le README,
+- dans le dépôt : [[ md_regles ]], la ROADMAP, le `JOURNAL`, le `BACKLOG`, le README,
   `pyproject.toml` et `uv.lock`, le `justfile`, la CI, [% if 'donnees-privees' in modules %]le hook et ses réglages,
   [% endif %]`tests/conftest.py`, la suite des numéros de `docs/decisions/`, les listes d'exports et de
   types documentés, les modules rendus communs (§ 8) ;
@@ -268,13 +268,13 @@ règle de l'autre sans qu'elle le sache.
 
 | Point de contact | Régime | Règle |
 |---|---|---|
-| ROADMAP, `JOURNAL`, `BACKLOG`, README | **information** | [[ humain ]] signale à l'autre A toute PR qui y touche. Conflit de texte : on garde les deux côtés, dans l'ordre convenu au relais (en général, la ligne de la PR déjà fusionnée d'abord). Le README suit `main` PR par PR : chaque brief dit ce qu'il y change |
+| ROADMAP, `JOURNAL`, `BACKLOG`, README | **information** | [[ humain ]] signale à l'autre A toute PR qui y touche. Conflit de texte : on garde les deux côtés, dans l'ordre convenu au relais (en général, la ligne de la PR déjà fusionnée d'abord). Le README suit `[[ branche_principale ]]` PR par PR : chaque brief dit ce qu'il y change |
 | `pyproject.toml`, `uv.lock` | **information** ; **accord** pour une dépendance qui touche le cœur de l'autre piste | `uv lock` sans `--upgrade`, refait depuis le verrou de la branche et comparé paquet par paquet ; une borne de version posée par un extra de l'autre piste se relaie |
-| `CLAUDE.md`, `justfile`, CI, [% if 'donnees-privees' in modules %]hook, [% endif %]`tests/conftest.py` | **accord des deux A** | le brief de la PR le prévoit dans une rubrique « Points de contact » ; l'accord précède la session Code |
+| [[ md_regles ]], `justfile`, CI, [% if 'donnees-privees' in modules %]hook, [% endif %]`tests/conftest.py` | **accord des deux A** | le brief de la PR le prévoit dans une rubrique « Points de contact » ; l'accord précède la session Code |
 | contrats et fonctions de l'autre piste | **propriété** | changer un contrat existant demande l'accord de sa piste, avant la PR ; en ajouter un est libre (par lignes ajoutées seulement) ; une fonction de l'autre s'appelle, ne se réimplémente jamais |
 | modules et fonctions rendus communs (§ 8) | **propriété partagée** | ils deviennent des points de contact ; tout changement se relaie avec son diff |
 | clôtures d'imports, interdictions de lint[% if 'donnees-privees' in modules %], motifs du hook[% endif %] | **accord** | leur portée s'écrit dans le nom ou la liste du test ; on les relit contre les plans de l'autre piste avant la fusion ; les lever demande l'accord des deux A |
-| numéros de `docs/decisions/` | **réservation** | ci-dessous |
+| numéros de [[ md_decisions ]] | **réservation** | ci-dessous |
 | ordre des fusions | **négocié** | § 7 |
 | copies de travail, miroirs | **propres** | une copie de travail par piste ; les deux miroirs à jour après chaque fusion |
 | [% if 'donnees-privees' in modules %]dossier de données, [% endif %]limites d'usage | **partagés** | [% if 'donnees-privees' in modules %]le même `.env` ; [% endif %]si les pistes partagent un compte, la politique de modèle tient compte de leurs limites d'usage |
@@ -299,11 +299,11 @@ piste, tenu à jour par son A.
   suites, et sort de la convention `NNNN-titre.md` du gabarit `0000-template.md`. À n'essayer
   que si les deux pistes ouvrent beaucoup de fiches en même temps.
 
-**Phrase à proposer pour `CLAUDE.md`** (PR de documentation de la piste, avec l'accord des deux A) :
+**Phrase à proposer pour [[ md_regles ]]** (PR de documentation de la piste, avec l'accord des deux A) :
 
 > **Plusieurs pistes, un dépôt.** Les pistes `principale` et `«piste»` avancent en parallèle.
-> `CLAUDE.md`, le `justfile`, la CI, [% if 'donnees-privees' in modules %]le hook [% endif %]et `tests/conftest.py` ne changent qu'avec l'accord
-> des deux conceptions. La PR qui fusionne en second fusionne `main` dans sa branche (jamais de
+> [[ md_regles ]], le `justfile`, la CI, [% if 'donnees-privees' in modules %]le hook [% endif %]et `tests/conftest.py` ne changent qu'avec l'accord
+> des deux conceptions. La PR qui fusionne en second fusionne `[[ branche_principale ]]` dans sa branche (jamais de
 > rebase d'une branche relue) et garde les deux côtés des conflits. Jalons : `«préfixe de la référence»«n»`
 > ou `«préfixe»«n»`, avec un sous-jalon éventuel ; branches `«préfixe en minuscules»«n»/«sujet»` ;
 > titres de PR « `«préfixe»«n» — «nom»` ».
@@ -408,13 +408,13 @@ sequenceDiagram
 
 1. **L'ordre se décide dans les relais**, au plus tard avant la session Code de la seconde PR ;
    chaque relais qui porte un paquet a sa rubrique « Calendrier ».
-2. **La seconde fusionne `main` dans sa branche**, jamais de rebase d'une branche déjà relue :
+2. **La seconde fusionne `[[ branche_principale ]]` dans sa branche**, jamais de rebase d'une branche déjà relue :
    les commits relus gardent leurs empreintes, le conflit se règle une fois, et *Squash and
-   merge* donne quand même un seul commit sur `main`.
-3. **Conflits de texte** (listes, `BACKLOG`, `JOURNAL`, « Structure » de `CLAUDE.md`) : garder les
+   merge* donne quand même un seul commit sur `[[ branche_principale ]]`.
+3. **Conflits de texte** (listes, `BACKLOG`, `JOURNAL`, « Structure » de [[ md_regles ]]) : garder les
    deux côtés, dans l'ordre convenu au relais.
 4. **La fusion se prépare d'avance** (`kit/LECONS.md`, PIS-1).
-   - La conception de la seconde PR fait la fusion de `main` dans une copie de sa tête, et
+   - La conception de la seconde PR fait la fusion de `[[ branche_principale ]]` dans une copie de sa tête, et
      vérifie qu'elle n'ajoute que le diff de l'autre PR, et que la suite passe.
    - **Par défaut**, elle en tire une consigne pour Code : conflit par conflit, quoi garder, et
      l'arbre attendu ; Code fait la fusion d'après elle (gabarit `CORRECTIFS`, variante 2).
@@ -429,15 +429,15 @@ sequenceDiagram
    outils de Code, `git merge --abort` compris.
 [% endif -%]
 6. **Si l'autre piste fusionne entre l'accord et le lancement de Code, le paquet se régénère.**
-   - La révision n+1 est la source de la révision n, `main` fusionné, les deux côtés gardés.
-   - Elle part avec deux diffs : de n à n+1, et les fichiers communs contre `main`.
+   - La révision n+1 est la source de la révision n, `[[ branche_principale ]]` fusionné, les deux côtés gardés.
+   - Elle part avec deux diffs : de n à n+1, et les fichiers communs contre `[[ branche_principale ]]`.
    - Un nouvel accord sur sa nouvelle empreinte précède Code.
 [% if 'relectures' in modules -%]
    - La B la vérifie mécaniquement : chaque fichier changé est la fusion à trois voies de
-     l'ancienne révision et des deux `main`.
+     l'ancienne révision et des deux `[[ branche_principale ]]`.
 [% endif -%]
 7. **Un paquet de recopie vérifie l'arbre de sa base** et l'empreinte de chaque fichier qu'il
-   remplace : il refuse un `main` changé, au lieu d'effacer la PR de l'autre piste.
+   remplace : il refuse un `[[ branche_principale ]]` changé, au lieu d'effacer la PR de l'autre piste.
 8. **Après chaque fusion, quelle que soit la piste**, [[ humain ]] met à jour les deux miroirs et les
    copies de travail (§ 10.2), et dit la nouvelle tête aux deux A ; chaque A compare la tête de
    son miroir à celle [[ que_humain ]] annonce.
@@ -502,7 +502,7 @@ sequenceDiagram
 | 9 | [[ humain ]] | transmet l'annonce, quand le cycle en cours de la référence le permet | — |
 | 10 | A de la piste | mène le cadrage `«préfixe»0` ; relais 01 : ce que ses décisions changent chez la référence | — |
 | **Première PR, de documentation** | | | |
-| 11 | A de la piste | écrit son brief : la ROADMAP (la piste ajoutée ; ce qu'elle retire du hors-périmètre), la phrase « Plusieurs pistes » et le nommage des jalons dans `CLAUDE.md` (§ 5), les fiches de décision de la piste ; accord de l'autre A sur `CLAUDE.md` | — |
+| 11 | A de la piste | écrit son brief : la ROADMAP (la piste ajoutée ; ce qu'elle retire du hors-périmètre), la phrase « Plusieurs pistes » et le nommage des jalons dans [[ md_regles ]] (§ 5), les fiches de décision de la piste ; accord de l'autre A sur [[ md_regles ]] | — |
 | **Avant la première session Code de la piste** | | | |
 | 12 | [[ humain ]] | crée la copie de travail de la piste (bloc 4, ou 4 bis) | — |
 [% if 'donnees-privees' in modules -%]
@@ -560,21 +560,21 @@ git clone https://github.com/[[ github ]].git [[ slug ]]_«piste»
 cd [[ racine ]]/[[ slug ]]_«piste»
 cp «copie de travail de la référence»/.env .env   # si le projet a un .env (ou Copy-Item sous PowerShell)
 uv sync --locked
-just check
+[[ cmd_verif ]]
 ```
 
 ```bash
 # 4 bis. Ou un arbre git worktree, tiré de la copie de travail de la référence (non éprouvé
-#        dans un projet ; essayé à blanc). main ne peut être extraite que dans un seul arbre :
-#        celui de la piste travaille détaché sur origin/main entre deux PR, et Code y crée sa
+#        dans un projet ; essayé à blanc). [[ branche_principale ]] ne peut être extraite que dans un seul arbre :
+#        celui de la piste travaille détaché sur origin/[[ branche_principale ]] entre deux PR, et Code y crée sa
 #        branche. On le supprime par « git worktree remove », jamais en effaçant le dossier.
 cd «copie de travail de la référence»
 git fetch origin
-git worktree add --detach [[ racine ]]/[[ slug ]]_«piste» origin/main
+git worktree add --detach [[ racine ]]/[[ slug ]]_«piste» origin/[[ branche_principale ]]
 cd [[ racine ]]/[[ slug ]]_«piste»
 cp «copie de travail de la référence»/.env .env   # si le projet a un .env (ou Copy-Item sous PowerShell)
 uv sync --locked
-just check
+[[ cmd_verif ]]
 ```
 
 ```bash
@@ -583,11 +583,11 @@ cd [[ racine ]]
 uv run outils/miroir.py
 uv run outils/miroir.py --piste «piste»
 cd «copie de travail de la référence»
-git switch main
+git switch [[ branche_principale ]]
 git pull
 uv sync --locked
 cd [[ racine ]]/[[ slug ]]_«piste»
-git switch main          # second clone ; pour un arbre worktree : git fetch origin, puis git switch --detach origin/main
+git switch [[ branche_principale ]]          # second clone ; pour un arbre worktree : git fetch origin, puis git switch --detach origin/[[ branche_principale ]]
 git pull
 uv sync --locked
 ```
@@ -633,7 +633,7 @@ connectés, et rien d'autre ; modèle et effort : ceux de la note d'ouverture
 > Lis, dans l'ordre : `conception_«piste»/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque
 > « à l'ouverture » ; `NOTE_PISTE_«PISTE».md` ; au niveau complet, `depuis_«référence»/LISEZ_MOI.md` ;
 > `kit/PISTES.md` par section, au moment voulu. Dans le miroir `v_for_cowork_«piste»/[[ slug ]]/` :
-> `CLAUDE.md`, `README.md`, `docs/ROADMAP.md`.
+> [[ md_regles ]], `README.md`, [[ md_plan ]].
 >
 > Ta mission : le cadrage de la piste (`«préfixe»0`), sans code, d'après la note. Tu ne connectes
 > jamais les dossiers de l'autre piste ; ce qu'il te faut d'elle, tu me le demandes (la section

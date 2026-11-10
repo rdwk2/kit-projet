@@ -89,10 +89,10 @@ Les champs `«…»` se remplissent à l'usage ; un `<…>` décrit la forme d'u
 - **SYS-4 — Fins de ligne et sorties texte** : voir PY-3.
 - **SYS-5 — Durées sous Windows**
   - Symptôme : les durées annoncées à [[ humain ]] sont fausses (« une demi-heure » pour une heure).
-  - Cause : un `just check` complet peut prendre longtemps selon les extras et la taille de la suite ;
+  - Cause : un [[ md_verif ]] complet peut prendre longtemps selon les extras et la taille de la suite ;
     l'agent de code en lance un par commit.
   - Parade : mesurer, noter la durée dans `MACHINE_PROJET.md`, et annoncer une durée mesurée,
-    à raison d'un `just check` par commit.
+    à raison d'un [[ md_verif ]] par commit.
 
 ## 2. Verrous de fichiers et de dossiers (VER)
 
@@ -231,7 +231,7 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
 - **CMD-2 — Essai sans les variables d'encodage**
   - Symptôme : un défaut d'encodage ne se voit pas dans le shell de Claude Code.
   - Cause : ce shell (et peut-être celui [[ de_humain ]]) hérite de `PYTHONIOENCODING=utf-8:surrogateescape`.
-  - Parade : R5, d'abord sur `main` (témoin), puis sur la branche.
+  - Parade : R5, d'abord sur `[[ branche_principale ]]` (témoin), puis sur la branche.
 
 ## 6. Python sous Windows : les outils remis aux agents (PY)
 
@@ -258,7 +258,7 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
   - Cause : `requires-python = ">=3.x"` laisse uv prendre plus haut.
   - Parade : `.python-version` = la version de la CI ; les essais de A dans cette version.
 - **PY-8 — Hypothesis sous Windows** : un `FailedHealthCheck` sous Windows sur un
-  test vert sous Linux. Parade à trancher par projet (une ligne de `BACKLOG.md`, en attendant).
+  test vert sous Linux. Parade à trancher par projet (une ligne de [[ md_backlog ]], en attendant).
 
 ## 7. uv et environnements (UV)
 
@@ -300,7 +300,7 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
 
 - **GIT-1 — Certificats** : AV-2.
 - **GIT-2 — Miroir en lecture seule** : VER-3. S'il est modifié par accident, [[ humain ]] le remet à neuf :
-  `git reset --hard origin/main`.
+  `git reset --hard origin/[[ branche_principale ]]`.
 - **GIT-3 — Fins de ligne** : dans le dépôt, `* text=auto eol=lf` partout, `*.ps1`, `*.bat`, `*.cmd` en
   `eol=crlf`, les binaires déclarés (`*.png binary`, …) dans `.gitattributes`.
 - **GIT-4 — `git worktree add` refuse une branche déjà prise** : cloner à part,
@@ -325,12 +325,12 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
   - Symptôme : selon l'outil, `gh` et l'API sont refusés depuis une conversation ; la page d'une
     PR lue par le web peut montrer un état périmé.
   - Parade : `v_for_cowork[[ suffixe ]]/ETAT_DISTANT.txt`, que `outils/miroir.py` réécrit à chaque passage
-    (R12) : les têtes de `main` et de chaque PR, avec l'heure ; [[ humain ]] le relance quand l'état distant
+    (R12) : les têtes de `[[ branche_principale ]]` et de chaque PR, avec l'heure ; [[ humain ]] le relance quand l'état distant
     compte.[% if public %]
     Le dépôt étant public, aussi : `git ls-remote` et `git fetch` (GIT-5) ;
     l'API publique répond sans jeton (60 requêtes par heure) :
     `https://api.github.com/repos/[[ github ]]/pulls?state=open`, `…/pulls/«n»` (champ `body`),
-    `…/branches/main`, `…/commits/«sha»/check-runs`.[% else %]
+    `…/branches/[[ branche_principale ]]`, `…/commits/«sha»/check-runs`.[% else %]
     Le dépôt est privé : aucune lecture sans identifiants — ni `git ls-remote`, ni `git fetch`, ni
     API sans jeton ; ne pas les tenter depuis une conversation.[% endif %]
     L'état de la CI vient [[ de_humain ]] ; une description se relit dans le fichier écrit par
@@ -436,7 +436,7 @@ Le script publie `conception[[ suffixe ]]/passations/REVUE_PR-«n».md` avec `gh
 
 **R4 — Sortie de Python vers un fichier** : PS-5.
 
-**R5 — Essai d'une sortie redirigée, sans les variables d'encodage** — d'abord sur `main`, puis sur la
+**R5 — Essai d'une sortie redirigée, sans les variables d'encodage** — d'abord sur `[[ branche_principale ]]`, puis sur la
 branche :
 ```powershell
 cd [[ depot_travail ]]
@@ -448,9 +448,9 @@ Get-Content -Encoding UTF8 $env:TEMP/sortie.txt
 **R6 — Commande sur les données réelles : sauvegarde d'abord, sortie gardée**
 ```powershell
 cd [[ depot_travail ]]
-git switch main
+git switch [[ branche_principale ]]
 git pull
-git rev-parse HEAD                 # comparer au main attendu
+git rev-parse HEAD                 # comparer au [[ branche_principale ]] attendu
 git status                         # arbre propre
 Copy-Item -Recurse «dossier_données»/«sous-dossier» «dossier_sauvegardes»/«sous-dossier»_avant_«objet»
 $env:PYTHONIOENCODING = "utf-8"
@@ -468,13 +468,13 @@ uv run outils/clone_c.py «n» --paquet C_PR-«n»[[ opt_piste ]]
 Le script crée `[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/` (refuse s'il existe déjà ; une C bornée ou seconde :
 `--variante «variante»`, poste `c-pr«n»-«variante»[[ suffixe ]]/`), y clone le dépôt sur la tête de la PR et
 copie le paquet `conception[[ suffixe ]]/passations/C_PR-«n»/` dans `paquet/` — le tout préparé dans
-`….preparation`, renommé une fois prêt —, puis lance `uv sync --locked` et `just check` dans le poste
+`….preparation`, renommé une fois prêt —, puis lance `uv sync --locked` et [[ md_verif ]] dans le poste
 à sa place définitive (UV-2 : un `.venv` déplacé ne marche plus). Puis l'agent **dans ce poste**, sans mode plan,
 aucun dossier ajouté : « Lis paquet/DEMARRAGE.md et exécute-le. » (modèle et effort : ceux du
 `DEMARRAGE.md`).
 *Ce que le script remplace* : fermer la session de la C précédente, `cd` dans le parent, `Remove-Item`
 de l'ancien clone (VER-1), `git -c http.sslBackend=schannel clone …` (AV-2), `uv sync --locked`,
-`just check`, `Copy-Item -Recurse` du paquet — une recette qui a joué sur un ancien clone quand la
+[[ md_verif ]], `Copy-Item -Recurse` du paquet — une recette qui a joué sur un ancien clone quand la
 suppression échouait, et qui a buté sur un dossier tenu ouvert (VER-2).
 
 **R8 — Rapport de la C vers A**

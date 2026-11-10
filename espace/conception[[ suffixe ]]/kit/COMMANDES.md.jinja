@@ -26,7 +26,7 @@ tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
 [% if piste == 'principale' -%]
 | Après chaque fusion | Terminal | `cd [[ racine ]]` puis `uv run outils/miroir.py` |
 [% else -%]
-| Après chaque fusion, quelle que soit la piste | Terminal | `cd [[ racine ]]` puis `uv run outils/miroir.py` et `uv run outils/miroir.py --piste [[ piste ]]` ; puis, dans chaque copie de travail, `git switch main`, `git pull`, `uv sync --locked` (`kit/PISTES.md`, § 10.2, bloc 5) |
+| Après chaque fusion, quelle que soit la piste | Terminal | `cd [[ racine ]]` puis `uv run outils/miroir.py` et `uv run outils/miroir.py --piste [[ piste ]]` ; puis, dans chaque copie de travail, `git switch [[ branche_principale ]]`, `git pull`, `uv sync --locked` (`kit/PISTES.md`, § 10.2, bloc 5) |
 | Extraits de la piste principale | Terminal, avant d'ouvrir une A de la piste et après chaque clôture d'une A de la principale | `cd [[ racine ]]` puis `uv run outils/extraire_piste.py --vers [[ piste ]]` |
 | Transporter un relais, et sa réponse | Terminal, à chaque relais | `cd [[ racine ]]` puis `cp conception[[ suffixe ]]/relais/RELAIS_[[ piste ]]_«nn»*.* conception/relais/` (ou `Copy-Item` sous PowerShell) ; la réponse : `cp conception/relais/REPONSE_RELAIS_[[ piste ]]_«nn».md conception[[ suffixe ]]/relais/` |
 [% endif -%]
@@ -49,5 +49,5 @@ tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
 [% endif -%]
 | Sortie de Python vers un fichier | Windows seulement, PowerShell, avant la commande | `$env:PYTHONIOENCODING = "utf-8"` puis `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8` |
 [% if 'donnees-privees' in modules -%]
-| Commande sur les données réelles | Terminal, copie de travail sur `main` à jour, arbre propre | uniquement par [[ humain ]], jamais par l'agent de code ; sauvegarde d'abord ; la commande exacte vient de A (`kit/MACHINE.md`, R6) |
+| Commande sur les données réelles | Terminal, copie de travail sur `[[ branche_principale ]]` à jour, arbre propre | uniquement par [[ humain ]], jamais par l'agent de code ; sauvegarde d'abord ; la commande exacte vient de A (`kit/MACHINE.md`, R6) |
 [% endif -%]

@@ -13,6 +13,7 @@
 [%- set contenu_verif = "lint, format, typage, tests" -%]
 [%- set outil_mutation = "celui du langage" -%]
 [%- endif -%]
+[%- if origine == 'existant' -%][%- set verif = md_verif -%][%- endif -%]
 # Brief de relecture — PR structurante
 
 > **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
@@ -41,7 +42,7 @@ Le projet a **trois filets, qui attrapent trois choses différentes** :
 | Le **code ne fait pas ce qu'il prétend** | les tests et la CI |
 
 **Tu es le deuxième.** Tu ne rejuges pas les décisions : elles ont été prises, écrites et
-justifiées dans `docs/decisions/`, et dans l'annexe § 7 pour les plus récentes. Tu vérifies
+justifiées dans [[ md_decisions ]], et dans l'annexe § 7 pour les plus récentes. Tu vérifies
 que le code les respecte, que la PR ne se contredit pas et ne dit rien de faux sur le dépôt,
 et surtout qu'elle n'a pas **refermé une porte** qu'elles laissaient délibérément ouverte.
 
@@ -65,8 +66,8 @@ pas ce qu'ils disent déjà.
 3. **le diff de la PR** — voir ci-dessous pour sa provenance ;
 4. **l'annexe, `06_ANNEXE_PR-«n».md` (§ 7)** — ce qui a été décidé *après* l'écriture du
    brief, et ce qui a déjà été tranché sur cette PR ;
-5. **le dépôt lui-même**, à la tête de la PR : `docs/decisions/`, `CLAUDE.md`,
-   `docs/PIEGES.md`, les contrats des jalons précédents.
+5. **le dépôt lui-même**, à la tête de la PR : [[ md_decisions ]], [[ md_regles ]],
+   [[ md_pieges ]], les contrats des jalons précédents.
 
 Ces pièces sont dans ton poste, `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/` (nom exact : ton
 `DEMARRAGE.md`) : le clone
@@ -98,7 +99,7 @@ relecteur ne prend pas son énoncé des mains de celui qu'il relit. Dans l'ordre
 préférence :
 
 1. **tu le calcules toi-même** depuis la base de fusion, dans ton clone (il est sur la tête
-   de la PR) : `git fetch origin`, puis `git diff origin/main...HEAD` ;
+   de la PR) : `git fetch origin`, puis `git diff origin/[[ branche_principale ]]...HEAD` ;
 2. sinon, `pr-«n».diff`, [[ que_humain ]] produit avec `uv run outils/diff_pr.py «n»`, et qui est le
    diff exact de GitHub.
 
@@ -220,7 +221,7 @@ quelqu'un dans six mois.
 
 ### C-f. Le README
 
-(`CLAUDE.md` : « Le README décrit `main` ».) Une phrase du README de la branche que la PR
+([% if origine != 'existant' %][[ md_regles ]][% else %]Règle du kit[% endif %] : « Le README décrit `[[ branche_principale ]]` ».) Une phrase du README de la branche que la PR
 rend fausse ou incomplète, par exemple une commande, une sous-commande ou une option ; une
 dépendance ou un extra ; la CI ; la version du langage ; les variables d'environnement qu'il
 documente ; le statut d'une fiche de décision ; ce qui est livré. Lis le README entier à la tête
@@ -230,7 +231,7 @@ la PR étend (commandes, tables, extras, tests sautés).
 
 ### C-g. La règle des données
 
-(`CLAUDE.md`, la règle des données personnelles.) Rien, tiré des données réelles, qui date,
+([% if origine != 'existant' %][[ md_regles ]], la règle[% else %]La règle du projet[% endif %] des données personnelles.) Rien, tiré des données réelles, qui date,
 situe ou identifie les personnes dont elles viennent — ni date tirée des données, ni lieu, ni
 valeur individuelle (une mesure, un enregistrement, un relevé), ni donnée sensible, ni identifiant : dans le code, les textes, les
 docstrings et les messages de commit ; la description de la PR, que tu n'ouvres pas, c'est la
@@ -242,10 +243,10 @@ pas une valeur réelle que tu trouverais : cite le fichier et la ligne.
 
 ## 5. Ce qu'il ne faut pas faire
 
-- **Ne propose pas d'améliorations.** Une idée d'amélioration va dans `BACKLOG.md`, pas dans
+- **Ne propose pas d'améliorations.** Une idée d'amélioration va dans [[ md_backlog ]], pas dans
   une relecture de conformité. Si tu en as une, dis-le en une ligne à part, sous un titre
   « pour le backlog », et n'en fais pas un défaut.
-- **Ne rejuge pas une décision** écrite dans `docs/decisions/`. Si tu la crois fausse,
+- **Ne rejuge pas une décision** écrite dans [[ md_decisions ]]. Si tu la crois fausse,
   dis-le séparément, en une ligne, sans la mélanger aux écarts.
 - **Ne remonte pas ce que l'annexe § 7 dit déjà tranché.**
 - **N'invente pas de défaut pour avoir l'air utile.** Une relecture qui ne trouve rien et le

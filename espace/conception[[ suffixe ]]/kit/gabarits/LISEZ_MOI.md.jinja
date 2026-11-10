@@ -26,7 +26,7 @@ jalon [[ prefixe_jalon ]]1 ».
 [% endif -%]
 | **Code** | l'agent de code : il écrit le code et les tests |
 
-`CLAUDE.md` porte les règles de tous les agents ; `AGENTS.md` y renvoie.
+[[ md_regles ]] porte les règles de tous les agents ; `AGENTS.md` y renvoie.
 
 ## Règles communes
 
@@ -89,7 +89,7 @@ flowchart LR
 | `CONSIGNE_CODE.md` | au départ de la session de code d'un jalon | A | `conception[[ suffixe ]]/passations/CONSIGNE_CODE_«jalon».md` | [[ humain ]] la colle dans la session de code |
 | `FEU_VERT_PLAN.md` | le plan relu : feu vert ou demande de révision ; plus tard, une précision en cours de session | A | `passations/FEU_VERT_PLAN_«jalon».md` ; `passations/MESSAGE_CODE_«jalon»_«k».md` | [[ humain ]] les colle dans la session de code[% if 'relectures' in modules %] ; le feu vert part aussi dans le paquet de la C[% endif %] |
 | `ARBITRAGE.md` | après chaque rapport de relecture | A | `passations/ARBITRAGE_PR-«n».md`[% if 'relectures' in modules %] ; pour une passe de B : `passations/ARBITRAGE_B_«jalon»_PASSE«x».md`[% endif %] | [[ humain ]], qui tranche ce qui lui appartient ; il nourrit les correctifs, la révision du brief, l'annexe suivante |
-| `CORRECTIFS.md` | après l'arbitrage d'une PR ; ou pour faire fusionner `main` dans une branche déjà relue | A | `passations/CORRECTIFS_PR-«n».md` ou `passations/FUSION_MAIN_PR-«n».md` ; fichiers joints dans `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/` | [[ humain ]] la colle dans la session de code de la PR |
+| `CORRECTIFS.md` | après l'arbitrage d'une PR ; ou pour faire fusionner `[[ branche_principale ]]` dans une branche déjà relue | A | `passations/CORRECTIFS_PR-«n».md` ou `passations/FUSION_MAIN_PR-«n».md` ; fichiers joints dans `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/` | [[ humain ]] la colle dans la session de code de la PR |
 | `REVUE_PR.md` | juste avant la fusion, sur l'état final | A | `passations/REVUE_PR-«n».md` | [[ humain ]] la publie : `uv run outils/revue_pr.py «n»` |
 [% if 'relectures' in modules -%]
 | `DEPART_B.md` | avant chaque passe de B | A | `passations/DEPART_B_«jalon»_PASSE«x».md` | [[ humain ]] le colle dans la conversation B |

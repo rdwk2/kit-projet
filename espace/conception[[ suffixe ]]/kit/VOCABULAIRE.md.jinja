@@ -34,7 +34,7 @@
 | Terme | Définition | Exemple |
 |---|---|---|
 | **Kit** (kit-projet) | Le gabarit Copier, versionné par tags, qui génère le dépôt et l'espace de travail d'un projet ; par extension, ses fichiers dans un projet. | `copier copy`, puis `copier recopy` à chaque nouvelle version. |
-| **Couche** | L'une des deux parties générées séparément : `depot` (le dépôt git : `CLAUDE.md`, `docs/`, CI) et `espace` (l'espace de travail IA d'une piste : conception, `v_for_cowork`, archives, outils). | Le dépôt se met à jour par `copier update`, l'espace par `copier recopy`. |
+| **Couche** | L'une des deux parties générées séparément : `depot` (le dépôt git : [[ md_regles ]], `docs/`, CI) et `espace` (l'espace de travail IA d'une piste : conception, `v_for_cowork`, archives, outils). | Le dépôt se met à jour par `copier update`, l'espace par `copier recopy`. |
 | **Module** | Une partie facultative du kit, choisie à la création : elle ajoute des fichiers et des sections. | Couche depot : `donnees-privees`, `analyse-donnees`, `groupe` ; couche espace : `relectures`, `archives`, `mutation`, `expert`. |
 | **Préréglage** | Un jeu de modules nommé, proposé à la création ; « personnalisé » laisse les choisir un à un. | Solo léger (`solo-leger`), Groupe scolaire (`groupe-scolaire`), Standard (`perso-standard`), Complet (`perso-complet`). |
 | **Fichier du kit** | Un fichier rafraîchi à chaque mise à jour du kit, jamais modifié dans un projet : une dérogation va au § 2 de `CONTEXTE.md`, une amélioration dans `REMONTEES_KIT.md`. | Tout `conception[[ suffixe ]]/kit/`, [% if 'relectures' in modules %]les briefs `06_` et `07_`, [% endif %]les scripts d'`outils/`. |
@@ -51,9 +51,9 @@
 | **Jalon** | Une étape de la roadmap, livrée par une ou plusieurs PR ; un gros jalon se découpe en lots numérotés. | `[[ prefixe_jalon ]]3`, puis `[[ prefixe_jalon ]]3a`, `[[ prefixe_jalon ]]3b`. |
 | **Lot** | Une part d'un jalon qui tient dans une PR : un brief, une session de code, une branche. | Une PR titrée `[[ prefixe_jalon ]]«n»«x» — …`. |
 | **Sous-jalon** | Un lot, vu depuis la roadmap : il porte le numéro du jalon, suivi d'une lettre. | `[[ prefixe_jalon ]]3a`. |
-| **ROADMAP** | `docs/ROADMAP.md` : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
-| **BACKLOG** | `BACKLOG.md` : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
-| **JOURNAL** | `docs/JOURNAL.md` : l'historique du projet, ce qui a été fait et décidé. | [% if 'groupe' in modules %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
+| **ROADMAP** | [[ md_plan ]] : le plan du projet, par jalons. | Chaque jalon y a son « fini quand ». |
+| **BACKLOG** | [[ md_backlog ]] : les idées écartées pour plus tard, une par ligne. | Ce qui déborde d'un brief y part en une ligne. |
+| **JOURNAL** | [[ md_journal ]] : l'historique du projet, ce qui a été fait et décidé. | [% if 'groupe' in modules %]Une entrée par livraison.[% else %]Une entrée par session.[% endif %] |
 | **Tranche verticale** | Un petit morceau qui marche de bout en bout. | Lire un fichier, calculer, afficher une valeur. |
 | **Artefact** | Un document produit puis relu : un brief, un plan, un cadrage. | « un artefact mérite plus d'effort qu'une conversation ». |
 | **Contrat** | Ce qu'un type ou une fonction promet à ceux qui s'en servent. | « ce type refuse toute valeur infinie ». |
@@ -62,7 +62,7 @@
 | **Piste** | Une ligne de travail parallèle dans le même dépôt, avec sa propre conversation de conception, ses dossiers et son `CONTEXTE.md`[% if 'pistes' in modules %] (`kit/PISTES.md`)[% endif %]. | `conception_analyse/`, jalons `AN1`, `AN2`… |
 [% if 'pistes' in modules -%]
 | **Référence** (piste de) | La piste qui existait déjà quand une autre s'ouvre, en général `principale`. | L'A de référence, le CONTEXTE de référence. |
-| **Point de contact** | Un fichier ou un sujet commun à deux pistes, qui demande de se coordonner (`kit/PISTES.md`, § 5). | `CLAUDE.md`, le `justfile`, la CI. |
+| **Point de contact** | Un fichier ou un sujet commun à deux pistes, qui demande de se coordonner (`kit/PISTES.md`, § 5). | [[ md_regles ]], le `justfile`, la CI. |
 [% endif -%]
 | **Cadrage** | Le document qui précède le premier brief d'un jalon : les mesures (M), les questions posées à [[ humain ]] (Q) et ses décisions (§ D). | `«NN»_CADRAGE_«jalon».md`, révision «r», tranchée. |
 | **Découpage** | Le partage d'un jalon en lots, avec les décisions qui le justifient. | Un jalon en cinq PR, chacune avec son « fini quand ». |
@@ -202,11 +202,11 @@ Pour qui débute sur git : ces mots suffisent à lire le kit.
 |---|---|---|
 | **Dépôt** | Le projet et tout son historique. | `https://github.com/[[ github ]]`. |
 | **Commit** | Une étape enregistrée du travail, avec un message. | `feat: lecture du fichier`. |
-| **Branche** | Une ligne de travail à part, pour ne pas toucher à `main`. | Une branche par tâche. |
-| **`main`** | La branche de référence : ce qu'elle contient marche. | Le miroir suit `main`. |
+| **Branche** | Une ligne de travail à part, pour ne pas toucher à `[[ branche_principale ]]`. | Une branche par tâche. |
+| **`[[ branche_principale ]]`** | La branche de référence : ce qu'elle contient marche. | Le miroir suit `[[ branche_principale ]]`. |
 | **Clone** | Une copie d'un dépôt sur ta machine. | La copie de travail, le miroir. |
 | **PR** (pull request) | Une demande de fusion, où l'on relit les changements avant de les accepter. | La PR #12. |
-| **Fusion** | Faire entrer une branche dans `main`. | *Squash and merge*. |
+| **Fusion** | Faire entrer une branche dans `[[ branche_principale ]]`. | *Squash and merge*. |
 | **Diff** | La liste des lignes changées entre deux états. | `pr-«n».diff`. |
 | **Tête** | Le dernier commit d'une branche ou d'une PR. | Une relecture porte sur la tête de la PR. |
 | **Arbre** | Le contenu exact des fichiers d'un commit, sans son historique. Deux commits peuvent avoir le même arbre. | `git rev-parse "HEAD^{tree}"`. |
@@ -214,7 +214,7 @@ Pour qui débute sur git : ces mots suffisent à lire le kit.
 | **Hook** | Un script lancé automatiquement avant une action, pour la contrôler. | [% if 'donnees-privees' in modules %]Le hook de `.claude/settings.json`, pour Claude Code ; un autre agent n'a que la consigne.[% else %]Claude Code en propose ; sinon, la consigne seule.[% endif %] |
 | **Tag** | Une étiquette posée sur un commit, pour marquer une version. | `v1.0.0`. |
 | **Rebase** | Reposer une branche sur un autre point de départ, ce qui réécrit ses commits. | Le kit l'évite sur une branche déjà relue. |
-| ***Squash and merge*** | Le bouton de GitHub qui fusionne une PR en un seul commit sur `main`. | En bas de la PR, dans le menu du bouton de fusion. |
+| ***Squash and merge*** | Le bouton de GitHub qui fusionne une PR en un seul commit sur `[[ branche_principale ]]`. | En bas de la PR, dans le menu du bouton de fusion. |
 | ***Comment*** | Une revue sans approbation. GitHub interdit d'approuver sa propre PR. | Dans la PR : *Files changed*, *Review changes*, *Comment*. |
 | ***Viewed*** | La case qu'on coche sur chaque fichier d'une PR : un bloc-notes, pas la relecture. | Dans la PR : *Files changed*, en haut de chaque fichier. |
 | **« Changes from all commits »** | Le menu qui limite le diff à une plage de commits. | Dans la PR : *Files changed*, en haut à gauche. |

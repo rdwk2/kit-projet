@@ -50,8 +50,8 @@ Dans les commandes, « Standard » s'écrit `perso-standard`, et « Complet », 
 
 ## 3. Créer un projet
 
-**Suis le § 3.1 ou le § 3.2, pas les deux.** Le § 3.1 sert à un petit projet ou à un projet de groupe ;
-le § 3.2 aux préréglages Standard et Complet.
+**Suis le § 3.1, le § 3.2 ou le § 3.3, un seul.** Le § 3.1 sert à un petit projet ou à un projet de
+groupe ; le § 3.2 aux préréglages Standard et Complet ; le § 3.3 à un projet qui a déjà son dépôt.
 
 ### 3.1 Le dépôt seul
 
@@ -104,6 +104,48 @@ clic droit, *Copier en tant que nom de chemin*. Dans VS Code : clic droit, *Copy
 
 Avec `--defaults`, Copier ne pose aucune question : une question sans valeur par défaut (`humain`,
 `github`) échoue alors, sauf si elle est dans le fichier de réponses ou dans tes réglages (§ 7).
+
+### 3.3 Greffer l'espace sur un dépôt existant
+
+Ton projet a déjà son dépôt, perso ou de groupe, fait sans le kit ? L'espace IA s'installe à côté,
+**sans rien écrire dans ton dépôt**. Il faut seulement que le dépôt soit sur GitHub et que tu en aies une
+copie de travail sur ta machine.
+
+```text
+~/dev/
+├── mon-projet/        ton dépôt, tel qu'il est : la copie de travail de l'agent de code
+└── mon-projet-ia/     l'espace IA, créé par la commande ci-dessous
+```
+
+```bash
+# À remplacer : ~/dev et mon-projet-ia
+cd ~/dev
+uvx copier copy --data couche=espace --data origine=existant gh:rdwk2/kit-projet mon-projet-ia
+```
+
+Copier pose ses questions. Trois réponses comptent ici :
+
+- **le dossier de l'espace** (`racine`) : celui que crée la commande, ici `~/dev/mon-projet-ia` ;
+- **la copie de travail** (`depot_travail`) : le chemin de ton dépôt, ici `~/dev/mon-projet` ;
+- **ce que ton dépôt a déjà** : sa branche principale (`main`, `master`…), le fichier de règles de ton
+  agent (`CLAUDE.md`, `AGENTS.md`, ou aucun), la commande qui le vérifie (`pytest`, `just check`…), et les
+  documents qu'il a déjà (plan, backlog, fiches de décision, journal, pièges), avec leur chemin.
+
+Les textes de l'espace citent alors tes fichiers à toi. Un document que ton dépôt n'a pas n'est pas
+exigé : les textes écrivent « (absent de ce dépôt) » et ne demandent jamais de l'écrire. La première A
+te propose deux ouvertures : découvrir le dépôt avec toi, et proposer ce qui manque, ou attendre ta
+première mission (§ 4.5).
+
+**Tu as ajouté un document au dépôt ?** Relance la commande de l'espace, sans `--defaults` : Copier
+repose ses questions avec tes réponses précédentes, et tu coches le nouveau document.
+
+```bash
+# Depuis la racine de l'espace IA
+uvx copier recopy --overwrite -a .copier-answers.espace.yml
+```
+
+Les fichiers du kit le citent alors. `CONTEXTE.md` est un fichier vivant, qui n'est jamais réécrit :
+corrige toi-même son tableau « Le dépôt, tel qu'il existe », ou demande-le à l'A suivante.
 
 ## 4. Après la génération
 
@@ -178,7 +220,9 @@ uv run outils/miroir.py
 2. Prends le modèle le plus capable auquel tu as accès.
 3. Colle le message de `conception/kit/prompts/PREMIERE_A.md`.
 
-La première A fait le cadrage : feuille de route, premières décisions, `CONTEXTE.md` rempli. La suite
+La première A fait le cadrage : feuille de route, premières décisions, `CONTEXTE.md` rempli. Autour d'un
+dépôt existant (§ 3.3), elle commence par te demander si elle découvre le dépôt avec toi ou si elle
+attend ta première mission. La suite
 est dans `conception/kit/METHODE.md`, et le principe dans [le workflow expliqué](WORKFLOW.md).
 
 ## 5. Ajouter une piste parallèle

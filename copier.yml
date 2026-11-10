@@ -63,7 +63,7 @@ _exclude:
   - "[% if 'relectures' not in modules %]conception*/kit/gabarits/ANNEXE_*[% endif %]"
   - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEPART_B*[% endif %]"
   - "[% if 'relectures' not in modules %]conception*/kit/gabarits/DEMARRAGE_C*[% endif %]"
-  - "[% if 'relectures' not in modules %]outils/clone_c.py[% endif %]"
+  - "[% if 'relectures' not in modules %]outils/clone_c.py*[% endif %]"
   # ── couche espace : module pistes
   - "[% if 'pistes' not in modules %]conception*/kit/PISTES.md*[% endif %]"
   - "[% if 'pistes' not in modules %]conception*/kit/gabarits/NOTE_PISTE*[% endif %]"
@@ -120,6 +120,15 @@ couche:
     "Le dépôt git du projet (code, documents, vérifications)": depot
     "L'espace de travail IA, autour du dépôt (conversations de conception et de relecture)": espace
   default: depot
+
+origine:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Autour de quel dépôt ?"
+  choices:
+    "Un dépôt généré par kit-projet, ou à générer ensuite": kit
+    "Un dépôt qui existe déjà, fait sans le kit (perso ou de groupe)": existant
+  default: kit
 
 projet:
   type: str
@@ -278,8 +287,153 @@ prefixe_jalon:
 depot_travail:
   type: str
   when: "[[ couche == 'espace' ]]"
-  help: "Dossier où tourne l'agent de code de cette piste (une copie du dépôt par piste)"
+  help: >-
+    Dossier où tourne l'agent de code de cette piste (une copie du dépôt par piste)[% if origine == 'existant' %] : le chemin de ton dépôt existant[% endif %]
   default: "[[ racine ]]/[[ slug ]][% if piste != 'principale' %]_[[ piste ]][% endif %]"
+
+# ─── Couche espace, dépôt existant : ce que les textes citent à la place des fichiers du kit
+branche_principale:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' ]]"
+  help: "Branche principale du dépôt, celle où l'on fusionne (main, master…)"
+  default: main
+  validator: >-
+    [% if not (branche_principale | regex_search('^[A-Za-z0-9._/-]+$')) %]Lettres, chiffres, points, tirets et barres obliques seulement.[% endif %]
+
+regles_agent:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' ]]"
+  help: "Fichier de règles de ton agent de code, chemin dans le dépôt (CLAUDE.md, AGENTS.md…) ; vide s'il n'y en a pas"
+  default: CLAUDE.md
+  validator: "[% if '`' in regles_agent %]Sans accent grave.[% endif %]"
+
+commande_verif:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' ]]"
+  help: "Commande qui vérifie tout le dépôt (tests, lint…), lancée à sa racine ; vide s'il n'y en a pas"
+  default: "[% if langage == 'python' %]just check[% endif %]"
+  validator: "[% if '`' in commande_verif %]Sans accent grave.[% endif %]"
+
+docs_existants:
+  type: str
+  help: "Documents que ton dépôt a déjà (espace pour cocher) ; la première A pourra proposer les autres"
+  multiselect: true
+  when: "[[ couche == 'espace' and origine == 'existant' ]]"
+  choices:
+    "Un plan par jalons (ROADMAP)": plan
+    "Un backlog : idées et tâches pour plus tard": backlog
+    "Des fiches de décision (ADR)": decisions
+    "Un journal des livraisons": journal
+    "Une liste des pièges connus": pieges
+  default: []
+
+chemin_plan:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' and 'plan' in docs_existants ]]"
+  help: "Chemin du plan dans le dépôt"
+  default: docs/ROADMAP.md
+
+chemin_backlog:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' and 'backlog' in docs_existants ]]"
+  help: "Chemin du backlog dans le dépôt"
+  default: BACKLOG.md
+
+chemin_decisions:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' and 'decisions' in docs_existants ]]"
+  help: "Dossier des fiches de décision dans le dépôt, avec sa barre finale"
+  default: docs/decisions/
+
+chemin_journal:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' and 'journal' in docs_existants ]]"
+  help: "Chemin du journal dans le dépôt"
+  default: docs/JOURNAL.md
+
+chemin_pieges:
+  type: str
+  when: "[[ couche == 'espace' and origine == 'existant' and 'pieges' in docs_existants ]]"
+  help: "Chemin de la liste des pièges dans le dépôt"
+  default: docs/PIEGES.md
+
+# Valeurs calculées (jamais posées). doc_* : le chemin du document, vide s'il manque. md_* : ce que
+# les textes écrivent à sa place ; avec un dépôt du kit, exactement le nom d'avant.
+doc_plan:
+  type: str
+  when: false
+  default: "[% if origine != 'existant' %]docs/ROADMAP.md[% elif 'plan' in docs_existants %][[ chemin_plan ]][% endif %]"
+
+doc_backlog:
+  type: str
+  when: false
+  default: "[% if origine != 'existant' %]BACKLOG.md[% elif 'backlog' in docs_existants %][[ chemin_backlog ]][% endif %]"
+
+doc_decisions:
+  type: str
+  when: false
+  default: "[% if origine != 'existant' %]docs/decisions/[% elif 'decisions' in docs_existants %][[ chemin_decisions ]][% endif %]"
+
+doc_journal:
+  type: str
+  when: false
+  default: "[% if origine != 'existant' %]docs/JOURNAL.md[% elif 'journal' in docs_existants %][[ chemin_journal ]][% endif %]"
+
+doc_pieges:
+  type: str
+  when: false
+  default: "[% if origine != 'existant' %]docs/PIEGES.md[% elif 'pieges' in docs_existants %][[ chemin_pieges ]][% endif %]"
+
+md_plan:
+  type: str
+  when: false
+  default: "[% if doc_plan %]`[[ doc_plan ]]`[% else %]`docs/ROADMAP.md` (absent de ce dépôt)[% endif %]"
+
+md_backlog:
+  type: str
+  when: false
+  default: "[% if doc_backlog %]`[[ doc_backlog ]]`[% else %]`BACKLOG.md` (absent de ce dépôt)[% endif %]"
+
+md_decisions:
+  type: str
+  when: false
+  default: "[% if doc_decisions %]`[[ doc_decisions ]]`[% else %]`docs/decisions/` (absent de ce dépôt)[% endif %]"
+
+md_journal:
+  type: str
+  when: false
+  default: "[% if doc_journal %]`[[ doc_journal ]]`[% else %]`docs/JOURNAL.md` (absent de ce dépôt)[% endif %]"
+
+md_pieges:
+  type: str
+  when: false
+  default: "[% if doc_pieges %]`[[ doc_pieges ]]`[% else %]`docs/PIEGES.md` (absent de ce dépôt)[% endif %]"
+
+md_regles:
+  type: str
+  when: false
+  default: >-
+    [% if origine != 'existant' %]`CLAUDE.md`[% elif regles_agent %]`[[ regles_agent ]]`[% else %]les règles du § 2 de `CONTEXTE.md`[% endif %]
+
+md_verif:
+  type: str
+  when: false
+  default: >-
+    [% if origine != 'existant' %]`just check`[% elif commande_verif %]`[[ commande_verif ]]`[% else %]la vérification du brief (§ 8.1)[% endif %]
+
+# La commande elle-même, pour un bloc de commandes.
+cmd_verif:
+  type: str
+  when: false
+  default: >-
+    [% if origine != 'existant' %]just check[% elif commande_verif %][[ commande_verif ]][% else %]# vérification : voir le § 2 de CONTEXTE.md[% endif %]
+
+# Le cadrage d'un projet neuf, tenu par une seule personne : la première A propose la ROADMAP.
+# Sinon, elle lit d'abord ce qui existe, ou attend sa première mission.
+cadrage_neuf:
+  type: bool
+  when: false
+  default: "[[ origine != 'existant' ]]"
 
 suffixe:
   type: str

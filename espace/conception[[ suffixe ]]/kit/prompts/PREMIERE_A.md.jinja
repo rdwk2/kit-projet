@@ -4,14 +4,21 @@
 > une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
+[% if cadrage_neuf -%]
 > À coller dans une conversation neuve, une fois l'espace et le dépôt générés. A réfléchit avec
 > toi et n'écrit pas de code ; l'agent de code l'écrit. La première A fait le **cadrage** (jalon
 > [[ prefixe_jalon ]]0) : décider quoi construire avant la première ligne de code. Pas de code, des décisions.
+[%- else -%]
+> À coller dans une conversation neuve, une fois l'espace généré autour de ton dépôt. A réfléchit
+> avec toi et n'écrit pas de code ; l'agent de code l'écrit. Le dépôt existe déjà : la première A
+> commence par te demander comment ouvrir — **découvrir le dépôt** avec toi (jalon [[ prefixe_jalon ]]0), ou
+> **attendre ta première mission**. Pas de code, des décisions.
+[%- endif %]
 >
 > Un mot inconnu (PR, branche, fusion, jalon…) ? `kit/VOCABULAIRE.md` ; pour git, son § 8.
 [% if piste != 'principale' %]>
 > **Pas pour une piste parallèle** : ce prompt est celui d'un projet neuf. La première A de la
-> piste « [[ piste ]] » s'ouvre avec le message du § 10.3 de `kit/PISTES.md` (la ROADMAP, `CLAUDE.md`
+> piste « [[ piste ]] » s'ouvre avec le message du § 10.3 de `kit/PISTES.md` (la ROADMAP, [[ md_regles ]]
 > et les fiches de décision sont communs : on ne les recadre pas sans l'accord de l'autre A).
 [% endif %]
 
@@ -55,27 +62,61 @@ Pour les installer : `docs/GUIDE.md` du kit.
 >
 > Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau, presque vide : c'est toi qui le
 > remplis), puis ce que son § 0 marque « à l'ouverture » ; rien d'autre en entier.
-> Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : `CLAUDE.md`, `README.md`,
-> `docs/ROADMAP.md`.
+[% if cadrage_neuf -%]
+> Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : [[ md_regles ]], `README.md`,
+> [[ md_plan ]].
 >
 > Ta mission : le **cadrage** du projet (jalon [[ prefixe_jalon ]]0), sans code.
+[%- else -%]
+> Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : le dépôt, qui existait avant l'espace et
+> n'a pas été généré par le kit. Le § 2 de `CONTEXTE.md` dit ce qu'il a ([[ md_regles ]], la commande de
+> vérification, les documents) ; ce qui y reste en «…» est à remplir avec moi.
+>
+> Commence par me demander laquelle de ces deux ouvertures je veux.
+>
+> **Découvrir le dépôt** (jalon [[ prefixe_jalon ]]0, sans code) :
+> 1. Lis-le dans le miroir — structure, `README.md`[% if regles_agent %], [[ md_regles ]][% endif %][% if doc_plan %], [[ md_plan ]][% endif %], tests,
+>    historique récent (`git --no-optional-locks log --oneline -20`) — puis explique-moi en une page
+>    ce que tu y vois : ce que fait le projet, comment il est rangé, comment on le vérifie, ce qui
+>    paraît fragile.
+> 2. Pose-moi les questions qui manquent — le but, ce qui compterait comme réussi, ce qui
+>    m'appartient, les conventions — une série courte à la fois, avec ta recommandation.
+> 3. Propose ce qui servirait au workflow et manque au dépôt[% if not (doc_plan and doc_backlog and doc_decisions and doc_journal and doc_pieges) %] ([[ [('un plan par jalons' if not doc_plan else ''), ('un backlog' if not doc_backlog else ''), ('des fiches de décision' if not doc_decisions else ''), ('un journal des livraisons' if not doc_journal else ''), ('une liste des pièges' if not doc_pieges else '')] | select | join(', ') ]])[% endif %][% if regles_agent %], et les compléments de [[ md_regles ]] (ce qui m'appartient, conventions)[% else %], et un fichier de règles pour l'agent de code[% endif %], sous forme
+>    de texte prêt à appliquer : l'agent de code l'appliquera dans une PR « [[ prefixe_jalon ]]0 — Cadrage ».
+>    Rien n'est obligatoire : ce que je refuse reste absent, et les textes du kit le disent.
+> 4. Remplis `CONTEXTE.md` : § 1 (vérifie chaque chemin ; demande-moi ceux que tu ne vois pas),
+>    § 2 (le tableau « Le dépôt, tel qu'il existe », ses «…» compris, et les commandes propres au
+>    projet), §§ 4, 5 et 7, en style compact.
+>
+> **Attendre la première mission** : remplis seulement le § 1 de `CONTEXTE.md` et le tableau « Le
+> dépôt, tel qu'il existe » du § 2, en me demandant ce que tu ne vois pas, puis attends que je te
+> confie une tâche ; elle deviendra le jalon [[ prefixe_jalon ]]1.
+[%- endif %]
+[% if cadrage_neuf -%]
 > 1. Me poser les questions qui décident de tout — le but, pour qui, ce qui compterait comme
 >    réussi et comment on le mesurerait, les contraintes de temps, les données, ce qui
 >    m'appartient — une série courte à la fois, en proposant à chaque fois ta recommandation.
 > 2. Proposer la ROADMAP : trois à six jalons [[ prefixe_jalon ]]1…, chacun avec un « Fini
 >    quand » vérifiable (le test qui dira que le jalon est fini) ; le premier jalon est une tranche
 >    verticale minimale, utilisable (un petit morceau qui marche de bout en bout).
-> 3. Proposer les premières fiches de décision (`docs/decisions/`, gabarit `0000-template.md`,
+> 3. Proposer les premières fiches de décision ([[ md_decisions ]], gabarit `0000-template.md`,
 >    au premier numéro libre[% if 'donnees-privees' in modules %] : `0001` est déjà pris par la séparation données / code[% endif %]) pour ce
 >    qui est déjà tranché, avec les options écartées et pourquoi.
-> 4. Proposer les compléments de `CLAUDE.md` (règles dures propres au projet, ce qui
+> 4. Proposer les compléments de [[ md_regles ]] (règles dures propres au projet, ce qui
 >    m'appartient, conventions), sous forme de texte prêt à appliquer : l'agent de code les
 >    appliquera dans une PR « [[ prefixe_jalon ]]0 — Cadrage ».
 > 5. Remplir `CONTEXTE.md` : § 1 (vérifie chaque chemin ; demande-moi ceux que tu ne vois pas),
 >    § 2 (commandes propres au projet), §§ 4, 5 et 7, en style compact.
+[% endif -%]
 [% if 'relectures' in modules -%]
+[% if cadrage_neuf -%]
 > 6. Décider avec moi du niveau du workflow pour ce projet : quelles PR passent par le cycle
 >    complet, quand une relecture neuve ; le noter au § 2 du CONTEXTE.
+[% else -%]
+>
+> Dans les deux cas, décide avec moi du niveau du workflow pour ce projet : quelles PR passent par
+> le cycle complet, quand une relecture neuve ; note-le au § 2 du CONTEXTE.
+[% endif -%]
 [% endif -%]
 >
 > Termine chaque réponse qui implique une action par une consigne explicite : qui agit (moi
@@ -84,11 +125,20 @@ Pour les installer : `docs/GUIDE.md` du kit.
 
 ## 3. Ce que la première A rend
 
-- La ROADMAP, les fiches de décision et les compléments de `CLAUDE.md` → une consigne pour
+[% if cadrage_neuf -%]
+- La ROADMAP, les fiches de décision et les compléments de [[ md_regles ]] → une consigne pour
   l'agent de code (`kit/gabarits/CONSIGNE_CODE.md`), puis une PR de documentation. Ouvre ton agent
   dans `[[ depot_travail ]]`, colle la consigne, relis la PR, fusionne-la.
 - `CONTEXTE.md` rempli, et `OUVERTURES_A2.md` (gabarit `kit/gabarits/OUVERTURES_A.md`) : le message
   qui ouvrira la conversation suivante. La deuxième A écrit le brief du premier jalon.
+[%- else -%]
+- **Découvrir le dépôt** : ce que tu as accepté d'ajouter → une consigne pour l'agent de code
+  (`kit/gabarits/CONSIGNE_CODE.md`), puis une PR de documentation. Ouvre ton agent dans
+  `[[ depot_travail ]]`, colle la consigne, relis la PR, fusionne-la. Un document ajouté au dépôt
+  revient dans les textes du kit quand tu régénères l'espace avec les réponses à jour.
+- `CONTEXTE.md` rempli, et `OUVERTURES_A2.md` (gabarit `kit/gabarits/OUVERTURES_A.md`) : le message
+  qui ouvrira la conversation suivante. La deuxième A écrit le brief de ta première mission.
+[%- endif %]
 [% if 'groupe' in modules %]
 **Projet de groupe** : le cadrage se décide avec le groupe, qui désigne la personne qui tient
 l'espace. La première A aide cette personne à préparer la réunion (questions, proposition de

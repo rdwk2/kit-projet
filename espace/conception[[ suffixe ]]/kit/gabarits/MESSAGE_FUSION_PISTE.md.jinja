@@ -4,14 +4,14 @@
 > point 4.
 >
 > Champs : `«n»` (numéro de la PR fusionnée) · `«émetteur»`, `«destinataire»` (noms des pistes)
-> · `«sha»`, `«arbre»` (tête de `main` après la fusion, et son arbre) · `«titre»` (titre de la
+> · `«sha»`, `«arbre»` (tête de `[[ branche_principale ]]` après la fusion, et son arbre) · `«titre»` (titre de la
 > PR) · `«date»`, `«heure lue»` · les autres se lisent dans leur rubrique.
 
 # PR #«n» fusionnée — de la piste « «émetteur» » à la piste « «destinataire» »
 
 *Relayé par [[ humain ]] le «date», «heure lue». Pas de réponse attendue, sauf objection.*
 
-1. **`main` = «sha»** (« «titre» »), arbre «arbre», vérifié au serveur (`git ls-remote`, ou `ETAT_DISTANT.txt`, écrit par `outils/miroir.py`, pour un dépôt privé).
+1. **`[[ branche_principale ]]` = «sha»** (« «titre» »), arbre «arbre», vérifié au serveur (`git ls-remote`, ou `ETAT_DISTANT.txt`, écrit par `outils/miroir.py`, pour un dépôt privé).
 2. **Fichiers communs touchés depuis ton dernier accord** : «liste, ou aucun».
 3. **Ce que la fusion change pour toi** : «un contrat, une commande, une version de dépendance[% if 'donnees-privees' in modules %],
    un motif du hook[% endif %]… — ou rien».
@@ -21,7 +21,7 @@
      `uv run outils/miroir.py --piste «piste»` ;
    - mettre à jour chaque copie de travail ;
    - «la commande qui régénère des données, s'il y en a une, et dans quel ordre — ou rien».
-5. **Si ta branche est ouverte** : elle fusionne `main`, jamais de rebase d'une branche relue.
+5. **Si ta branche est ouverte** : elle fusionne `[[ branche_principale ]]`, jamais de rebase d'une branche relue.
    Conflits attendus : «fichiers et lignes, ou aucun», à résoudre en gardant les deux côtés, «la
    ligne de la PR #«n» d'abord».
 6. **Suite** : «mon prochain jalon, et ses points de contact».

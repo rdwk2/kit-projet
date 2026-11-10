@@ -41,7 +41,7 @@
 3. le plan validé, `«fichier»`, et le message qui l'a validé, `«fichier»` — il prime sur le
    plan ;
 4. ton clone, sur la tête de la PR : branche `«branche»`, tête `«sha»`, base de fusion `«sha»`
-   (`main`). Calcule le diff toi-même (§ 2).
+   (`[[ branche_principale ]]`). Calcule le diff toi-même (§ 2).
 
 ## Décidé après le brief — ne le signale pas comme un écart
 
@@ -123,15 +123,15 @@ correctifs, le contrôle réel [[ de_humain ]] et la fusion. »
    **`«message de validation»`** — le message qui l'a validé, avec «k» précisions ; il prime
    sur le plan ;
 4. le diff, que tu calcules toi-même dans ton clone : `git fetch origin`, puis
-   `git diff origin/main...HEAD` :
+   `git diff origin/[[ branche_principale ]]...HEAD` :
    - base : `«sha»` (« «titre du commit» »), arbre `«…»` ;
    - tête : `«sha»`, arbre `«…»` ;
    - «k» commits («lesquels, dans quel ordre») ; «f» fichiers, +«a» / −«d» (`src/` +«…» /
      −«…», `tests/` +«…» / −«…») ;
-   - `git rev-parse "HEAD^{tree}"` doit rendre `«arbre»`, et `origin/main` être à `«base»` ;
+   - `git rev-parse "HEAD^{tree}"` doit rendre `«arbre»`, et `origin/[[ branche_principale ]]` être à `«base»` ;
      sinon, dis-le en tête du rapport ;
 5. dans le dépôt, à la tête : «les fiches de décision, avec les sections précises» ;
-   `docs/ROADMAP.md` («jalon») ; `CLAUDE.md` (règles «…») ; «les autres fichiers de
+   [[ md_plan ]] («jalon») ; [[ md_regles ]] (règles «…») ; «les autres fichiers de
    référence». Pour les métadonnées de la PR, `gh pr view «n» --json
    number,state,headRefName,headRefOid,baseRefName,baseRefOid` — la seule commande `gh` permise,
    jamais `body` ni `comments` (§ 2).
@@ -173,9 +173,9 @@ Reconstitue et exécute plutôt que de lire seulement.
 > 4. ce qui est hors de la PR, et où c'est fait ;
 > 5. ce que les sorties ne sont pas (les non-promesses du brief) : leur absence de validation
 >    n'est pas un constat ;
-> 6. les lignes de `BACKLOG.md` ajoutées par la PR, qui sont des limites connues.
+> 6. les lignes de [[ md_backlog ]] ajoutées par la PR, qui sont des limites connues.
 
-Texte type : « Les lignes de `BACKLOG.md` ajoutées par la PR sont des limites connues : **ne
+Texte type : « Les lignes de [[ md_backlog ]] ajoutées par la PR sont des limites connues : **ne
 construis pas de constat sur elles**, sauf à montrer qu'elles laissent passer autre chose que
 ce que la ligne dit. »
 
@@ -269,8 +269,8 @@ rougit, ou qu'aucun ne rougit.
 > 8. **les consignes passées en cours de session** qui reviennent à la C ;
 > 9. **les facteurs qui valent 1 dans les fixtures** — texte type : « Une mutation qu'un de
 >    ces facteurs rendrait invisible est un constat C-a. » ;
-> 10. **les documents** : la fiche de décision contre le brief, le README, `CLAUDE.md`,
->     `BACKLOG.md`, le journal ; une phrase devenue fausse ailleurs ;
+> 10. **les documents** : la fiche de décision contre le brief, le README, [[ md_regles ]],
+>     [[ md_backlog ]], le journal ; une phrase devenue fausse ailleurs ;
 > 11. **toute garantie écrite par la PR** (docstrings), au sens du § 6 ter, point 4.
 
 ## Git dans ton clone (et dans le miroir)

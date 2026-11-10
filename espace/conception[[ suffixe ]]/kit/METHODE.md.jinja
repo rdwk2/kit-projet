@@ -11,10 +11,10 @@ En clair : **A** conçoit avec [[ humain ]] et n'écrit pas de code ; [% if 'rel
 [% if 'relectures' in modules -%]
 > **À l'ouverture de toute conversation A, lire le § 0** ; le reste, par section, au moment que
 > donne le § 0 de `CONTEXTE.md`. B, C et l'agent de code ne le lisent pas : leurs briefs et
-> `CLAUDE.md` leur suffisent.
+> [[ md_regles ]] leur suffisent.
 [%- else -%]
 > **À l'ouverture de toute conversation A, lire le § 0** ; le reste, par section, au moment que
-> donne le § 0 de `CONTEXTE.md`. L'agent de code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.
+> donne le § 0 de `CONTEXTE.md`. L'agent de code ne le lit pas : le brief et [[ md_regles ]] lui suffisent.
 [%- endif %]
 >
 > Ce fichier porte les règles communes à tous les projets générés par ce kit, avec leur
@@ -57,9 +57,9 @@ Sept principes. Tout le reste en découle.
    ne voient pas le raisonnement de l'auteur.
 4. **Un fichier, un rédacteur.** Deux conversations qui éditent le même fichier sans se
    voir, c'est une divergence garantie.
-5. **Le dépôt est la source de vérité.** Les conventions sont dans `CLAUDE.md`, le
-   raisonnement dans `docs/decisions/`, le plan dans `docs/ROADMAP.md`, l'historique dans
-   `docs/JOURNAL.md`. L'espace de conception porte ce que le dépôt ne porte pas, et y renvoie.
+5. **Le dépôt est la source de vérité.** Les conventions sont dans [[ md_regles ]], le
+   raisonnement dans [[ md_decisions ]], le plan dans [[ md_plan ]], l'historique dans
+   [[ md_journal ]]. L'espace de conception porte ce que le dépôt ne porte pas, et y renvoie.
 6. **Lire tôt, conclure tard.** On relit le brief avant le code, le plan avant le diff ; on
    ne commente et ne fusionne que l'état final.
 7. **Le rôle prime sur le moteur.** Ce qui définit un relecteur, ce n'est pas le moteur qui le
@@ -86,7 +86,7 @@ brief (A) → plan (Code) → relu (A) → PR → CI verte → commentaire de re
 | **Les conversations** (A[% if 'relectures' in modules %], B, C[% endif %][% if 'expert' in modules %], passes expertes[% endif %]) | réfléchir avant de coder, relire, produire ce qui n'est pas du code. **Lecture seule sur le dépôt** |
 
 **Ce qui appartient à [[ humain ]]**, jamais tranché sans son accord explicite (liste reprise dans
-`CLAUDE.md` du dépôt, « Ce qui appartient à l'humain ») : l'architecture (les briques et les
+[[ md_regles ]] du dépôt, « Ce qui appartient à l'humain ») : l'architecture (les briques et les
 contrats entre elles), le modèle (mathématique ou métier) et ses hypothèses, la métrique
 d'erreur et le protocole de validation, tout ce qui touche aux données personnelles. Quand
 l'une de ces décisions se présente, la conversation pose les options, leur coût, sa
@@ -136,7 +136,7 @@ l'annexe du brief de C**, filtré par A — jamais en lui donnant le rapport de 
 
 **Le relecteur ne prend pas son énoncé des mains de l'auteur.** Le compte rendu de fin de
 session de l'agent de code et sa description de PR ne vont ni à B ni à C (A les lit). C
-calcule le diff elle-même depuis le point où la branche a quitté `main` (`git diff origin/main...HEAD` dans son clone),
+calcule le diff elle-même depuis le point où la branche a quitté `[[ branche_principale ]]` (`git diff origin/[[ branche_principale ]]...HEAD` dans son clone),
 ou lit `pr-«n».diff`, produit par `outils/diff_pr.py` et joint au paquet.
 
 **Durée de vie.** B se renouvelle au jalon, C à chaque PR relue : c'est ce qui leur donne
@@ -200,7 +200,7 @@ le dépôt étant privé, c'est le seul moyen de le lire[% endif %] — sinon la
 Une conversation n'y lance jamais `git status` ni `git fetch`, qui écrivent dans `.git` :
 pour lire, `git --no-optional-locks …` ; pour voir les PR, `ETAT_DISTANT.txt`, que le script écrit à côté
 du miroir[% if public %] (ou `git ls-remote`)[% endif %]. S'il est modifié
-par accident, dans le miroir seulement : `git reset --hard origin/main` (efface toute modification
+par accident, dans le miroir seulement : `git reset --hard origin/[[ branche_principale ]]` (efface toute modification
 locale). Tant qu'une PR n'est pas fusionnée, son code n'est pas dans le miroir : c'est le diff qui le porte.
 
 **Une session de code ne reçoit qu'un sous-dossier** de `v_for_cowork[[ suffixe ]]` (celui
@@ -265,12 +265,12 @@ sur l'état final.
 pas dans la PR), des décisions numérotées et sourcées, des critères d'acceptation
 vérifiables, les tests attendus. Gabarit : `kit/gabarits/BRIEF_JALON.md`. Si le critère
 d'acceptation n'est pas clair, c'est le brief qui n'est pas fini. Ce qui déborde part au
-`BACKLOG.md` du dépôt, en une ligne.
+[[ md_backlog ]] du dépôt, en une ligne.
 
 **Relire le plan, pas seulement le diff.** C'est moins cher : deux cents mots de plan valent
 mieux que quelques centaines de lignes de diff — c'est le même argument que le mode plan, poussé d'un
 cran. À la relecture d'un plan, la question n'est pas « est-ce correct ? », c'est **« y a-t-il
-là-dedans quelque chose que le brief ne demande pas ? »** (règle 3 de `CLAUDE.md`). Un
+là-dedans quelque chose que le brief ne demande pas ? »** (règle 3 de [[ md_regles ]]). Un
 modèle fort a tendance à bien faire, puis à ajouter la petite chose adjacente qui manquait.
 
 **Révision du plan, ou message en cours de session.** Dans Claude Code, le dialogue de plan
@@ -409,7 +409,7 @@ veut dire modèle d'IA. Les règles qui ne bougent pas :
   agit ([[ humain ]], ou l'agent de code), quoi exactement, et quand. Sans ça, la réponse est
   incomplète. Les explications de fond sont bienvenues ; c'est l'absence de conclusion
   actionnable qui ne l'est pas.
-- **Ne pas énumérer ce que l'agent de code fait seul** à partir de `CLAUDE.md` (créer la
+- **Ne pas énumérer ce que l'agent de code fait seul** à partir de [[ md_regles ]] (créer la
   branche, ouvrir la PR, nommer les commits) : une consigne ne liste que ce qui revient
   réellement à [[ humain ]].
 - **Les commandes se redonnent telles quelles**, depuis le tableau « Commandes [[ de_humain ]] » du
@@ -449,7 +449,7 @@ l'effort. À défaut :
 
 > *Projet [[ projet ]], piste [[ piste ]]. Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son
 > § 0 marque « à l'ouverture », rien d'autre en entier, et applique-les. Si `kit/perso/` existe, lis-le aussi : il complète ces règles et il prime.
-> Puis, selon la mission, `docs/ROADMAP.md` et `docs/decisions/` dans
+> Puis, selon la mission, [[ md_plan ]] et [[ md_decisions ]] dans
 > le miroir. [ce qu'on fait aujourd'hui]*
 
 Cette liste est **la** liste de l'ouverture : le CONTEXTE, l'index et les messages d'ouverture

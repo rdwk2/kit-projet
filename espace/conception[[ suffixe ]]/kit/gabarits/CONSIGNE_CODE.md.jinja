@@ -5,11 +5,17 @@
 > *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
 > amélioration va dans `REMONTEES_KIT.md`.*
 > **Écrite par** A, une fois le brief prêt[% if 'relectures' in modules %] (relu par B, constats arbitrés)[% endif %] ; **collée par** [[ humain ]] au départ de
-> la session de code. Elle ne liste pas ce que l'agent fait seul d'après `CLAUDE.md` — créer la
+[% if origine != 'existant' -%]
+> la session de code. Elle ne liste pas ce que l'agent fait seul d'après [[ md_regles ]] — créer la
 > branche, ouvrir la PR, nommer les commits (`kit/METHODE.md`, § 9) : seulement ce qui est propre
 > à ce jalon.
+[% else -%]
+> la session de code. Elle ne répète pas ce que fixent [% if regles_agent %][[ md_regles ]] et [% endif %]le § 9 du brief — créer la
+> branche, ouvrir la PR, nommer les commits (`kit/METHODE.md`, § 9) : seulement ce qui est propre
+> à ce jalon. Le dépôt n'a pas été généré par le kit : ce que ses règles ne disent pas, le brief le dit.
+[% endif -%]
 > **Champs** : `«jalon»`, `«titre»`, `«branche»`, `«k»` (commits), `«n»` (l'A qui écrit), `«date»`, `«sha»`
-> (tête de `main`), `«r»` (révision), `«sha256»` (empreinte du brief), `«modèle»`, `«effort»`,
+> (tête de `[[ branche_principale ]]`), `«r»` (révision), `«sha256»` (empreinte du brief), `«modèle»`, `«effort»`,
 > `«alternative»`, `«raison»`, `«dérogation»`, les accords obtenus, les commandes refusées, la durée
 > attendue, les précisions.
 
@@ -18,7 +24,7 @@
 ## Pour [[ humain ]], avant de coller
 
 - **Un mot inconnu** (PR, branche, fusion…) ? `kit/VOCABULAIRE.md` ; pour git, son § 8.
-- **Où** : ton agent de code (Claude Code, Codex…), ouvert dans `[[ depot_travail ]]`, sur `main` à jour
+- **Où** : ton agent de code (Claude Code, Codex…), ouvert dans `[[ depot_travail ]]`, sur `[[ branche_principale ]]` à jour
   (`«sha»`).
 - **Mode** : plan, si ton agent en a un. À défaut, le message lui demande la même chose : il présente
   son plan et n'écrit rien avant validation.
@@ -36,25 +42,25 @@
 - **Avant d'ouvrir la session**, dans un terminal :
   ```bash
   cd [[ depot_travail ]]
-  git switch main     # se place sur main
-  git pull            # récupère le dernier main
+  git switch [[ branche_principale ]]     # se place sur [[ branche_principale ]]
+  git pull            # récupère le dernier [[ branche_principale ]]
   git rev-parse HEAD  # affiche le commit où tu es
   git status          # dit si des fichiers ont changé
   ```
-  `git rev-parse HEAD` doit donner `«sha»`, ou la tête de `main` si une PR a fusionné depuis (le dire
+  `git rev-parse HEAD` doit donner `«sha»`, ou la tête de `[[ branche_principale ]]` si une PR a fusionné depuis (le dire
   alors à A) ; `git status` doit dire « nothing to commit » (« rien à valider » en français).
 
 ## Le message
 
-> «jalon» — «titre». Lis `CLAUDE.md`, puis, en entier, le brief `«jalon»/BRIEF_«jalon».md` (révision
+> «jalon» — «titre». Lis [% if origine != 'existant' or regles_agent %][[ md_regles ]], puis, en entier,[% else %]en entier[% endif %] le brief `«jalon»/BRIEF_«jalon».md` (révision
 > «r») : c'est la référence de la mission. Vérifie d'abord son empreinte SHA-256 : `«sha256»`. Si elle
 > diffère, arrête-toi et dis-le. Lis ensuite les pièces qu'il joint, chacune contre son empreinte.
 >
 > Tu écris tout le code et tous les tests d'après le brief : aucun code ni test ne t'est fourni.
 >
-> Pars du `main` à jour (`«sha»`) et donne son commit. Accords obtenus : «… (brief, § …)» — ou
-> « aucun accord extérieur requis ». Si `main` bouge pendant la session, suis le § 4 du brief : fusion
-> de `main` dans ta branche, jamais de rebase ; «un conflit dans … t'arrête, et la conception donne les
+> Pars du `[[ branche_principale ]]` à jour (`«sha»`) et donne son commit. Accords obtenus : «… (brief, § …)» — ou
+> « aucun accord extérieur requis ». Si `[[ branche_principale ]]` bouge pendant la session, suis le § 4 du brief : fusion
+> de `[[ branche_principale ]]` dans ta branche, jamais de rebase ; «un conflit dans … t'arrête, et la conception donne les
 > fichiers résolus».
 >
 > Propose ton plan (en mode plan, si tu en as un), et attends la validation avant d'écrire du code.[% if 'relectures' in modules %] Je le fais relire
@@ -67,7 +73,7 @@
 > réelles, pas même leur aide : ce sont des commandes [[ de_humain ]].
 >
 [% endif -%]
-> Branche `«branche»`, «k» commits (brief, § 9), la vérification complète de `CLAUDE.md` verte avant
+> Branche `«branche»`, «k» commits (brief, § 9), [% if origine != 'existant' %]la vérification complète de [[ md_regles ]][% elif commande_verif %][[ md_verif ]][% else %]les vérifications du brief (§ 8)[% endif %] verte[% if origine == 'existant' and not commande_verif %]s[% endif %] avant
 > chacun ; «ce qui ne doit pas changer : les sorties existantes, les tests existants (§ 8.1)».
 >
 > À la fin, [% if 'relectures' in modules %]joue chaque contre-épreuve du § 8.3[% else %]si le brief a un § 8.3, joue chacune de ses contre-épreuves[% endif %], une à une, dans ton arbre de travail[% if langage == 'python' %], sans cache de

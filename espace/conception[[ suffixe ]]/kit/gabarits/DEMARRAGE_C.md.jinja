@@ -19,7 +19,8 @@
 > **dans** le poste que le script affiche, `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/`
 > (`«-variante»` : rien pour la première C, `-bornee`, `-seconde`…), sans mode plan, si ton agent en a
 > un (il l'empêcherait d'écrire son rapport), aucun dossier ajouté, avec : « Lis paquet/DEMARRAGE.md et
-> exécute-le. »[% if langage == 'python' %] Si le script finit sur « just check est rouge », la PR ne passe pas ses propres
+> exécute-le. »[% if origine == 'existant' %][% if commande_verif %] Si le script finit sur « la vérification est rouge », la PR ne passe pas ses propres
+> vérifications : à régler avant la C, ou à lui dire.[% endif %][% elif langage == 'python' %] Si le script finit sur « just check est rouge », la PR ne passe pas ses propres
 > vérifications : à régler avant la C, ou à lui dire.[% endif %] Quand la C a fini :
 > `uv run outils/clone_c.py «n» --recuperer[[ opt_piste ]]` (avec `--variante «variante»` pour une C bornée
 > ou seconde : son rapport arrive chez A sous le nom `RELECTURE_PR-«n»_«variante».md`). Le poste n'est
@@ -47,7 +48,8 @@ produire un plan, ni de corriger le code.
 ## Ton poste
 
 - Ton dossier : `[[ racine ]]/relecture/c-pr«n»«-variante»[[ suffixe ]]/`. Le clone `[[ slug ]]/` y est sur la tête de
-  la PR (`«sha»`)[% if langage == 'python' %], avec son environnement (`uv sync --locked`) ; `just check` y a tourné à la
+  la PR (`«sha»`)[% if origine == 'existant' %][% if commande_verif %] ; [[ md_verif ]] y a tourné à la préparation,
+  relance-la toi-même : son résultat fait partie de ta relecture[% endif %][% elif langage == 'python' %], avec son environnement (`uv sync --locked`) ; [[ md_verif ]] y a tourné à la
   préparation, relance-le toi-même : son résultat fait partie de ta relecture[% endif %]. Ton paquet est `paquet/`.
 - Le clone est jetable : mutations et essais y sont permis, mais **restaure chaque mutation avant la
   suivante** — une coupure ne doit jamais laisser un arbre muté.
@@ -68,7 +70,7 @@ produire un plan, ni de corriger le code.
 4. `paquet/PLAN_«jalon».md`, puis `paquet/FEU_VERT_PLAN_«jalon».md`, qui prime sur le plan, et
    `paquet/MESSAGE_CODE_«jalon»_«k».md` s'il y en a ;
 5. le diff, que tu calcules toi-même depuis la base de fusion, dans le clone :
-   `git fetch origin main` puis `git diff origin/main...HEAD` (base
+   `git fetch origin [[ branche_principale ]]` puis `git diff origin/[[ branche_principale ]]...HEAD` (base
    attendue : `«base»`).
 
 Le brief et les décisions de l'annexe priment sur les passages correspondants du plan.
@@ -77,16 +79,16 @@ Le brief et les décisions de l'annexe priment sur les passages correspondants d
 
 Ce que le § 2 du brief de C exclut, dont la description de la PR et ses commentaires. Pour ses
 métadonnées, seulement `gh pr view «n» --json number,state,headRefName,headRefOid,baseRefName,baseRefOid`
-(jamais `body` ni `comments`). `docs/JOURNAL.md` fait partie du diff : tu le relis comme livrable,
-jamais comme preuve.
+(jamais `body` ni `comments`).[% if doc_journal %] [[ md_journal ]] fait partie du diff : tu le relis comme livrable,
+jamais comme preuve.[% endif %]
 
 ## Avant les mutations
 
-1. Consigne le SHA complet de la tête, celui de `main` et leur base de fusion. L'annexe annonce la
+1. Consigne le SHA complet de la tête, celui de `[[ branche_principale ]]` et leur base de fusion. L'annexe annonce la
    tête `«sha»` et la base `«base»` : un écart se signale précisément, sans verdict implicite sur une
    autre version. Fige ces références pour toute la relecture.
 2. Le code testé est celui de cette tête, sans modification initiale. Une base verte avant toute
-   mutation : la vérification complète de `CLAUDE.md`, puis les cibles ci-dessous.
+   mutation : [% if origine == 'existant' %][[ md_verif ]][% else %]la vérification complète de [[ md_regles ]][% endif %], puis les cibles ci-dessous.
 
 ## Ton mandat
 

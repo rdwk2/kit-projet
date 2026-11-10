@@ -16,3 +16,12 @@ racine: ~/dev/mon-projet   # le dossier de l'espace (couche espace seulement)
 public: false              # true si le dépôt est (ou sera) public
 # module groupe : les pseudos GitHub de ceux qui fusionnent
 # responsables: "@alice @bob"
+# espace autour d'un dépôt existant, fait sans le kit (docs/GUIDE.md, § 3.3) :
+# origine: existant
+# depot_travail: ~/dev/mon-projet       # le chemin de ton dépôt
+# branche_principale: main
+# regles_agent: AGENTS.md               # vide s'il n'y en a pas
+# commande_verif: "pytest -q"           # vide s'il n'y en a pas
+# docs_existants: [plan, backlog]       # parmi plan, backlog, decisions, journal, pieges
+# chemin_plan: docs/ROADMAP.md
+# chemin_backlog: BACKLOG.md
