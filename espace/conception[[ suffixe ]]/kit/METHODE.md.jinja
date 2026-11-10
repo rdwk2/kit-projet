@@ -9,11 +9,12 @@ En clair : **A** conçoit avec [[ humain ]] et n'écrit pas de code ; [% if 'rel
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
 [% if 'relectures' in modules -%]
-> **À lire en entier à l'ouverture de toute conversation A**, avant `CONTEXTE.md`. B, C et
-> l'agent de code ne le lisent pas : leurs briefs et `CLAUDE.md` leur suffisent.
+> **À l'ouverture de toute conversation A, lire le § 0** ; le reste, par section, au moment que
+> donne le § 0 de `CONTEXTE.md`. B, C et l'agent de code ne le lisent pas : leurs briefs et
+> `CLAUDE.md` leur suffisent.
 [%- else -%]
-> **À l'ouverture de toute conversation A, lire le § 0**, avant `CONTEXTE.md` ; le reste, quand il
-> sert. L'agent de code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.
+> **À l'ouverture de toute conversation A, lire le § 0** ; le reste, par section, au moment que
+> donne le § 0 de `CONTEXTE.md`. L'agent de code ne le lit pas : le brief et `CLAUDE.md` lui suffisent.
 [%- endif %]
 >
 > Ce fichier porte les règles communes à tous les projets générés par ce kit, avec leur
@@ -384,7 +385,7 @@ au moins autant de soin — et d'effort — que la session de code.
 
 ## 8. Modèle d'IA et effort
 
-Politique détaillée : `kit/MODELES_ET_EFFORTS.md` (lire son § 0 [% if 'relectures' in modules %]à l'ouverture[% else %]avant un passage de main[% endif %]). Ici, « modèle »
+Politique détaillée : `kit/MODELES_ET_EFFORTS.md` (lire son § 0 pour un cas hors de la table du noyau). Ici, « modèle »
 veut dire modèle d'IA. Les règles qui ne bougent pas :
 
 - **On choisit à l'ouverture, en visant le moment le plus dur de la conversation, et on n'y
@@ -437,20 +438,17 @@ veut dire modèle d'IA. Les règles qui ne bougent pas :
 **Le test, pour relancer une conversation comme une session de code : ce que je vais perdre
 est-il reproductible ?** Si oui, on relance. Sinon, on l'écrit d'abord dans le CONTEXTE.
 
-**Une conversation A par jalon.** Relancer quand un jalon est fini et que le suivant porte sur
-un autre sujet, quand la conversation a dérivé sur beaucoup de sujets sans rapport, quand les
-réponses ralentissent ou tournent en rond. **Ne pas relancer au milieu d'une discussion sur
-un seul sujet**, même longue : là, le fil du raisonnement *est* la valeur.
+**Une A neuve à chaque étape stable** (brief ou révision publiés, arbitrage écrit, consigne de code
+partie, PR fusionnée[% if 'expert' in modules %], paquet expert parti[% endif %]). Relancer aussi quand la conversation a dérivé sur beaucoup
+de sujets sans rapport, quand les réponses ralentissent ou tournent en rond. **Ne pas relancer au
+milieu d'une discussion sur un seul sujet**, même longue : là, le fil du raisonnement *est* la valeur.
 
 **Ouvrir.** [[ humain ]] connecte les dossiers du rôle (§ 3) et colle le message du dernier
 `OUVERTURES_A«n».md` (gabarit `kit/gabarits/OUVERTURES_A.md`), qui donne aussi le modèle et
 l'effort. À défaut :
 
-> *Projet [[ projet ]], piste [[ piste ]]. [% if 'relectures' in modules %]Lis `conception[[ suffixe ]]/kit/METHODE.md` en
-> entier, puis le § 0 de `kit/MODELES_ET_EFFORTS.md`, puis `CONTEXTE.md` en entier et les ★ de
-> `kit/LECONS.md`[% else %]Lis le § 0 de `conception[[ suffixe ]]/kit/METHODE.md`, puis `CONTEXTE.md`
-> en entier[% endif %][% if piste != 'principale' %], puis
-> `kit/PISTES.md`[% endif %], et applique-les. Si `kit/perso/` existe, lis-le aussi : il complète ces règles et il prime.
+> *Projet [[ projet ]], piste [[ piste ]]. Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son
+> § 0 marque « à l'ouverture », rien d'autre en entier, et applique-les. Si `kit/perso/` existe, lis-le aussi : il complète ces règles et il prime.
 > Puis, selon la mission, `docs/ROADMAP.md` et `docs/decisions/` dans
 > le miroir. [ce qu'on fait aujourd'hui]*
 
@@ -467,18 +465,26 @@ PR fusionnée) plutôt que de continuer : un résumé perd des décisions et des
 CONTEXTE ne porte pas encore. Elle ne modifie pas l'état du projet à partir de ce résumé : elle
 revérifie dans les fichiers.
 
+**Relève légère, à chaque étape stable.** L'A réécrit l'état, les points actifs et la mission du noyau
+(§§ 4, 5 et 7) ; ajoute ses leçons et ses notes machine dans `LECONS_PROJET.md` et `MACHINE_PROJET.md` ;
+fait lancer `outils/mesurer_noyau.py`, qui doit être VERT ; écrit un message de relève de 1,5 Ko au
+plus (`kit/gabarits/CLOTURE_CONTEXTE.md`). Le noyau ne prend une ligne qu'en en rendant une.
+
+**Clôture complète**, à la fusion d'une PR, en fin de jalon, ou toutes les trois A : la relève,
+plus l'inventaire, le lisez-moi, l'archivage et la règle qui suit.
+
 **Règle de clôture.** Avant sa première modification de `CONTEXTE.md`, l'A le copie tel quel
 dans `passations/CONTEXTE_avant_A«n».md` (une copie par clôture). Puis :
 
 1. elle **réécrit** les §§ 4, 5 et 7 (état, points ouverts, suite), mais n'en retire que ce
    qui est fait ou clos, et le dit à [[ humain ]] ; une consigne durable qui s'y trouve passe d'abord
-   aux §§ 1, 2, 3 ou 6, jamais à la seule copie ;
-2. elle **ajoute** aux §§ 1, 2, 3 et 6 ce qu'elle a appris (règle locale, leçon, particularité
-   de la machine), et le dit à [[ humain ]] ;
-3. elle ne **retire ni ne résume** rien des §§ 1, 2, 3 et 6 sans l'accord explicite [[ de_humain ]] ;
+   aux §§ 1 ou 2, à `LECONS_PROJET.md` ou à `MACHINE_PROJET.md`, jamais à la seule copie ;
+2. elle **ajoute** aux §§ 1 et 2, à `LECONS_PROJET.md` et à `MACHINE_PROJET.md` ce qu'elle a appris
+   (règle locale, leçon, particularité de la machine), et le dit à [[ humain ]] ;
+3. elle ne **retire ni ne résume** rien de ces textes sans l'accord explicite [[ de_humain ]] ;
    une règle devenue fausse se corrige par une note datée, à côté du texte d'origine ;
 [% if 'relectures' in modules -%]
-4. elle met à jour la table des matières si elle ajoute, renomme ou déplace une sous-section ;
+4. elle tient l'index du § 0 si elle ajoute un fichier à lire ou renomme une section ;
 5. si [[ humain ]] maintient le kit, ou si l'enseignant le demande, ce qui vaut au-delà du projet
    (une règle, une leçon, un piège d'outillage, un gabarit amélioré) va **aussi** dans
    `REMONTEES_KIT.md` (§ 12) ; sinon, à ignorer ;
@@ -492,8 +498,8 @@ Si [[ humain ]] maintient le kit, ou si l'enseignant le demande, ce qui vaut au-
 **aussi** dans `REMONTEES_KIT.md` (§ 12).
 [%- endif %]
 
-**Le CONTEXTE a un plafond** (environ 60 Ko). Au-delà, il devient un coût fixe à chaque
-ouverture : l'historique et le détail des jalons fusionnés partent [% if 'archives' in modules %]aux archives
+**Le noyau a un budget** ([[ budget_noyau_ko | int ]] Ko, et [[ budget_ouverture_ko | int ]] Ko pour toute la lecture d'ouverture ; `outils/mesurer_noyau.py`). Au-delà, il
+devient un coût fixe à chaque message : l'historique et le détail des jalons fusionnés partent [% if 'archives' in modules %]aux archives
 (`kit/ARCHIVES.md`)[% else %]dans un fichier d'historique à part, qu'aucune A ne lit par défaut[% endif %], avec l'accord [[ de_humain ]].
 
 **Écrire le kit avant d'en avoir besoin.** Un CONTEXTE et un arbitrage écrits au fil de l'eau
@@ -507,13 +513,14 @@ réduit le périmètre, pas le soin.
 
 | Fichier du kit | Contenu | Quand le lire |
 |---|---|---|
-| `kit/MODELES_ET_EFFORTS.md` | politique de modèle et d'effort, réglages actifs (§ 0) | [% if 'relectures' in modules %]§ 0 à l'ouverture ; le reste avant un passage de main[% else %]avant un passage de main[% endif %] |
-| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | [% if 'relectures' in modules %]les ★ à l'ouverture ; le thème concerné[% else %]les ★ et le thème concerné[% endif %] avant d'écrire un brief, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
-| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | avant de donner une commande à [[ humain ]] |
+| `kit/COMMANDES.md` | le tableau des commandes [[ de_humain ]] | avant chaque lancement, la ligne de l'étape |
+| `kit/MODELES_ET_EFFORTS.md` | politique de modèle et d'effort, réglages actifs (§ 0) | avant un passage de main hors de la table du noyau |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ et le thème concerné avant d'écrire un brief, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | « En vigueur » à l'ouverture ; le reste avant de donner une commande à [[ humain ]] |
 | `kit/VOCABULAIRE.md` | les termes du workflow | à la demande |
 | `kit/IDIOMES_DEV.md` | les idiomes de développement repérés | en écrivant un brief ; pour expliquer du code à [[ humain ]] |
 [% if 'pistes' in modules -%]
-| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | à l'ouverture d'une A d'une piste parallèle ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | par section : avant d'ouvrir une piste ; à chaque point de contact entre pistes |
 [% endif -%]
 [% if 'archives' in modules -%]
 | `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire | à chaque clôture |

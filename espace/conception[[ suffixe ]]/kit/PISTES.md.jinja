@@ -39,7 +39,7 @@
   ne peut donc rien y écrire. C'est le principe 1 de `kit/METHODE.md` (« une frontière vaut
   mieux qu'une consigne ») appliqué entre pistes.
 - **Ce qui est commun vit dans le dépôt et dans le kit**, identique pour toutes les pistes.
-  Seules les règles propres au projet de la référence (§§ 1, 2, 3 et 6 de son `CONTEXTE.md`) se
+  Seules les règles propres au projet de la référence (§§ 1, 2, 3 et 6 de son `CONTEXTE.md`, avec `LECONS_PROJET.md` et `MACHINE_PROJET.md`) se
   transportent, et seulement au niveau complet, par un script : **jamais son état** (§§ 4, 5, 7).
 - **[[ humain ]] est le seul canal entre les deux A.** Un relais est un fichier ; il dit la réponse
   attendue ; une demande d'accord joint le diff exact des fichiers communs et une fusion d'essai.
@@ -245,8 +245,8 @@ de la référence. Le message d'ouverture le dit à l'A.
 1. Vérifier que `depuis_«référence»/LISEZ_MOI.md` existe ; sinon, s'arrêter et le dire à [[ humain ]].
 2. Comparer les empreintes du contenu à celles qu'elle a notées au § 1 de son CONTEXTE, et ne
    relire que les fichiers changés.
-3. Lire chaque fichier au moment que dit le `LISEZ_MOI` : §§ 1 et 2 à l'ouverture, § 3 avant le
-   premier brief, § 6 avant de donner une commande à [[ humain ]].
+3. Lire chaque fichier au moment que dit le `LISEZ_MOI` : § 1 quand un chemin de l'autre piste sert,
+   § 2 avant de déroger, § 3 avant le premier brief, § 6 avant de donner une commande à [[ humain ]].
 4. Transposer : les règles nomment les dossiers de la référence ; ce qui suppose un accès à ces
    dossiers ne s'applique pas tel quel, et se signale à [[ humain ]].
 5. Ne jamais rien écrire dans `depuis_«référence»/`. Un fichier de l'autre piste trouvé là se
@@ -630,10 +630,9 @@ connectés, et rien d'autre ; modèle et effort : ceux de la note d'ouverture
 > Projet [[ projet ]]. Tu es la **première conversation A de la piste « «piste» »**, qui avance
 > en parallèle de la piste « «référence» », dans le même dépôt et avec la même méthode.
 >
-> Lis en entier, dans l'ordre : `conception_«piste»/kit/METHODE.md` ; le § 0 de
-> `kit/MODELES_ET_EFFORTS.md` ; `kit/PISTES.md` ; `NOTE_PISTE_«PISTE».md` ;
-> `conception_«piste»/CONTEXTE.md` ; au niveau complet, `depuis_«référence»/LISEZ_MOI.md`, puis
-> les fichiers qu'il dit de lire à l'ouverture. Dans le miroir `v_for_cowork_«piste»/[[ slug ]]/` :
+> Lis, dans l'ordre : `conception_«piste»/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque
+> « à l'ouverture » ; `NOTE_PISTE_«PISTE».md` ; au niveau complet, `depuis_«référence»/LISEZ_MOI.md` ;
+> `kit/PISTES.md` par section, au moment voulu. Dans le miroir `v_for_cowork_«piste»/[[ slug ]]/` :
 > `CLAUDE.md`, `README.md`, `docs/ROADMAP.md`.
 >
 > Ta mission : le cadrage de la piste (`«préfixe»0`), sans code, d'après la note. Tu ne connectes

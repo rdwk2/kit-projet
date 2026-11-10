@@ -53,14 +53,8 @@ Pour les installer : `docs/GUIDE.md` du kit.
 > Projet **[[ projet ]]** — [[ description ]]
 > Tu es la **première conversation A (conception)** de la piste « [[ piste ]] ».
 >
-[% if 'relectures' in modules -%]
-> Lis en entier, dans l'ordre : `conception[[ suffixe ]]/kit/METHODE.md` ; le § 0 de
-> `kit/MODELES_ET_EFFORTS.md` ; `conception[[ suffixe ]]/CONTEXTE.md` (presque vide : c'est
-> toi qui le remplis) ; `conception[[ suffixe ]]/00_LISEZ_MOI.md` ; les ★ de `kit/LECONS.md`.
-[%- else -%]
-> Lis, dans l'ordre : le § 0 de `conception[[ suffixe ]]/kit/METHODE.md` ;
-> `conception[[ suffixe ]]/CONTEXTE.md` (presque vide : c'est toi qui le remplis).
-[%- endif %]
+> Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau, presque vide : c'est toi qui le
+> remplis), puis ce que son § 0 marque « à l'ouverture » ; rien d'autre en entier.
 > Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : `CLAUDE.md`, `README.md`,
 > `docs/ROADMAP.md`.
 >
@@ -78,7 +72,7 @@ Pour les installer : `docs/GUIDE.md` du kit.
 >    m'appartient, conventions), sous forme de texte prêt à appliquer : l'agent de code les
 >    appliquera dans une PR « [[ prefixe_jalon ]]0 — Cadrage ».
 > 5. Remplir `CONTEXTE.md` : § 1 (vérifie chaque chemin ; demande-moi ceux que tu ne vois pas),
->    § 2 (commandes, adaptées au projet), §§ 4, 5 et 7.
+>    § 2 (commandes propres au projet), §§ 4, 5 et 7, en style compact.
 [% if 'relectures' in modules -%]
 > 6. Décider avec moi du niveau du workflow pour ce projet : quelles PR passent par le cycle
 >    complet, quand une relecture neuve ; le noter au § 2 du CONTEXTE.

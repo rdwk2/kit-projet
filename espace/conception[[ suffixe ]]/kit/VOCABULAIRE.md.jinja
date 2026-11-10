@@ -135,11 +135,11 @@ où A lance une autre session.
 
 | Terme | Définition | Exemple |
 |---|---|---|
-| **Fichier de contexte** | `CONTEXTE.md` : ce qui est propre au projet (emplacements, commandes, dérogations, état, points ouverts, suite, leçons locales), lu en entier par chaque A ; les règles générales sont dans `kit/METHODE.md`. | Un plafond d'environ 60 Ko (`kit/METHODE.md`, § 10). |
+| **Fichier de contexte** | `CONTEXTE.md`, le noyau : ce qui est propre au projet (index, emplacements, dérogations, état, points ouverts, suite), lu en entier par chaque A ; les règles générales sont dans `kit/METHODE.md`, lues par section. | Un budget de [[ budget_noyau_ko | int ]] Ko, mesuré par `outils/mesurer_noyau.py` (`kit/METHODE.md`, § 10). |
 | **Ouverture** | Le message, écrit par l'A sortante, qui ouvre la suivante avec son modèle et son effort. | `OUVERTURES_A«n+1».md`, d'après `kit/gabarits/OUVERTURES_A.md`. |
 | **Étape stable** | Un moment où passer la main ne perd rien : brief publié, arbitrage écrit, PR fusionnée. | Le moment de la relève. |
 | **Clôture** | La fin d'une conversation A : la règle de clôture, les remontées, l'index, l'archivage s'il y en a un, le message d'ouverture. | `kit/METHODE.md`, § 10. |
-| **Règle de clôture** | Copier le CONTEXTE avant de le modifier ; réécrire l'état, les points ouverts et la suite ; ajouter aux règles et aux leçons locales ; n'en rien retirer sans accord ; tenir la table des matières. | `passations/CONTEXTE_avant_A«n».md`. |
+| **Règle de clôture** | Copier le CONTEXTE avant de le modifier ; réécrire l'état, les points ouverts et la suite ; ajouter aux règles et aux leçons locales ; n'en rien retirer sans accord ; tenir l'index du § 0. | `passations/CONTEXTE_avant_A«n».md`. |
 | **Relève** | Le remplacement d'une conversation A par une neuve, proposé par elle à une étape stable et accepté par [[ humain ]]. | « Relève proposée à «heure», acceptée à «heure» ». |
 | **Compaction** | Le remplacement automatique de l'historique d'une conversation par un résumé. La conversation le signale, ne change rien sur la foi du résumé, revérifie dans les fichiers et propose la relève. | `kit/METHODE.md`, § 10. |
 | **Passation** | La transmission d'une conversation à une autre (message, paquet) ; par extension, le dossier `passations/` où vivent ces pièces et la copie d'avant. | [% if 'relectures' in modules %]Le paquet d'une C, le départ de B.[% else %]Le message d'ouverture de l'A suivante.[% endif %] |

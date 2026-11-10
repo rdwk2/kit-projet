@@ -4,7 +4,8 @@
 > une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
 > `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
 >
-> [% if 'relectures' in modules %]**Le § 0 se lit à chaque ouverture d'une A** et s'applique à chaque passage de main.[% else %]**Le § 0 se lit et s'applique à chaque passage de main.**[% endif %]
+> **Le § 0 s'applique à chaque passage de main** ; la table des réglages du § 0 de `CONTEXTE.md` le
+> résume, il ne se lit que pour un cas hors de cette table.
 > Le reste explique les choix ; il change rarement. Dans ce fichier, « modèle » veut dire modèle
 > d'IA.
 >
@@ -31,7 +32,7 @@ Code).
 
 | Rôle | Par défaut | Alternative raisonnable | Quand déroger |
 |---|---|---|---|
-| **A — conception** | modèle fort, effort très élevé, pour une conversation qui écrit un découpage, un brief ou un arbitrage | un autre modèle fort, effort très élevé, comme essai délibéré, décidé à l'ouverture | conversation légère (clôture, rangement, questions) : modèle fort, effort élevé |
+| **A — conception** | modèle fort, effort très élevé (`xhigh`), pour une conversation qui arbitre, cadre, écrit un découpage, un brief[% if 'expert' in modules %] ou un paquet expert[% endif %] | un autre modèle fort, effort très élevé, comme essai délibéré, décidé à l'ouverture | relève, rangement, clôture, publication, relais : modèle fort, effort élevé (`high`) ; jamais `max` par défaut pour une A |
 [% if 'relectures' in modules -%]
 | **B — relecture d'artefact** | modèle fort, effort très élevé, conversation neuve | un autre moteur, effort élevé, si aucune C n'attend sa fenêtre | passe bis courte : effort élevé |
 [% endif -%]

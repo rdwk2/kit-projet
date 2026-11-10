@@ -24,14 +24,15 @@ Ils se rafraîchissent à chaque mise à jour du kit (`copier recopy`) et ne se 
 
 | Fichier | Contenu | Quand le lire |
 |---|---|---|
-| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | [% if 'relectures' in modules %]**à l'ouverture**, en entier, avant `CONTEXTE.md`[% else %]le § 0 **à l'ouverture**, avant `CONTEXTE.md` ; le reste, quand il sert[% endif %] |
-| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | [% if 'relectures' in modules %]**à l'ouverture** (§ 0) ; le reste avant un passage de main[% else %]**avant un passage de main**[% endif %] |
-| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | [% if 'relectures' in modules %]les ★ **à l'ouverture** ; le thème concerné[% else %]les ★ et le thème concerné[% endif %] **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
-| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | **avant de donner des commandes** à [[ humain ]] |
+| `kit/METHODE.md` | les règles du workflow, avec leur « pourquoi » | le § 0 **à l'ouverture** ; le reste, par section, au moment que donne le § 0 de `CONTEXTE.md` |
+| `kit/COMMANDES.md` | le tableau des commandes [[ de_humain ]] | **avant chaque lancement**, la ligne de l'étape |
+| `kit/MODELES_ET_EFFORTS.md` | la politique de modèle et d'effort, réglages actifs (§ 0) | **avant un passage de main** hors de la table du noyau |
+| `kit/LECONS.md` | les leçons de méthode accumulées, par thème | les ★ et le thème concerné **avant le premier brief**, [% if 'relectures' in modules %]une annexe, [% endif %]un arbitrage |
+| `kit/MACHINE.md` | les particularités générales des machines (git, gh, uv, agents) et les recettes | « En vigueur » **à l'ouverture** ; le reste **avant de donner des commandes** à [[ humain ]] |
 | `kit/VOCABULAIRE.md` | les termes du workflow et du kit | **à la demande** |
 | `kit/IDIOMES_DEV.md` | les idiomes de développement, par niveau | **avant le premier brief** qui crée du code ; pour expliquer du code à [[ humain ]] |
 [% if 'pistes' in modules -%]
-| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | **à l'ouverture** si cette piste n'est pas la principale ; avant d'ouvrir une piste ; à chaque point de contact entre pistes |
+| `kit/PISTES.md` | ouvrir et mener une piste parallèle sur le même dépôt | par section : avant d'ouvrir une piste ; à chaque point de contact entre pistes |
 [% endif -%]
 [% if 'archives' in modules -%]
 | `kit/ARCHIVES.md` | archiver, lire un archivé, l'inventaire, la copie d'avant | à chaque clôture, **avant de donner des commandes** d'archivage |
@@ -49,7 +50,9 @@ Ils se rafraîchissent à chaque mise à jour du kit (`copier recopy`) et ne se 
 
 | Fichier ou dossier | Usage | Quand il part |
 |---|---|---|
-| `CONTEXTE.md` | le propre au projet : emplacements, commandes [[ de_humain ]] et dérogations au kit (§§ 1 et 2), état, points ouverts, suite (§§ 4, 5 et 7), leçons locales. Lu en entier par chaque A ; tenu par l'A (règle de clôture, `kit/METHODE.md` § 10) | Jamais |
+| `CONTEXTE.md` | le noyau, propre au projet : index (§ 0), emplacements et dérogations au kit (§§ 1 et 2), état, points ouverts, suite (§§ 4, 5 et 7). Lu en entier par chaque A ; tenu par l'A (`kit/METHODE.md` § 10) | Jamais |
+| `LECONS_PROJET.md` | les leçons propres au projet ; lues à la demande | Jamais |
+| `MACHINE_PROJET.md` | les particularités de la machine propres au projet ; lues à la demande | Jamais |
 | `00_LISEZ_MOI.md` | cet index | Jamais |
 [% if 'archives' in modules -%]
 | `INVENTAIRE_ARCHIVES.md` | une ligne par élément archivé : chemin, contenu, quand en avoir besoin ; ce qui reste ici, et quand l'archiver | Jamais |

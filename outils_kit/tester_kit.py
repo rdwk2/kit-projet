@@ -23,6 +23,7 @@ Ce que vérifie chaque scénario :
 - extraction entre pistes : le CONTEXTE généré suit le plan fixe d'extraire_piste.py ;
 - chaque renvoi à une entrée de kit/MACHINE.md existe ;
 - `CLAUDE.md` a ses huit règles, avec leurs numéros, dans tous les préréglages ;
+- la lecture d'ouverture d'une A tient dans son budget, et un CONTEXTE gonflé fait échouer la mesure ;
 - un préréglage ne cite aucun fichier qu'il n'a pas, et refuse une piste sans le module pistes ;
 - un `racine` en `~/…` donne un chemin absolu aux scripts ;
 - avec --complet : uv sync, uv sync --locked et just check dans chaque dépôt Python généré,
@@ -135,11 +136,12 @@ DEPOT_ANALYSE = ["docs/analyse/CHARTE.md", "docs/analyse/QUESTIONS.md"]
 def espace_socle(s: str = "") -> list[str]:
     c = f"conception{s}"
     return [
-        f"{c}/CONTEXTE.md", f"{c}/00_LISEZ_MOI.md", f"{c}/REMONTEES_KIT.md",
-        f"{c}/passations/LISEZ_MOI.md",
+        f"{c}/CONTEXTE.md", f"{c}/LECONS_PROJET.md", f"{c}/MACHINE_PROJET.md", f"{c}/00_LISEZ_MOI.md",
+        f"{c}/REMONTEES_KIT.md", f"{c}/passations/LISEZ_MOI.md",
         f"{c}/kit/METHODE.md", f"{c}/kit/MODELES_ET_EFFORTS.md", f"{c}/kit/LECONS.md",
-        f"{c}/kit/MACHINE.md", f"{c}/kit/VOCABULAIRE.md", f"{c}/kit/IDIOMES_DEV.md",
+        f"{c}/kit/MACHINE.md", f"{c}/kit/COMMANDES.md", f"{c}/kit/VOCABULAIRE.md", f"{c}/kit/IDIOMES_DEV.md",
         f"{c}/kit/gabarits/LISEZ_MOI.md", f"{c}/kit/gabarits/BRIEF_JALON.md",
+        f"{c}/kit/gabarits/CLOTURE_CONTEXTE.md",
         f"{c}/kit/gabarits/OUVERTURES_A.md", f"{c}/kit/gabarits/CONSIGNE_CODE.md",
         f"{c}/kit/gabarits/FEU_VERT_PLAN.md", f"{c}/kit/gabarits/CORRECTIFS.md",
         f"{c}/kit/gabarits/ARBITRAGE.md", f"{c}/kit/gabarits/REVUE_PR.md",
@@ -152,6 +154,7 @@ def espace_socle(s: str = "") -> list[str]:
 ESPACE_RACINE = [
     "00_LISEZ_MOI_ESPACE.md", "outils/espace.py", "outils/diff_pr.py", "outils/miroir.py",
     "outils/compte_rendu_pr.py", "outils/revue_pr.py", "outils/tete_pr.py",
+    "outils/_commun.py", "outils/lire_section.py", "outils/mesurer_noyau.py", "outils/verifier_deplacement.py",
 ]
 OUTIL_PISTES = "outils/extraire_piste.py"
 # Ce qu'un projet sans le module pistes ne cite nulle part : il n'a pas ces fichiers.
@@ -217,10 +220,12 @@ SCENARIOS: list[dict] = [
         OUTIL_PISTES],
      "jamais_cite": CITES_PISTES,
      # sans relectures : une clôture courte, et les 7 titres que lit extraire_piste.py
-     "contient": {"conception/CONTEXTE.md": ["**Prochaine étape**", "## 7. Prochaine séance"],
+     "contient": {"conception/CONTEXTE.md": ["## 7. Prochaine séance"],
+                  "conception/kit/gabarits/CLOTURE_CONTEXTE.md": ["**Prochaine étape**"],
                   "conception/kit/gabarits/BRIEF_JALON.md": ["(facultatif)"],
                   "conception/kit/IDIOMES_DEV.md": ["le niveau *socle* seul"]},
-     "sans": {"conception/CONTEXTE.md": ["Ce qu'a fait", "États d'avant", "METHODE.md` en entier"],
+     "sans": {"conception/CONTEXTE.md": ["METHODE.md` en entier"],
+              "conception/kit/gabarits/CLOTURE_CONTEXTE.md": ["Ce qu'a fait", "États d'avant"],
               "conception/kit/gabarits/OUVERTURES_A.md": ["METHODE.md` en entier"],
               # hypothesis n'est pas installé : pytest s'arrêterait sur cette option
               "conception/kit/gabarits/BRIEF_JALON.md": ["--hypothesis-seed"],
@@ -232,13 +237,13 @@ SCENARIOS: list[dict] = [
      "absents": espace_archives() + espace_expert() + ["conception/kit/MUTATION.md", "outils/archiver.py"],
      # dépôt public : les parades anonymes sont données ; avec relectures, la clôture complète
      "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "API publique répond sans jeton"],
-                  "conception/CONTEXTE.md": ["Ce qu'a fait la", "États d'avant"]},
+                  "conception/kit/gabarits/CLOTURE_CONTEXTE.md": ["Ce qu'a fait la", "États d'avant"]},
      "sans": {"conception/kit/MACHINE.md": ["Le dépôt est privé"]}},
     {"nom": "espace-perso-complet", "data": {"couche": "espace", "preset": "perso-complet"},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_archives()
      + espace_expert() + espace_pistes() + ["relecture/LISEZ_MOI.md", "conception/kit/MUTATION.md",
                                             "outils/clone_c.py", "outils/archiver.py", OUTIL_PISTES],
-     "absents": [], "recopy": True,
+     "absents": [], "recopy": True, "budget_mord": True,
      # dépôt privé (défaut) : pas de parade anonyme
      "contient": {"conception/kit/MACHINE.md": ["ETAT_DISTANT.txt", "Le dépôt est privé"]},
      "sans": {"conception/kit/MACHINE.md": ["API publique répond sans jeton"]},
@@ -359,6 +364,30 @@ def verifier_regles(dest: Path) -> list[str]:
     return [] if numeros == list("12345678") else [f"règles de CLAUDE.md : {numeros}"]
 
 
+def verifier_budget_ouverture(dest: Path, piste: str | None = None) -> list[str]:
+    """La lecture d'ouverture d'une A tient dans son budget : `outils/mesurer_noyau.py` le dit."""
+    if not (dest / "outils" / "mesurer_noyau.py").is_file():
+        return []
+    r = lancer_script(dest, "outils/mesurer_noyau.py", *(["--piste", piste] if piste else []))
+    if r.returncode:
+        return [f"budget d'ouverture{f' (piste {piste})' if piste else ''} : {(r.stdout + r.stderr).strip()[-500:]}"]
+    return []
+
+
+def verifier_budget_mord(dest: Path) -> list[str]:
+    """Le garde-fou mord : un CONTEXTE gonflé au-delà du budget fait échouer la mesure."""
+    contexte = dest / "conception" / "CONTEXTE.md"
+    avant = contexte.read_bytes()
+    contexte.write_bytes(avant + b"LIGNE DE TROP\n" * 4000)
+    try:
+        r = lancer_script(dest, "outils/mesurer_noyau.py")
+    finally:
+        contexte.write_bytes(avant)
+    if r.returncode == 1 and "budget noyau dépassé" in r.stdout:
+        return []
+    return [f"un CONTEXTE gonflé ne fait pas échouer la mesure : code {r.returncode}, {r.stdout.strip()[-300:]}"]
+
+
 def verifier_jamais_cite(dest: Path, noms: list[str]) -> list[str]:
     """Un fichier qu'un préréglage n'a pas n'y est cité nulle part : un renvoi ne mène pas dans le vide."""
     erreurs = []
@@ -468,16 +497,25 @@ def lancer_script(dest: Path, script: str, *args: str) -> subprocess.CompletedPr
     """
     env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
     return subprocess.run(["uv", "run", "--quiet", script, *args], capture_output=True, text=True,
-                          cwd=dest, env=env)
+                          encoding="utf-8", errors="replace", cwd=dest, env=env)
 
 
 def verifier_extraction(dest: Path, piste: str) -> list[str]:
-    """Le CONTEXTE généré suit le plan fixe qu'attend outils/extraire_piste.py."""
-    r = lancer_script(dest, "outils/extraire_piste.py", "--vers", piste)
+    """Le CONTEXTE généré suit le plan fixe qu'attend outils/extraire_piste.py, et les leçons du projet suivent."""
+    lecons = dest / "conception" / "LECONS_PROJET.md"
+    avant = lecons.read_bytes()
+    lecons.write_bytes(avant + "\nLEÇON DE LA RÉFÉRENCE\n".encode())
+    try:
+        r = lancer_script(dest, "outils/extraire_piste.py", "--vers", piste)
+    finally:
+        lecons.write_bytes(avant)
     if r.returncode:
         return [f"extraire_piste.py échoue sur le CONTEXTE généré : {(r.stdout + r.stderr).strip()[-400:]}"]
-    if not (dest / f"conception_{piste}" / "depuis_principale" / "LISEZ_MOI.md").is_file():
+    sortie = dest / f"conception_{piste}" / "depuis_principale"
+    if not (sortie / "LISEZ_MOI.md").is_file():
         return ["extraire_piste.py n'a pas écrit son LISEZ_MOI.md"]
+    if "LEÇON DE LA RÉFÉRENCE" not in (sortie / "REGLES_PRINCIPALE_3_LECONS.md").read_text(encoding="utf-8"):
+        return ["extraire_piste.py n'a pas repris LECONS_PROJET.md"]
     return []
 
 
@@ -591,6 +629,11 @@ def main() -> int:
             erreurs += verifier_contenu(dest)
             erreurs += verifier_renvois(dest)
             erreurs += verifier_regles(dest)
+            erreurs += verifier_budget_ouverture(dest)
+            if "piste" in sc:
+                erreurs += verifier_budget_ouverture(dest, sc["piste"]["data"]["piste"])
+            if sc.get("budget_mord"):
+                erreurs += verifier_budget_mord(dest)
             erreurs += verifier_jamais_cite(dest, sc.get("jamais_cite", []))
             if "refus" in sc:
                 erreurs += verifier_refus(racine, {**sc["data"], **sc["refus"]})

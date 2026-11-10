@@ -1,0 +1,53 @@
+[% set opt_piste = '' if piste == 'principale' else ' --piste ' ~ piste -%]
+# Commandes [[ de_humain ]]
+
+> **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
+> une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
+> `REMONTEES_KIT.md`. Il est réécrit à chaque mise à jour du kit.
+>
+> **Quand le lire** : avant chaque lancement, la ligne de l'étape seulement. Les commandes propres au
+> projet sont au § 2 de `CONTEXTE.md`.
+
+À redonner **telles quelles** à [[ humain ]] à chaque lancement (`kit/METHODE.md`, § 9). Dans le terminal,
+sauf mention ; chaque bloc commence par `cd [[ racine ]]` (ou par le chemin absolu indiqué). Les
+scripts d'`outils/` capturent les sorties en octets : ne pas les remplacer par une redirection
+tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
+
+| Étape | Où | Commande ou geste |
+|---|---|---|
+| Ouvrir une A | Outil de conversation (Cowork, ou tout outil où l'on choisit les dossiers accessibles), conversation neuve | dossiers connectés : `[[ racine ]]/conception[[ suffixe ]]` et `[[ racine ]]/v_for_cowork[[ suffixe ]]`, rien d'autre ; coller le message du dernier `OUVERTURES_A«n».md`, qui donne le modèle et l'effort |
+| Mesurer le noyau | Terminal, à chaque relève et à chaque clôture | `cd [[ racine ]]` puis `uv run outils/mesurer_noyau.py[[ opt_piste ]]` : la sortie doit finir par VERT ; donner le résultat à l'A |
+[% if 'relectures' in modules -%]
+| Ouvrir B | Outil de conversation (Cowork, ou tout outil où l'on choisit les dossiers accessibles) : conversation neuve pour la passe 1 ; **la même** pour les passes bis et la passe 2 (une B neuve seulement si la première a été compactée, ou si [[ humain ]] le décide : elle n'ouvre pas les rapports des passes précédentes) | dossier connecté : `[[ racine ]]/v_for_cowork[[ suffixe ]]` seulement ; coller `conception[[ suffixe ]]/passations/DEPART_B_«jalon»_PASSE«x».md` |
+| Ranger un rapport de B | Terminal, quand B a fini **toutes** ses passes sur l'artefact (passes bis comprises), et en tout cas avant d'ouvrir une B neuve | `cd [[ racine ]]` puis `mv v_for_cowork[[ suffixe ]]/RELECTURE_«BRIEF ou PLAN»-«jalon».md conception[[ suffixe ]]/passations/` (ou `Move-Item` sous PowerShell) ; l'annexe de la passe close part de même : `mv v_for_cowork[[ suffixe ]]/07_ANNEXE_«jalon»_PASSE«x».md conception[[ suffixe ]]/passations/` |
+[% endif -%]
+| Session de code | Agent de code, dossier `[[ depot_travail ]]` | mode plan ; seul dossier ajouté : `[[ racine ]]/v_for_cowork[[ suffixe ]]/«jalon»` (selon ton agent : ajouter ce dossier à la session, ou lui donner le chemin du brief) ; coller `conception[[ suffixe ]]/passations/CONSIGNE_CODE_«jalon».md` |
+| Reprendre une session de code fermée | Terminal | `cd [[ depot_travail ]]` puis reprendre la session (Claude Code : `claude --continue`) |
+[% if piste == 'principale' -%]
+| Après chaque fusion | Terminal | `cd [[ racine ]]` puis `uv run outils/miroir.py` |
+[% else -%]
+| Après chaque fusion, quelle que soit la piste | Terminal | `cd [[ racine ]]` puis `uv run outils/miroir.py` et `uv run outils/miroir.py --piste [[ piste ]]` ; puis, dans chaque copie de travail, `git switch main`, `git pull`, `uv sync --locked` (`kit/PISTES.md`, § 10.2, bloc 5) |
+| Extraits de la piste principale | Terminal, avant d'ouvrir une A de la piste et après chaque clôture d'une A de la principale | `cd [[ racine ]]` puis `uv run outils/extraire_piste.py --vers [[ piste ]]` |
+| Transporter un relais, et sa réponse | Terminal, à chaque relais | `cd [[ racine ]]` puis `cp conception[[ suffixe ]]/relais/RELAIS_[[ piste ]]_«nn»*.* conception/relais/` (ou `Copy-Item` sous PowerShell) ; la réponse : `cp conception/relais/REPONSE_RELAIS_[[ piste ]]_«nn».md conception[[ suffixe ]]/relais/` |
+[% endif -%]
+| Diff d'une PR | Terminal | `cd [[ racine ]]` puis `uv run outils/diff_pr.py «n»[[ opt_piste ]]` → `v_for_cowork[[ suffixe ]]/pr-«n».diff` |
+| Compte rendu de Code (pour A seulement) | Terminal | `cd [[ racine ]]` puis `uv run outils/compte_rendu_pr.py «n»[[ opt_piste ]]` → `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md` |
+[% if 'relectures' in modules -%]
+| Poste de C | Terminal, puis l'agent | `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --paquet C_PR-«n»[[ opt_piste ]]` ; puis l'agent **dans** `[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/`, mode normal, aucun dossier ajouté : « Lis paquet/DEMARRAGE.md et exécute-le. » ; modèle et effort : ceux du `DEMARRAGE.md` |
+| C bornée ou seconde C, même PR | Terminal, puis l'agent | `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --paquet C_PR-«n»_«variante» --variante «variante»[[ opt_piste ]]` (ex. `bornee`, `seconde`) ; poste `relecture/c-pr«n»-«variante»[[ suffixe ]]/` ; un poste raté se refait par la même commande |
+| Rapport de C vers A | Terminal, quand la C a fini | `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --recuperer[[ opt_piste ]]` (ajouter `--variante «variante»` pour une C bornée ou seconde) |
+[% if 'mutation' in modules -%]
+| Tête de la PR pour A (balayage de mutation) | Terminal | `cd [[ racine ]]` puis `uv run outils/tete_pr.py «n»[[ opt_piste ]]` → `conception[[ suffixe ]]/passations/TETE_PR-«n».tar` et sa fiche `.txt` |
+[% endif -%]
+[% endif -%]
+[% if 'expert' in modules -%]
+| Passe experte, session à part | Terminal, puis une conversation neuve | les commandes du gabarit rempli (`kit/gabarits/PASSE_EXPERTE.md`, `kit/gabarits/SESSION_A_PART.md`) ; leur poste n'est jamais connecté à une A |
+[% endif -%]
+| Commentaire de revue, puis fusion | Terminal, puis GitHub | `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` ; sur GitHub, *Squash and merge* ; puis `uv run outils/miroir.py[[ opt_piste ]]` |
+[% if 'archives' in modules -%]
+| Archivage | Terminal, quand l'A qui clôt le demande | `cd [[ racine ]]` puis `uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_A«n».txt[[ opt_piste ]]` (essai à blanc), puis la même commande suivie de `--executer` |
+[% endif -%]
+| Sortie de Python vers un fichier | Windows seulement, PowerShell, avant la commande | `$env:PYTHONIOENCODING = "utf-8"` puis `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8` |
+[% if 'donnees-privees' in modules -%]
+| Commande sur les données réelles | Terminal, copie de travail sur `main` à jour, arbre propre | uniquement par [[ humain ]], jamais par l'agent de code ; sauvegarde d'abord ; la commande exacte vient de A (`kit/MACHINE.md`, R6) |
+[% endif -%]
