@@ -44,7 +44,9 @@ gardent les règles complètes et `mypy` strict. Pour durcir un projet : `strict
 `pyproject.toml`.
 
 **En solo léger et en groupe scolaire, ne génère pas l'espace IA.** Il pèse une trentaine de fichiers
-qu'un débutant n'a pas à lire. Dans un groupe, les camarades n'ont besoin que du dépôt.
+qu'un débutant n'a pas à lire. Dans un groupe, les camarades n'ont besoin que du dépôt. Un membre qui
+veut mener ses tâches avec le workflow génère son propre espace, avec `--data role=membre` (§ 3.3) :
+il couvre ses tâches et les relectures qu'on lui demande, et les responsables du dépôt fusionnent.
 
 Dans les commandes, « Standard » s'écrit `perso-standard`, et « Complet », `perso-complet`.
 
@@ -130,6 +132,11 @@ Copier pose ses questions. Trois réponses comptent ici :
 - **ce que ton dépôt a déjà** : sa branche principale (`main`, `master`…), le fichier de règles de ton
   agent (`CLAUDE.md`, `AGENTS.md`, ou aucun), la commande qui le vérifie (`pytest`, `just check`…), et les
   documents qu'il a déjà (plan, backlog, fiches de décision, journal, pièges), avec leur chemin.
+
+**Dans un projet de groupe**, ajoute `--data role=membre`. L'espace ne couvre alors que les tâches qui te
+sont confiées, et les relectures qu'on te demande. Tu tranches dans le périmètre de tes tâches, et les
+responsables du dépôt relisent et fusionnent. Ça marche aussi pour un dépôt de groupe généré par le kit :
+remplace alors `origine=existant` par `origine=kit`.
 
 Les textes de l'espace citent alors tes fichiers à toi. Un document que ton dépôt n'a pas n'est pas
 exigé : les textes écrivent « (absent de ce dépôt) » et ne demandent jamais de l'écrire. La première A

@@ -43,7 +43,7 @@ tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
 [% if 'expert' in modules -%]
 | Passe experte, session à part | Terminal, puis une conversation neuve | les commandes du gabarit rempli (`kit/gabarits/PASSE_EXPERTE.md`, `kit/gabarits/SESSION_A_PART.md`) ; leur poste n'est jamais connecté à une A |
 [% endif -%]
-| Commentaire de revue, puis fusion | Terminal, puis GitHub | `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` ; sur GitHub, *Squash and merge* ; puis `uv run outils/miroir.py[[ opt_piste ]]` |
+| Commentaire de revue, puis fusion | Terminal, puis GitHub | `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` ; sur GitHub, [% if membre %]les responsables fusionnent[% else %]*Squash and merge*[% endif %] ; puis `uv run outils/miroir.py[[ opt_piste ]]` |
 [% if 'archives' in modules -%]
 | Archivage | Terminal, quand l'A qui clôt le demande | `cd [[ racine ]]` puis `uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_A«n».txt[[ opt_piste ]]` (essai à blanc), puis la même commande suivie de `--executer` |
 [% endif -%]

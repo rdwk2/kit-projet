@@ -7,9 +7,9 @@
 > amélioration va dans `REMONTEES_KIT.md`.*
 > **Écrit par** A, sur l'état final de la branche (tête `«sha»`, CI verte), une fois les correctifs
 > poussés. **Publié par** [[ humain ]], juste avant la fusion :
-> `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` (option *Comment*[% if 'groupe' in modules %] ; un camarade relit et
-> approuve : `docs/RELIRE_UNE_PR.md`[% else %] : GitHub interdit
-> d'approuver sa propre PR[% endif %]) ; puis, sur GitHub, *Squash and merge* ; puis
+> `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` (option *Comment*[% if en_groupe %] ; un camarade relit et
+> approuve[% if 'groupe' in modules %] : `docs/RELIRE_UNE_PR.md`[% endif %][% else %] : GitHub interdit
+> d'approuver sa propre PR[% endif %]) ; puis, sur GitHub, [% if membre %]les responsables fusionnent (*Squash and merge*)[% else %]*Squash and merge*[% endif %] ; puis
 > `uv run outils/miroir.py[[ opt_piste ]]`.
 > **Règles** : le commentaire dit ce qui a été vérifié — vingt secondes, et c'est la trace visible
 > que la relecture a eu lieu (`kit/METHODE.md`, § 6) ; il porte donc sur l'état final. Aucune
@@ -43,4 +43,4 @@ Revue de conception — «jalon», «titre» («ce que la PR livre, en une paren
 - **Pas de C bornée** (si c'est le cas) : «la règle appliquée, ce qu'une C bornée aurait vérifié, et
   comment c'est déjà vérifié».
 [% endif %]
-[% if 'groupe' in modules %]Revue publiée : l'approbation vient du camarade qui relit.[% else %]Fusion approuvée.[% endif %]
+[% if en_groupe %]Revue publiée : l'approbation vient du camarade qui relit.[% else %]Fusion approuvée.[% endif %]

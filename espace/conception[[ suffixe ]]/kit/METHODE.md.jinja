@@ -2,7 +2,7 @@
 
 En clair : **A** conçoit avec [[ humain ]] et n'écrit pas de code ; [% if 'relectures' in modules %]**B** relit le brief et le plan,
 **C** relit la PR, sans avoir vu A ; [% endif %]**Code**, l'agent de code, est seul à écrire dans le dépôt ;
-[[ humain ]] tranche et fusionne. Un mot inconnu (brief, plan, PR, CI…) : `kit/VOCABULAIRE.md`.
+[[ humain ]] [% if membre %]tranche dans le périmètre de ses tâches, et les responsables du dépôt fusionnent[% else %]tranche et fusionne[% endif %]. Un mot inconnu (brief, plan, PR, CI…) : `kit/VOCABULAIRE.md`.
 
 > **Fichier du kit** (kit-projet [[ version_kit ]]). Ne pas le modifier dans ce projet :
 > une dérogation propre au projet va au § 2 de `CONTEXTE.md` ; une amélioration, dans
@@ -81,7 +81,7 @@ brief (A) → plan (Code) → relu (A) → PR → CI verte → commentaire de re
 
 | | Rôle |
 |---|---|
-| **[[ humain ]]** | tranche ce qui lui appartient (ci-dessous) ; relit et fusionne les PR ; lance les commandes sur sa machine ; **transporte** les rapports et les messages d'une conversation à l'autre |
+| **[[ humain ]]** | tranche ce qui lui appartient (ci-dessous) ; [% if membre %]relit ses PR, et en demande la relecture aux responsables, qui fusionnent[% else %]relit et fusionne les PR[% endif %] ; lance les commandes sur sa machine ; **transporte** les rapports et les messages d'une conversation à l'autre |
 | **L'agent de code** (Claude Code, Codex…) | **seul à écrire dans le dépôt.** Une tâche = une session = une branche = une PR, mode plan d'abord. Il exécute ; il ne décide pas |
 | **Les conversations** (A[% if 'relectures' in modules %], B, C[% endif %][% if 'expert' in modules %], passes expertes[% endif %]) | réfléchir avant de coder, relire, produire ce qui n'est pas du code. **Lecture seule sur le dépôt** |
 
@@ -102,7 +102,12 @@ silence, chaque pas semblant un gain de temps.
 **[[ humain ]] est le seul canal entre conversations.** Elles ne se voient pas : tout passe par des
 fichiers nommés et des messages prêts à coller (gabarits de `kit/gabarits/`). Un message
 qui oblige [[ humain ]] à reformuler est un message mal écrit.
-[% if 'groupe' in modules %]
+[% if membre %]
+**En groupe, comme membre.** [[ humain ]] contribue à un projet que tiennent d'autres : cet espace ne
+couvre que les tâches qui lui sont confiées, et les relectures qu'on lui demande. Ce qui appartient à
+l'humain se tranche avec le groupe ; [[ humain ]] tranche seulement dans le périmètre de sa tâche. Les
+responsables du dépôt relisent et fusionnent ; une A n'écrit jamais au nom du groupe.
+[% elif 'groupe' in modules %]
 **En groupe.** Ici, [[ humain ]] est la personne qui tient l'espace, et le groupe la choisit. Deux
 montages : un espace par personne, ou un seul pour le groupe. Les responsables du dépôt
 (`.github/CODEOWNERS`) fusionnent ; ce qui appartient à l'humain se tranche en groupe.
@@ -232,7 +237,7 @@ connecté, par un script qui ne fait que déplacer (`kit/ARCHIVES.md`).
 | 8 | Relecture profonde | C, neuve | 06 + annexe, brief, plan validé, diff | `RELECTURE_PR-«n».md` | verdict de C |
 | 9 | Arbitrage | A | rapport de C | `ARBITRAGE_PR-«n».md`, consigne de correctifs | — |
 | 10 | Correctifs | Code | consigne de correctifs | un commit par constat, ou par nature s'ils sont nombreux | CI verte |
-| 11 | Fusion | [[ humain ]] | état final | commentaire de revue, *Squash and merge*, `git pull` du miroir | — |
+| 11 | Fusion | [% if membre %]les responsables[% else %][[ humain ]][% endif %] | état final | commentaire de revue, *Squash and merge*, `git pull` du miroir | — |
 | 12 | Clôture | A | tout ce qui précède | CONTEXTE à jour, message d'ouverture suivant | règle de clôture (§ 10) |
 
 **Quand ouvrir chaque conversation** : A à l'ouverture du jalon ; B quand le brief est prêt à
@@ -249,7 +254,7 @@ une phrase, à l'ouverture du jalon.
 2. **Plan** (Code, mode plan) ; A le relit contre le brief ; [[ humain ]] valide.
 3. **Implémentation** (Code) : branche, commits, PR, CI verte.
 4. **Relecture** : [[ humain ]] ; et, pour une PR qui porte une décision, une relecture neuve.
-5. **Fusion** ([[ humain ]]) : commentaire de revue, *Squash and merge*, `git pull` du miroir.
+5. **Fusion** ([% if membre %]les responsables du dépôt[% else %][[ humain ]][% endif %]) : commentaire de revue, *Squash and merge*, `git pull` du miroir.
 6. **Clôture** (A) : règle de clôture (§ 10).
 [%- endif %]
 
@@ -290,8 +295,8 @@ vite sans rien perdre.
 
 ## 6. La relecture de PR
 
-**Le rituel.** Avant chaque fusion, [% if 'groupe' in modules %]un autre membre du groupe relit et approuve la PR
-(`docs/RELIRE_UNE_PR.md`) ; un commentaire de revue dit ce qui a été vérifié[% else %][[ humain ]] laisse un commentaire de revue (option *Comment* :
+**Le rituel.** Avant chaque fusion, [% if en_groupe %]un autre membre du groupe relit et approuve la PR[% if 'groupe' in modules %]
+(`docs/RELIRE_UNE_PR.md`)[% endif %] ; un commentaire de revue dit ce qui a été vérifié[% else %][[ humain ]] laisse un commentaire de revue (option *Comment* :
 GitHub interdit d'approuver sa propre PR) disant ce qui a été vérifié[% endif %] — écrit par A dans
 `passations/REVUE_PR-«n».md`, publié par `uv run outils/revue_pr.py «n»` (demande `gh`, connecté
 à ton compte). Vingt secondes, et c'est la trace visible que la relecture a eu lieu.
@@ -455,7 +460,7 @@ l'effort. À défaut :
 Cette liste est **la** liste de l'ouverture : le CONTEXTE, l'index et les messages d'ouverture
 y renvoient.
 
-L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir[% if 'groupe' not in modules %], dernier JOURNAL[% endif %]), pas dans
+L'A qui ouvre vérifie l'état dans les fichiers (tête du miroir[% if not en_groupe %], dernier JOURNAL[% endif %]), pas dans
 sa mémoire ni dans un résumé.
 
 **Une A compactée passe la main.** Une A dont la conversation a été compactée — l'historique
