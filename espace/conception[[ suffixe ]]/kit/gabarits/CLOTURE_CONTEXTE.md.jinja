@@ -12,7 +12,7 @@ Dans `OUVERTURES_A«n+1».md`, **1,5 Ko au plus** :
 
 > Projet [[ projet ]], piste [[ piste ]]. Tu es la «n+1»ᵉ A, une étape : «étape». «Modèle», effort «effort». Lis
 > `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque « à l'ouverture », rien
-> d'autre. Vérifie `main` et le miroir à `«sha»`. Ta mission : § 7, avec les lectures de l'étape. Si ta conversation a été
+> d'autre. Vérifie `[[ branche_principale ]]` et le miroir à `«sha»`. Ta mission : § 7, avec les lectures de l'étape. Si ta conversation a été
 > résumée automatiquement, dis-le en tête de ton message.
 
 ## En-tête
@@ -68,14 +68,14 @@ et leurs empreintes se notent au § 1 (`kit/PISTES.md`, § 10.4). -->
 <!--
 RÈGLES DU § 4
 - Une entrée par jalon, dans l'ordre des jalons ; sous elle, une puce par PR. Un jalon se
-  découpe en plusieurs PR quand un seul diff dépasserait le seuil de taille de `CLAUDE.md`.
+  découpe en plusieurs PR quand un seul diff dépasserait le seuil de taille de [% if origine != 'existant' %][[ md_regles ]][% else %]«la taille de commit du dépôt, ou environ 300 lignes»[% endif %].
 - Titre en gras : « **[[ prefixe_jalon ]]«n» — «titre» : «état»** ». États : cadré ; découpé en «k» PR ;
   en cours ; brief en révision «r» ; en PR #«p» ; fusionné ; complet (toutes ses PR fusionnées
   et le « Fini quand » de la ROADMAP atteint).
 - **Au plus cinq lignes par PR fusionnée**, champs dans cet ordre : fusion (commit, date, arbre
   identique à la tête relue, tests) ; brief, révision, empreinte ; agent, modèle, effort ;
   relectures ; arbitrage, correctifs, revue ; « Suite ». Le détail (têtes relues, comptes,
-  constats) est dans [% if 'groupe' not in modules %]le JOURNAL du dépôt, dans [% endif %]`passations/ARBITRAGE_PR-«p».md`[% if 'archives' in modules %] et, une fois
+  constats) est dans [% if 'groupe' not in modules and doc_journal %]le JOURNAL du dépôt, dans [% endif %]`passations/ARBITRAGE_PR-«p».md`[% if 'archives' in modules %] et, une fois
   archivé, dans `archives_conception[[ suffixe ]]/`[% endif %]. (Pourquoi : sans plafond, une entrée de PR
   grossit vite, et ce fichier devient un coût fixe à chaque ouverture.)
 - Une avancée en cours de conversation s'écrit en note datée, en italique, sous l'entrée :
@@ -98,7 +98,7 @@ Format d'une entrée :
 par [[ humain ]] le «date». Découpage : «k» PR.
 *Titre d'avant («date») : « … ».*
 
-- **[[ prefixe_jalon ]]«n»-«i» — «titre» : fusionné, PR #«p»** (*Squash and merge* `«sha»` sur `main`, «date» ; arbre identique à la tête relue ; «N» tests).
+- **[[ prefixe_jalon ]]«n»-«i» — «titre» : fusionné, PR #«p»** (*Squash and merge* `«sha»` sur `[[ branche_principale ]]`, «date» ; arbre identique à la tête relue ; «N» tests).
   Brief `«fichier»`, révision «r» (`«empreinte»…`) ; Code : «modèle» `«effort»`.
 [% if 'relectures' in modules %]  Relectures : B «passes, constats retenus» ; C «complète ou bornée, verdict» (`RELECTURE_PR-«p».md`).
 [% endif -%]
@@ -126,7 +126,7 @@ RÈGLES DU § 5
   des lignes trop longues, que plus personne ne relit.)
 - Une ligne se clôt par « **close** » dans une note, et se retire à la clôture suivante en le
   disant à [[ humain ]]. Une consigne durable qui s'y trouve passe d'abord aux §§ 1, 2, ou à `LECONS_PROJET.md` et `MACHINE_PROJET.md`.
-- Le § 5 ne porte pas les idées de modélisation (`BACKLOG.md`, dans le dépôt)[% if 'archives' in modules %] ni la liste de ce
+- Le § 5 ne porte pas les idées de modélisation ([% if doc_backlog %][[ md_backlog ]], dans le dépôt[% else %]«là où le projet les range»[% endif %])[% if 'archives' in modules %] ni la liste de ce
   qui reste à archiver (`INVENTAIRE_ARCHIVES.md`, « Restés en conception »)[% endif %] : il y renvoie.
 -->
 
@@ -136,14 +136,14 @@ RÈGLES DU § 5
 <!--
 RÈGLES DU § 7
 - Réécrite à chaque clôture : c'est la seule chose qui ne se retrouve nulle part ailleurs.
-- Ordre des blocs : lecture d'ouverture ; état de clôture (date, heure, `main` et miroir, PR
+- Ordre des blocs : lecture d'ouverture ; état de clôture (date, heure, `[[ branche_principale ]]` et miroir, PR
   ouvertes, ce qui tourne chez B, Code ou C, ce qui a été donné à [[ humain ]], fait ou non,
   compaction, relève, suite) ; « État d'avant » et « États d'avant » (une ligne par clôture) ;
   « Ce qu'a fait » de la dernière A et de l'avant-dernière — la plus ancienne se retire à la
   clôture : elle est dans la copie d'avant ; « Dans `v_for_cowork[[ suffixe ]]` » ; la mission de l'A
   suivante ; « Ensuite ».
 - « Ce qu'a fait » : une puce par étape, chacune avec son heure ; toujours « Ouverture » (état
-  vérifié : `main` distant, miroir, empreintes[% if 'archives' in modules %], archivage précédent fait[% endif %]) et « Clôture » ;
+  vérifié : `[[ branche_principale ]]` distant, miroir, empreintes[% if 'archives' in modules %], archivage précédent fait[% endif %]) et « Clôture » ;
   « Compaction » à chaque fois (« aucune » compris) ; les accès accordés par [[ humain ]] pour la
   conversation ; « Notes » : ce qui ne survit pas à la conversation, et comment le reconstruire.
 - Ce qui a été donné à [[ humain ]], sans savoir si c'est fait, s'écrit comme tel (« fait ou non :
@@ -170,7 +170,7 @@ RÈGLES DU § 7
 ### Le squelette, à remplir
 
 [% if 'relectures' in modules -%]
-**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
+**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `[[ branche_principale ]]` et le miroir à `«sha»`
 («dernière fusion» ; PR ouvertes : «aucune | #«p», tête `«sha»`»). «L'artefact en cours : fichier,
 révision, empreinte, où il en est.» «Ce qui tourne chez B, Code ou C, et ce qui a été donné
 à [[ humain ]] (fait ou non : à vérifier).» Compaction : «aucune | oui, «quand»». «Relève proposée à
@@ -184,7 +184,7 @@ La copie d'avant cette clôture, `passations/CONTEXTE_avant_A«n».md` (`«empre
 
 ### Ce qu'a fait la «n»ᵉ A («sujet»)
 
-- **Ouverture** («date», «heure», avec le message d'`OUVERTURES_A«n».md`) : état vérifié («`main`
+- **Ouverture** («date», «heure», avec le message d'`OUVERTURES_A«n».md`) : état vérifié («`[[ branche_principale ]]`
   distant = `«sha»` ; miroir ; empreintes[% if 'archives' in modules %] ; archivage précédent fait[% endif %]»).
 - **«Étape»** («heure») : «ce qui a été fait, produit (fichier, empreinte), décidé par [[ humain ]] (sa
   phrase, son heure)».
@@ -219,7 +219,7 @@ Contenu au «date», «heure» :
 
 ### «Jalon» — mission de la «n+1»ᵉ A
 
-**Où on en est («date», «heure»)** : «trois lignes : `main`, l'artefact en cours et son empreinte,
+**Où on en est («date», «heure»)** : «trois lignes : `[[ branche_principale ]]`, l'artefact en cours et son empreinte,
 ce qui attend».
 
 **Mission de la «n+1»ᵉ A**, chaque étape quand [[ humain ]] la lance :
@@ -251,7 +251,7 @@ déclenche» ; jalons complets : «liste».
 Pièces de travail du jalon en cours : «chemins en conception, rôle de chacun, quand il part».
 Chemins qui ne survivent pas à la conversation (`«…»`) : perdus avec elle.
 [%- else -%]
-**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `main` et le miroir à `«sha»`
+**État au «date», à «heure» — clôture de la «n»ᵉ A : «résumé».** `[[ branche_principale ]]` et le miroir à `«sha»`
 («dernière fusion» ; PR ouvertes : «aucune | #«p»»). «Ce qui a été donné à [[ humain ]] (fait ou non : à
 vérifier).»
 

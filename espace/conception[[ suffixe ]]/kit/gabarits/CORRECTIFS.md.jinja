@@ -3,10 +3,11 @@
 [%- else -%]
 [%- set verif = "la commande de vérification de `CLAUDE.md`" -%]
 [%- endif -%]
+[%- if origine == 'existant' -%][%- set verif = md_verif -%][%- endif -%]
 # Correctifs — PR #«n» («jalon»)
 
 > **Gabarit** — copier dans `conception[[ suffixe ]]/passations/` sous le nom `CORRECTIFS_PR-«n».md`
-> (ou, pour la variante « Fusion de `main` », `FUSION_MAIN_PR-«n».md`), remplir les `«…»`, retirer
+> (ou, pour la variante « Fusion de `[[ branche_principale ]]` », `FUSION_MAIN_PR-«n».md`), remplir les `«…»`, retirer
 > ce bloc et la variante inutile.
 > *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
 > amélioration va dans `REMONTEES_KIT.md`.*
@@ -43,7 +44,7 @@ raison : «raison» ; dérogation : «aucune | dérogation».
 > garanties écrites que rien ne teste», et «ce que ça dit du code, en une phrase». Ta tâche :
 > «corriger les défauts, écrire les tests ci-dessous», en «k» commits sur `«branche»`, dans cet ordre,
 > puis pousser. Tu écris le code et les tests (brief, § 3) ; tu ne fais rien d'autre (règle de
-> périmètre de `CLAUDE.md` : une idée en passant va au `BACKLOG.md`).
+> périmètre de [[ md_regles ]] : une idée en passant va au [[ md_backlog ]]).
 >
 > Les cas de référence sont dans `correctifs-pr«n»/cas/` (SHA-256 `«…»`). **Ne les copie pas dans le
 > dépôt** : prends-y les entrées et les valeurs attendues, et écris tes tests au style de ceux du
@@ -66,7 +67,7 @@ raison : «raison» ; dérogation : «aucune | dérogation».
 > [[ verif ]] doit passer[% if 'donnees-privees' in modules %] ; les messages de commit par `git commit -F`[% endif %].
 >
 > **Ce qui n'est pas à faire** : «les constats écartés, chacun avec sa raison en une phrase ; les
-> lignes parties au `BACKLOG.md`». Pas de commentaire GitHub, pas de changement de la description
+> lignes parties au [[ md_backlog ]]». Pas de commentaire GitHub, pas de changement de la description
 > de la PR : la revue dira ce qui a été fait.
 >
 > Quand c'est fait : `git push origin «branche»`. Ton dernier message : le SHA et l'arbre de chaque
@@ -74,13 +75,13 @@ raison : «raison» ; dérogation : «aucune | dérogation».
 > sautés) ; la tête poussée (`git ls-remote origin «branche»`) ; et, pour chaque ligne des tables ci-dessus, le
 > nom du test qui la tient.
 
-## Variante 2 — Fusion de `main` dans la branche
+## Variante 2 — Fusion de `[[ branche_principale ]]` dans la branche
 
 > Une branche déjà relue se met à jour par une **fusion, pas par un rebase** : les commits relus
 > gardent leurs empreintes, et le conflit se résout une fois.
 >
-> `git fetch origin` puis `git merge origin/main`. Conflits attendus, et pour chacun ce que tu
-> gardes : «`fichier` — les deux côtés, dans l'ordre … | la version de `main` | …». «Sous
+> `git fetch origin` puis `git merge origin/[[ branche_principale ]]`. Conflits attendus, et pour chacun ce que tu
+> gardes : «`fichier` — les deux côtés, dans l'ordre … | la version de `[[ branche_principale ]]` | …». «Sous
 > dérogation seulement (CONTEXTE, § 2) : à résoudre en recopiant les fichiers résolus joints
 > (`correctifs-pr«n»/fusion/`, empreintes ci-dessous).» Arbre attendu après la fusion :
 > `«arbre»`. **Un conflit que cette liste ne prévoit pas : `git merge --abort`, et tu

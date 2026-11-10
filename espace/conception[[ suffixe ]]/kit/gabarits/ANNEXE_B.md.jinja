@@ -18,7 +18,7 @@
 >
 > Champs : «jalon» · «titre» · «x» (la passe) · «r» (révision du brief) · «chemin» (d'une
 > pièce dans `v_for_cowork[[ suffixe ]]/`) · «empreinte» (son SHA-256) · «date» · «heure» ·
-> «A» (quelle conversation de conception) · «sha» (tête du miroir, ou de `main`) · «k» (numéro
+> «A» (quelle conversation de conception) · «sha» (tête du miroir, ou de `[[ branche_principale ]]`) · «k» (numéro
 > d'un constat).
 >
 > Ce qui change d'une passe à l'autre :
@@ -26,7 +26,7 @@
 > | | Passe 1 | Passe 1 bis (ter…) | Passe 2 |
 > |---|---|---|---|
 > | Objet | le brief, révision «r» (ou les textes) | la révision suivante : le diff du texte, et le sort des constats | le plan de l'agent de code |
-> | Référence | ROADMAP, fiches de décision, `CLAUDE.md`, documents validés, annexe | les constats de B, l'arbitrage résumé dans l'annexe, le diff | le brief et l'annexe |
+> | Référence | ROADMAP, fiches de décision, [[ md_regles ]], documents validés, annexe | les constats de B, l'arbitrage résumé dans l'annexe, le diff | le brief et l'annexe |
 > | Méthode | les classes du § 3 du brief de B | § 3 bis : chaque correction ferme-t-elle son constat sans en ouvrir un autre ? puis les classes, sur le texte changé | les quatre questions du § 4, les classes, puis le tri révision / message |
 > | Verdict | prêt à partir · prêt après correction · à retravailler | idem | validable · validable avec un message · à réviser |
 > | Rapport | `RELECTURE_BRIEF-«jalon».md` | à la suite, dans le même fichier | `RELECTURE_PLAN-«jalon».md` |
@@ -110,7 +110,7 @@ Verdict en une ligne ; en passe 2, le tri révision / message.
 > *Passe 2* : l'état de la session de l'agent de code (modèle, mode plan s'il en a un, effort ; « a fait
 > l'état des lieux du brief, en lecture seule, et présenté son plan ») ; « **Le plan n'est pas
 > validé** : il attend ta passe 2. » ; ce qui va se passer pendant la session, déjà décidé
-> (par exemple `main` qui bouge : fusion, jamais de rebase, et les conflits attendus) — texte
+> (par exemple `[[ branche_principale ]]` qui bouge : fusion, jamais de rebase, et les conflits attendus) — texte
 > type : « L'ordre n'est pas un constat ; ce que le plan en fait, si. » Si la B est neuve :
 > « Tu es une conversation neuve, pour la passe 2 seulement : tu n'as pas besoin de ces passes,
 > et tu n'ouvres pas leur rapport. »
@@ -136,9 +136,9 @@ Verdict en une ligne ; en passe 2, le tri révision / message.
 
 ## Tes références pour ce jalon
 
-> **A :** en plus de celles du § 2 : les fiches de décision de `docs/decisions/` et leurs
-> sections précises ; les documents de la piste ; les sections de `docs/ROADMAP.md` ; dans
-> `CLAUDE.md`, la règle 3 et la méthode de travail. En passe 2 : « Le brief, révision «r»,
+> **A :** en plus de celles du § 2 : les fiches de décision de [[ md_decisions ]] et leurs
+> sections précises ; les documents de la piste ; les sections de [[ md_plan ]] ; dans
+> [% if origine != 'existant' %][[ md_regles ]], la règle 3 et la méthode de travail[% else %][[ md_regles ]], ses règles de méthode ; « Ce qui appartient à l'humain », recopié du § 2 de `CONTEXTE.md`[% endif %]. En passe 2 : « Le brief, révision «r»,
 > d'abord : c'est ta référence. »
 
 ## Où regarder d'abord
@@ -167,8 +167,8 @@ Verdict en une ligne ; en passe 2, le tri révision / message.
 >    le corps d'un test, pas à la collecte), la restauration, le témoin, ce que fait le plan
 >    quand une ligne reste verte ;
 > 8. le hors-périmètre : les fichiers qu'on ne touche pas ; ce qui déborde part au
->    `BACKLOG.md` ;
-> 9. si `main` bouge : à quel moment, et ce que cela change pour les vérifications ;
+>    [[ md_backlog ]] ;
+> 9. si `[[ branche_principale ]]` bouge : à quel moment, et ce que cela change pour les vérifications ;
 > 10. les « points soumis » (ou « signalés ») à la fin du plan : chacun conforme au brief, ou une
 >     décision prise en silence ?
 > 11. les comptes que le plan annonce (lignes de backlog, arguments, tests modifiés, tailles de
@@ -187,7 +187,7 @@ Verdict en une ligne ; en passe 2, le tri révision / message.
 
 > **A :** sur le prototype, s'il y en a un (lint, typage, comptes de tests, contre-épreuves
 > jouées une à une et leur résultat, imports) ; les pièces elles-mêmes (le dossier contient
-> exactement la révision «r», aux empreintes données ; `main` est à `«sha»`, vérifié au
+> exactement la révision «r», aux empreintes données ; `[[ branche_principale ]]` est à `«sha»`, vérifié au
 > serveur ; le plan est, à l'octet, le texte [[ que_humain ]] a collé). Finir par la phrase qui borne la
 > passe — texte type : « Ce qui n'est pas vérifié, et qui est ta question : que le plan fasse
 > ce que le brief demande, rien de plus, sans décision prise en silence. »

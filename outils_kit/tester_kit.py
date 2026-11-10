@@ -264,6 +264,47 @@ SCENARIOS: list[dict] = [
                "presents": espace_socle("_analyse") + espace_pistes("_analyse")
                + [".copier-answers.espace_analyse.yml"],
                "absents": espace_relectures("_analyse")}},
+    # L'espace greffé sur un dépôt qui n'a pas été généré par le kit : ses noms à lui, et un seul
+    # document présent. Les textes citent ce qu'il a, et ne font écrire dans rien de ce qu'il n'a pas.
+    {"nom": "espace-existant", "data": {"couche": "espace", "preset": "perso-standard", "origine": "existant",
+                                         "branche_principale": "master", "regles_agent": "AGENTS.md",
+                                         "commande_verif": "pytest -q", "docs_existants": ["plan"],
+                                         "chemin_plan": "docs/plan.md"},
+     "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
+     "absents": espace_archives() + espace_expert(),
+     "contient": {"conception/CONTEXTE.md": ["### Le dépôt, tel qu'il existe", "`master`", "`AGENTS.md`",
+                                             "`pytest -q`, à la racine", "`docs/plan.md`", "pas de backlog"],
+                  "conception/kit/gabarits/CONSIGNE_CODE.md": ["Lis `AGENTS.md`, puis", "`pytest -q` verte",
+                                                               "git switch master"],
+                  "conception/kit/prompts/PREMIERE_A.md": [
+                      "**Découvrir le dépôt**", "**Attendre la première mission**",
+                      "(un backlog, des fiches de décision, un journal des livraisons, une liste des pièges)"],
+                  "conception/kit/gabarits/BRIEF_JALON.md": ["le plan (`docs/plan.md`)", "« Pour plus tard »"],
+                  "outils/clone_c.py": ['VERIF = "pytest -q"']},
+     "sans": {"conception/kit/gabarits/BRIEF_JALON.md": ["docs/JOURNAL.md", "`BACKLOG.md`", "just check",
+                                                         "règle 3", "CLAUDE.md", "`main`"],
+              "conception/kit/gabarits/CONSIGNE_CODE.md": ["CLAUDE.md", "just check", "`main`"],
+              "conception/kit/prompts/PREMIERE_A.md": ["Proposer la ROADMAP", "CLAUDE.md"],
+              "conception/kit/gabarits/DEMARRAGE_C.md": ["just check", "docs/JOURNAL.md", "origin/main"],
+              "v_for_cowork/06_BRIEF_RELECTURE_PR.md": ["just check", "origin/main"],
+              "outils/clone_c.py": ["just check"]}},
+    # Le cas le plus nu : ni fichier de règles, ni commande de vérification, ni document.
+    {"nom": "espace-existant-nu", "data": {"couche": "espace", "preset": "perso-standard", "origine": "existant",
+                                            "regles_agent": "", "commande_verif": "", "langage": "autre"},
+     "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + ["outils/clone_c.py"],
+     "absents": espace_archives() + espace_expert(),
+     "contient": {"conception/kit/gabarits/CONSIGNE_CODE.md": ["Lis en entier le brief",
+                                                               "les vérifications du brief (§ 8) vertes avant"],
+                  "conception/CONTEXTE.md": ["aucun fichier : les règles du projet sont dans ce tableau",
+                                             "«aucune commande : ce qui vérifie le dépôt, et comment»"],
+                  "conception/kit/prompts/PREMIERE_A.md": ["et un fichier de règles pour l'agent de code",
+                                                           "(un plan par jalons, un backlog,"],
+                  "outils/clone_c.py": ['VERIF = ""']},
+     "sans": {"conception/kit/gabarits/CONSIGNE_CODE.md": ["CLAUDE.md", "just check"],
+              "conception/kit/gabarits/BRIEF_JALON.md": ["CLAUDE.md", "just check", "docs/JOURNAL.md",
+                                                         "docs/decisions/", "`BACKLOG.md`"],
+              "conception/kit/gabarits/DEMARRAGE_C.md": ["just check", "est rouge"]}},
 ]
 
 

@@ -18,7 +18,7 @@
 >   leurs annexes y renvoient[% else %]les autres gabarits y renvoient[% endif %].
 >
 > Champs : «jalon» (ex. `[[ prefixe_jalon ]]3-1`) · «titre» · «r» (révision : 0, 0 bis, 1…) ·
-> «date» · «A» (quelle conversation de conception) · «branche» · «sha» (tête de `main` au
+> «date» · «A» (quelle conversation de conception) · «branche» · «sha» (tête de `[[ branche_principale ]]` au
 > départ) · «n» (numéro d'une décision, d'un critère, d'un commit).
 
 ---
@@ -29,14 +29,14 @@
 
 > Révision «r», «date». Pour «l'agent de code, en mode plan s'il en a un | le camarade qui prend la tâche» :
 > lire ce brief et le dépôt, présenter un plan, ne rien écrire avant qu'il soit validé.
-> Branche : `«branche»`, depuis `main`.
+> Branche : `«branche»`, depuis `[[ branche_principale ]]`.
 
 ## 0. Comment lire ce brief
 
 - **La règle de fond**, que tout le reste applique : «une phrase».
 - **Ce que la session ne fait jamais** : «les commandes qu'elle ne lance pas, les fichiers
   qu'elle ne lit pas».
-- Si une décision qui appartient à [[ humain ]] (`CLAUDE.md`, « Ce qui appartient à l'humain ») se
+- Si une décision qui appartient à [[ humain ]] ([% if origine != 'existant' %][[ md_regles ]], « Ce qui appartient à l'humain »[% else %]«la liste du § 2 de `CONTEXTE.md`, recopiée»[% endif %]) se
   présente sans être au § 3 : s'arrêter et le dire.
 
 ## 1. But de cette PR
@@ -48,8 +48,15 @@
 
 - **Dans la PR** : «les modules et les fichiers».
 - **Hors de la PR, intouchable** : «les fichiers qu'on ne modifie pas».
-- **Ce qui déborde** va au `BACKLOG.md`, en une ligne, jamais dans la PR (règle 3 de
-  `CLAUDE.md`).
+[% if origine != 'existant' -%]
+- **Ce qui déborde** va au [[ md_backlog ]], en une ligne, jamais dans la PR (règle 3 de
+  [[ md_regles ]]).
+[%- elif doc_backlog -%]
+- **Ce qui déborde** va au [[ md_backlog ]], en une ligne, jamais dans la PR.
+[%- else -%]
+- **Ce qui déborde** se note en une ligne dans la description de la PR, sous « Pour plus tard »,
+  jamais dans la PR.
+[%- endif %]
 
 ## 3. Décisions déjà prises — à appliquer, pas à rediscuter
 
@@ -95,8 +102,13 @@ brief, et les comptes de tests.
 > « Révisions ». L'empreinte (SHA-256) de chaque révision se calcule après écriture et se note
 > [% if 'relectures' in modules %]dans les annexes de B et de C, et [% endif %]dans la consigne de départ.
 >
-> **Écrit à partir de** : `docs/ROADMAP.md` («jalon») ; les fiches de décision et `CLAUDE.md`, «sections
-> et règles» ; le cadrage et les décisions [[ de_humain ]] ;[% if 'expert' in modules %] «une passe experte et son arbitrage» ;[% endif %][% if 'relectures' in modules %] «les passes
+[% if origine != 'existant' -%]
+> **Écrit à partir de** : [[ md_plan ]] («jalon») ; les fiches de décision et [[ md_regles ]], «sections
+> et règles» ;
+[%- else -%]
+> **Écrit à partir de** : «la mission confiée»[% if doc_plan %], [[ md_plan ]] («jalon»)[% endif %] ; [% if doc_decisions %]les fiches de décision, [% endif %][% if regles_agent %][[ md_regles ]] et [% endif %]le § 2 de `CONTEXTE.md`, «sections
+> et règles» ;
+[%- endif %] le cadrage et les décisions [[ de_humain ]] ;[% if 'expert' in modules %] «une passe experte et son arbitrage» ;[% endif %][% if 'relectures' in modules %] «les passes
 > de B» ;[% endif %] «l'accord d'une autre piste» ; «le prototype de la conception (un essai écrit à part par A
 > pour calculer les valeurs attendues ; facultatif) : ce qu'il couvre et ce qui y a été joué, sans
 > être joint».
@@ -112,7 +124,7 @@ brief, et les comptes de tests.
 > et tu n'écris rien avant qu'il soit validé. Le modèle, l'effort, le dossier de travail
 > et le seul dossier ajouté sont dans le message de lancement, pas ici.
 >
-> Branche : `«branche»`, depuis `main` à `«sha»`.
+> Branche : `«branche»`, depuis `[[ branche_principale ]]` à `«sha»`.
 
 ---
 
@@ -129,7 +141,7 @@ brief, et les comptes de tests.
   commandes qui les lisent (le hook les refuse) sont lancées par [[ humain ]], après la PR (§ 10).
 [%- endif %]
 - **La règle d'arrêt** : si une décision qui relève de « Ce qui appartient à l'humain »
-  (`CLAUDE.md` : l'architecture, le modèle, la métrique d'erreur, le protocole de validation,
+  ([% if origine != 'existant' %][[ md_regles ]] :[% else %]«la liste du § 2 de `CONTEXTE.md`», par exemple[% endif %] l'architecture, le modèle, la métrique d'erreur, le protocole de validation,
   les données personnelles) se présente et n'est pas au § 3, la session s'arrête et le dit.
 - **Ce que la PR réemploie sans le réécrire** : les fonctions, les types et les fixtures existants,
   nommés un par un.
@@ -139,7 +151,7 @@ brief, et les comptes de tests.
 [% endif %]
 ## 1. But du lot, et de cette PR
 
-- **Ce que demande la ROADMAP**, cité : «la phrase du jalon» ; ce qui existe aujourd'hui, et ce qui
+- **Ce que demande [% if origine != 'existant' %]la ROADMAP[% elif doc_plan %]le plan ([[ md_plan ]])[% else %]la mission confiée[% endif %]**, cité : «la phrase du jalon» ; ce qui existe aujourd'hui, et ce qui
   manque.
 - **Cette PR livre**, numéroté, en trois à cinq lignes : «1. … 2. …» ; et ce qu'elle ne livre pas.
 - **Après la PR, hors de la session** : ce [[ que_humain ]] lance, ce que la conception vérifie (§ 10), ce qui
@@ -149,16 +161,23 @@ brief, et les comptes de tests.
 
 - **Dans la PR** : les modules et les fichiers, nommés.
 - **Hors de la PR, et intouchable** : les fichiers et dossiers que la session ne modifie pas
-  (configuration du projet, verrou des dépendances, CI, réglages de l'agent, `docs/ROADMAP.md`,
+  (configuration du projet, verrou des dépendances, CI, réglages de l'agent[% if doc_plan %], [[ md_plan ]][% endif %],
   les modules voisins…).
 - **Fait ailleurs, et où** : ce qui se fait en conception, au contrôle réel (§ 10), ou dans une
   PR suivante. Une décision « hors PR » s'écrit ici (et au § 10) : sinon [% if 'relectures' in modules %]B la prend[% else %]la relecture la prend[% endif %] pour un
   trou de périmètre.
-- **Ce qui déborde** va au `BACKLOG.md`, en une ligne, jamais dans la PR (règle 3 de
-  `CLAUDE.md`).
+[% if origine != 'existant' -%]
+- **Ce qui déborde** va au [[ md_backlog ]], en une ligne, jamais dans la PR (règle 3 de
+  [[ md_regles ]]).
+[% elif doc_backlog -%]
+- **Ce qui déborde** va au [[ md_backlog ]], en une ligne, jamais dans la PR.
+[% else -%]
+- **Ce qui déborde** se note en une ligne dans la description de la PR, sous « Pour plus tard »,
+  jamais dans la PR.
+[% endif -%]
 [% if 'relectures' in modules %]
 > **A :** B y cherche B-c (trou de périmètre), dans les deux sens, contre le « Fini quand » de
-> `docs/ROADMAP.md` ; en passe 2, la question 1 (« quelque chose que le brief ne demande
+> [% if doc_plan %][[ md_plan ]][% else %]la mission confiée[% endif %] ; en passe 2, la question 1 (« quelque chose que le brief ne demande
 > pas ? »). C y cherche ce qui est hors de la PR.
 [% endif %]
 ## 3. Décisions déjà prises — à appliquer, pas à rediscuter
@@ -176,19 +195,23 @@ brief, et les comptes de tests.
 > un format qui apparaît ailleurs dans le brief sans être ici. C reprend cette liste dans son
 > annexe (« ne les signale pas comme des écarts »).
 [% endif %]
-## 4. Points de contact, et `main` qui bouge
+## 4. Points de contact, et `[[ branche_principale ]]` qui bouge
 
 - Les fichiers partagés avec une autre piste ou équipe, s'il y en a : ce qui y change,
   exactement ; l'accord obtenu, et sur quel diff.
 - À l'ouverture de la PR, la conception compare les fichiers communs à ce diff, et relaie tout écart
   de fond ; un test de l'autre piste modifié en est un. Ce qui devient un point de contact commun
   après la PR se dit ici.
-- Si `main` bouge pendant la session : fusion, jamais de rebase ; les conflits attendus et leur
+- Si `[[ branche_principale ]]` bouge pendant la session : fusion, jamais de rebase ; les conflits attendus et leur
   résolution ; ce qui arrête la session (un conflit dans tel fichier).
 
 ## 5. Ce que la session lit avant d'écrire
 
-- `CLAUDE.md` ; les fiches de décision, avec leurs sections ; `docs/PIEGES.md`.
+[% if origine != 'existant' -%]
+- [[ md_regles ]] ; les fiches de décision, avec leurs sections ; [[ md_pieges ]].
+[% else -%]
+- [% if regles_agent %][[ md_regles ]][% else %]le README et «les fichiers qui disent les conventions du dépôt»[% endif %][% if doc_decisions %] ; les fiches de décision ([[ md_decisions ]]), avec leurs sections[% endif %][% if doc_pieges %] ; [[ md_pieges ]][% endif %].
+[% endif -%]
 - Les modules, nommés avec les fonctions et les constantes à lire ; les fixtures et les tests qui
   servent de modèle.
 - **Ce que le plan doit contenir** : les
@@ -226,14 +249,22 @@ Une sous-section par module ou fichier, titrée «ce que c'est» — `«fichiers
 
 Dernière sous-section, **les documents** :
 
-- la fiche de décision neuve, dans `docs/decisions/` (ses règles, numérotées comme ici ; « ce que
+[% if doc_decisions -%]
+- la fiche de décision neuve, dans [[ md_decisions ]] (ses règles, numérotées comme ici ; « ce que
   les sorties ne sont pas ») ;
 - la note datée d'une fiche de décision que la PR rend partielle ; les fichiers régénérés ;
-- `CLAUDE.md` (règles, commandes, structure) ;
-- les lignes de `BACKLOG.md`, comptées — cochées, réécrites, neuves : ce sont les limites
+[% else -%]
+- les fichiers régénérés ;
+[% endif -%]
+[% if origine != 'existant' or regles_agent -%]
+- [[ md_regles ]] (règles, commandes, structure) ;
+[% endif -%]
+[% if doc_backlog -%]
+- les lignes de [[ md_backlog ]], comptées — cochées, réécrites, neuves : ce sont les limites
   connues[% if 'relectures' in modules %], que C ne doit pas reprendre en constats[% endif %] ;
-[% if 'groupe' not in modules -%]
-- l'entrée de `docs/JOURNAL.md` ;
+[% endif -%]
+[% if 'groupe' not in modules and doc_journal -%]
+- l'entrée de [[ md_journal ]] ;
 [% endif -%]
 - **README** : soit les phrases du README que la PR rend fausses ou
   incomplètes, avec leur texte de remplacement, soit « README relu, inchangé ».
@@ -257,10 +288,10 @@ fichier généré à régénérer ; le comportement d'un outil sous un système 
 
 ### 8.1 Critères d'acceptation
 
-Numérotés, chacun vérifiable par une commande ou une comparaison : les commandes vertes (la
-vérification complète de `CLAUDE.md`, avec quels extras, à partir de quel commit) ; « seuls ces
+Numérotés, chacun vérifiable par une commande ou une comparaison : les commandes vertes ([% if origine != 'existant' %]la
+vérification complète de [[ md_regles ]][% elif commande_verif %][[ md_verif ]][% else %]«les commandes qui vérifient le dépôt»[% endif %], avec quels extras, à partir de quel commit) ; « seuls ces
 tests existants changent » ; « tel fichier généré ne diffère que par… » ; et ce que devient le
-« Fini quand » de `docs/ROADMAP.md` — ce que la PR en fait, et ce qui vient après elle (§ 10).
+« Fini quand » de [% if doc_plan %][[ md_plan ]][% else %]la mission confiée[% endif %] — ce que la PR en fait, et ce qui vient après elle (§ 10).
 Le dernier : chaque test du § 8.2 existe, et rougit sous sa contre-épreuve, jouée puis restaurée.
 
 ### 8.2 Tests attendus
@@ -298,10 +329,10 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
 [% endif %]
 ## 9. Livraison
 
-- La branche `«branche»`, partie de `main` à `«sha»`. La liste ordonnée des commits : ce que chacun contient (« le commit 1 ne change aucune
+- La branche `«branche»`, partie de `[[ branche_principale ]]` à `«sha»`. La liste ordonnée des commits : ce que chacun contient (« le commit 1 ne change aucune
   sortie ») ; chacun vert à lui seul ; leur taille, annoncée quand elle dépasse la règle de
-  `CLAUDE.md` (environ 300 lignes).
-- Les messages (préfixes de `CLAUDE.md`, ligne d'attribution) ; le titre de la PR
+  [% if origine != 'existant' %][[ md_regles ]] (environ 300 lignes)[% else %]«la taille de commit du dépôt, ou environ 300 lignes»[% endif %].
+- Les messages ([% if origine != 'existant' %]préfixes de [[ md_regles ]][% else %]«les conventions de message du dépôt»[% endif %], ligne d'attribution) ; le titre de la PR
   (`«jalon» — «titre»`) ; ce que dit sa description : l'accord d'une autre piste (§ 4) ; les commits de
   plus de 300 lignes, avec leur raison ; les comptes de tests réussis et sautés ; les contre-épreuves
   jouées, rouges et équivalentes ; tout écart au brief, avec sa raison ; la ligne d'attribution.
@@ -309,7 +340,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
 - Messages de commit par `git commit -F <fichier>`, corps de PR par `--body-file` : aucun ne cite une
   commande refusée par le hook.
 [%- endif %]
-- **Si `main` a bougé** : § 4.
+- **Si `[[ branche_principale ]]` a bougé** : § 4.
 
 ## 10. Ce [[ que_humain ]] fait, et quand
 
@@ -331,7 +362,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   et la non-régression faite en conception, sous la règle des données.
 [%- endif %]
 - **Après la fusion** : ce qui reste à lancer, avec les commandes données par la conception ; ce
-  qu'elle en fait (une PR suivante[% if 'groupe' not in modules %], le `docs/JOURNAL.md`[% endif %]).
+  qu'elle en fait (une PR suivante[% if 'groupe' not in modules and doc_journal %], le [[ md_journal ]][% endif %]).
 - **Où vont les fichiers** : ce qui se dépose, et où ; rien du prototype dans le dossier que
   reçoit la session.
 - Ce qui se relaie à une autre piste, et quand.
@@ -386,7 +417,7 @@ fin, une section pour les erreurs et les messages).
 | § 1 | B-c contre le « Fini quand » | ce que le brief ne demande pas | « ce que tu relis » |
 | § 2 | B-c trou de périmètre | ce que le brief ne demande pas | « hors de la PR » |
 | § 3 | B-e décision passée en douce | une décision prise en silence | « décisions prises » |
-| § 4 | B-c | si `main` bouge | « points de contact » |
+| § 4 | B-c | si `[[ branche_principale ]]` bouge | « points de contact » |
 | § 5 | — | le plan contient-il ce que le § 5 demande ? | — |
 | § 6 | B-a, B-b, B-f, B-g, B-h | les classes appliquées au plan | C-b, C-c, C-f, C-g ; garanties écrites |
 | § 7 | B-a contre les §§ 6 et 9 | le plan évite-t-il chaque piège ? | « points d'attention » |

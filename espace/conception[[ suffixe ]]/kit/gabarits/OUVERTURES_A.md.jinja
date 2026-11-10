@@ -9,7 +9,7 @@
 > qu'elle peut le faire sans perte (`kit/METHODE.md`, § 10) — d'après les fichiers, pas d'après sa mémoire ni un résumé. **Lu par**
 > [[ humain ]], qui fait les gestes du § 1 puis colle le message du § 2 ; et par l'A neuve.
 > **Champs** : `«n»` (l'A qui s'ouvre), `«n−1»`, `«date»`, `«heure»`, `«jalon»`, `«sha»` (tête de
-> `main` et du miroir), `«empreinte»` (de `CONTEXTE.md`, huit caractères), `«modèle»`, `«effort»`,
+> `[[ branche_principale ]]` et du miroir), `«empreinte»` (de `CONTEXTE.md`, huit caractères), `«modèle»`, `«effort»`,
 > `«alternative»`, `«raison»`, `«dérogation»`, et les gestes et sessions propres à ce relais ;
 > [% if 'archives' in modules %]`«k»` (éléments archivés), [% endif %]l'état, les pièces de la mission et leurs empreintes.
 
@@ -18,7 +18,7 @@ automatiquement : «non | oui, «quand»».*
 
 **État** :
 
-- `main` et le miroir à `«sha»` ; «les jalons complets» ; «les PR ouvertes, ou aucune».
+- `[[ branche_principale ]]` et le miroir à `«sha»` ; «les jalons complets» ; «les PR ouvertes, ou aucune».
 - **Le jalon en cours** : «où en sont son cadrage et son brief ; ce [[ que_humain ]] a tranché, et où c'est
   écrit».
 - «Ce qui attend une lecture ou une réponse : [% if 'expert' in modules %]un rapport de session à part, [% endif %][% if 'pistes' in modules %]un relais, une PR de
@@ -62,7 +62,7 @@ automatiquement : «non | oui, «quand»».*
 ## 2. Le message à coller
 
 > Projet [[ projet ]], piste [[ piste ]]. Tu es la «n»ᵉ A (conception). «L'état en deux phrases :
-> ce qui est complet, `main` = `«sha»`, le jalon en cours.» Ta mission : «les étapes, dans l'ordre».
+> ce qui est complet, `[[ branche_principale ]]` = `«sha»`, le jalon en cours.» Ta mission : «les étapes, dans l'ordre».
 >
 > Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau) et ce que son § 0 marque « à l'ouverture », rien d'autre
 > en entier, et applique-les ; «les pièces de la mission se lisent à l'étape qui les touche, par section : le § 7 les liste». Ta mission est au
@@ -72,7 +72,7 @@ automatiquement : «non | oui, «quand»».*
 > passer à une conversation neuve.
 >
 > Vérifie d'abord l'état dans les fichiers :
-> - `main` distant (`v_for_cowork[[ suffixe ]]/ETAT_DISTANT.txt`) et miroir à `«sha»` ;
+> - `[[ branche_principale ]]` distant (`v_for_cowork[[ suffixe ]]/ETAT_DISTANT.txt`) et miroir à `«sha»` ;
 [% if 'relectures' in modules -%]
 > - les PR ouvertes et leurs têtes, dans le même fichier («la tête de la #… a-t-elle bougé depuis `«sha»` ?») ;
 > - les empreintes : `CONTEXTE.md` = `«empreinte»…` ; «les autres pièces vivantes et celles de la mission :

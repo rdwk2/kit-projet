@@ -7,8 +7,8 @@
 
 | Fichier ou dossier | Usage |
 |---|---|
-| `[[ slug ]]/` | le **miroir** du dépôt : `main` tel que fusionné. Il ne reçoit que des `git pull`, lancés par [[ humain ]] (`uv run outils/miroir.py`). Une conversation n'y lance jamais `git status` ni `git fetch` : `git --no-optional-locks …` pour lire |
-| `ETAT_DISTANT.txt` | l'état du dépôt distant (têtes de `main` et des PR), écrit par `uv run outils/miroir.py` avec l'heure : c'est là qu'une conversation voit les PR[% if not public %] — le dépôt est privé, elle ne peut pas interroger GitHub elle-même[% endif %] |
+| `[[ slug ]]/` | le **miroir** du dépôt : `[[ branche_principale ]]` tel que fusionné. Il ne reçoit que des `git pull`, lancés par [[ humain ]] (`uv run outils/miroir.py`). Une conversation n'y lance jamais `git status` ni `git fetch` : `git --no-optional-locks …` pour lire |
+| `ETAT_DISTANT.txt` | l'état du dépôt distant (têtes de `[[ branche_principale ]]` et des PR), écrit par `uv run outils/miroir.py` avec l'heure : c'est là qu'une conversation voit les PR[% if not public %] — le dépôt est privé, elle ne peut pas interroger GitHub elle-même[% endif %] |
 [% if 'relectures' in modules -%]
 | `06_BRIEF_RELECTURE_PR.md` | brief de C (fichier du kit, jamais modifié ici) |
 | `06_ANNEXE_PR-«n».md` | l'annexe du brief de C pour la PR «n», écrite par A ; seule l'annexe de la PR en cours s'applique |

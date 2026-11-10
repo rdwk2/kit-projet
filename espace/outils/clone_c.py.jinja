@@ -12,8 +12,13 @@ tête de la PR et le paquet de démarrage écrit par A.
 
 Résultat : relecture/c-pr42[-variante][_piste]/<dépôt>/ (le clone, sur la tête de la PR) et
 …/paquet/ (copie de conception/passations/<paquet>/). Puis, dans le poste à sa place définitive :
+[% if origine == 'existant' -%]
+`uv sync --locked` si le dépôt a un `uv.lock`, puis sa commande de vérification, s'il en a une
+(`--sans-check` pour s'en passer).
+[%- else -%]
 `uv sync --locked` si le dépôt a un `pyproject.toml`, `just check` s'il a un `justfile`
-(`--sans-check` pour s'en passer). Lancer ensuite l'agent **dans** ce dossier (pas de .git à sa
+(`--sans-check` pour s'en passer).
+[%- endif %] Lancer ensuite l'agent **dans** ce dossier (pas de .git à sa
 racine, aucun dossier ajouté), dans un mode où il peut écrire (ni mode plan ni lecture seule),
 pour son rapport, avec le message : « Lis paquet/DEMARRAGE.md et exécute-le. »
 
@@ -43,7 +48,10 @@ import time
 from pathlib import Path
 
 import espace
-
+[% if origine == 'existant' %]
+VERIF = [[ commande_verif | tojson ]]
+"""La commande qui vérifie tout le dépôt, donnée à la création de l'espace ; vide : aucune."""
+[% endif %]
 
 def dossier_c(numero: int, piste: str | None, variante: str) -> Path:
     nom = f"c-pr{numero}{'-' + variante if variante else ''}{espace.suffixe(piste)}"
@@ -74,7 +82,7 @@ def renommer(source: Path, cible: Path) -> None:
                 sys.exit(
                     f"Clone et paquet prêts, mais impossible de renommer {source} en {cible} "
                     f"(un fichier encore tenu ?) : renommer à la main, puis lancer "
-                    f"`uv sync --locked` et `just check` dans le clone."
+                    f"`uv sync --locked` et [% if origine == 'existant' %]la vérification[% else %]`just check`[% endif %] dans le clone."
                 )
             time.sleep(1)
 
@@ -89,6 +97,28 @@ def essayer(cmd: list[str], dossier: Path) -> bool:
         return False
 
 
+[% if origine == 'existant' -%]
+def verifier_poste(clone: Path) -> bool:
+    """uv sync s'il y a un uv.lock, puis la vérification du dépôt, dans le poste à sa place
+    définitive. True si tout est vert."""
+    if (clone / "uv.lock").is_file() and not essayer(["uv", "sync", "--locked"], clone):
+        print(
+            f"\n✗ uv sync a échoué : le poste est là, mais sans environnement. Relancer "
+            f"`uv sync --locked` dans {clone} (réseau ? uv.lock pas à jour dans la PR ?)."
+        )
+        return False
+    if not VERIF:
+        return True
+    print(f"> ({clone}) {VERIF}", flush=True)
+    if subprocess.run(VERIF, cwd=clone, shell=True, check=False).returncode != 0:
+        print(
+            f"\n✗ la vérification est rouge sur la tête de la PR ({VERIF}) : le poste est prêt, mais la "
+            "PR ne passe pas ses propres vérifications. À régler avant de lancer la C — ou la lancer en "
+            "le sachant, et le lui dire."
+        )
+        return False
+    return True
+[%- else -%]
 def verifier_poste(clone: Path) -> bool:
     """uv sync puis just check, dans le poste à sa place définitive. True si tout est vert."""
     if (clone / "pyproject.toml").is_file() and not essayer(["uv", "sync", "--locked"], clone):
@@ -105,6 +135,7 @@ def verifier_poste(clone: Path) -> bool:
         )
         return False
     return True
+[%- endif %]
 
 
 def preparer(numero: int, paquet: str, piste: str | None, variante: str, sans_check: bool) -> int:
@@ -184,7 +215,7 @@ def main() -> None:
         "--variante", default="", help="autre C de la même PR : bornee, seconde… (minuscules, chiffres, tirets)"
     )
     p.add_argument("--recuperer", action="store_true", help="copier les rapports de la C vers A")
-    p.add_argument("--sans-check", action="store_true", help="ne lancer ni uv sync ni just check")
+    p.add_argument("--sans-check", action="store_true", help="ne lancer ni uv sync ni [% if origine == 'existant' %]la vérification[% else %]just check[% endif %]")
     args = p.parse_args()
     if args.variante and not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.variante):
         p.error("--variante : minuscules, chiffres et tirets seulement")

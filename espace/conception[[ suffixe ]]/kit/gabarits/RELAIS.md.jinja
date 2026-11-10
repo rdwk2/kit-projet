@@ -8,7 +8,7 @@
 > Champs : `«nn»` (numéro du relais, sur deux chiffres, compté par la piste qui écrit) ·
 > `«émetteur»`, `«destinataire»` (noms des pistes) · `«rang»` (rang de l'A qui écrit) ·
 > `«date»`, `«heure lue»` (lue par une commande, juste avant d'écrire) · `«v»` (version) ·
-> `«sha»`, `«arbre»` (tête de `main` et son arbre) · `«k»` (nombre de points) · les autres
+> `«sha»`, `«arbre»` (tête de `[[ branche_principale ]]` et son arbre) · `«k»` (nombre de points) · les autres
 > se lisent dans leur rubrique.
 >
 > Règles (`kit/PISTES.md`, § 6.4) : un relais ne part que pour un point qui compte ; la
@@ -26,7 +26,7 @@ Version «v» ; versions non parties : «aucune | liste».*
 **Réponse attendue** : «sur les points x et y, avant «étape»» | «pas de réponse attendue, sauf
 objection».
 
-**État vu** : `main` = «sha» (arbre «arbre») ; PR ouvertes : «liste, ou aucune» ; dernière pièce
+**État vu** : `[[ branche_principale ]]` = «sha» (arbre «arbre») ; PR ouvertes : «liste, ou aucune» ; dernière pièce
 reçue de toi : «`REPONSE_RELAIS_…` ou `MESSAGE_…`, avec son empreinte», ou « aucune ».
 
 0. **Réponse à ton «relais ou message»** : «accord | objection | conditions». *(Retirer ce point
@@ -39,7 +39,7 @@ reçue de toi : «`REPONSE_RELAIS_…` ou `MESSAGE_…`, avec son empreinte», o
 
 | Fichier | Nature du changement | Régime | Conflit attendu avec | Résolution proposée |
 |---|---|---|---|---|
-| «`CLAUDE.md`, « Structure »» | «deux lignes ajoutées» | «accord des deux A» | «ta PR #…, ou rien» | «garder les deux côtés, la tienne d'abord» |
+| «[[ md_regles ]], « Structure »» | «deux lignes ajoutées» | «accord des deux A» | «ta PR #…, ou rien» | «garder les deux côtés, la tienne d'abord» |
 
 **Pièces jointes**, [[ que_humain ]] copie avec ce relais :
 
@@ -52,7 +52,7 @@ reçue de toi : «`REPONSE_RELAIS_…` ou `MESSAGE_…`, avec son empreinte», o
 **Ce qui ne change pas chez toi** : «contrats, signatures et sorties gardés ; tes tests passent
 sans modification, vérifié sur «sha»».
 
-**Calendrier** : «qui fusionne d'abord ; qui fusionne `main` dans sa branche ; numéro de
+**Calendrier** : «qui fusionne d'abord ; qui fusionne `[[ branche_principale ]]` dans sa branche ; numéro de
 fiche de décision réservé : `00«nn»`, après lecture du miroir et des PR ouvertes».
 
 **Vérifié avant l'envoi** : «sans chiffre tiré des données réelles (script «nom») ; suite verte,

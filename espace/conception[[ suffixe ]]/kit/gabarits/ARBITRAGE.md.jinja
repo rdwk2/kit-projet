@@ -11,7 +11,7 @@
 > contredit-il vraiment une décision, ou l'intention a-t-elle été mal lue ? (`kit/METHODE.md`,
 > § 6) ; chaque constat est **rejoué** : vérifié à nouveau, sur le dernier commit de la branche (ou
 > sur le prototype, ou par une contre-épreuve), avant d'être retenu ; un défaut se corrige par une
-> règle aussi étroite que lui ; ce qui déborde part au `BACKLOG.md`, en une ligne.[% if 'relectures' in modules %] Classes de
+> règle aussi étroite que lui ; ce qui déborde part au [[ md_backlog ]], en une ligne.[% if 'relectures' in modules %] Classes de
 > constats : **B-a…B-h** pour une relecture d'artefact, **C-a…C-g** pour une relecture de PR (leurs
 > briefs les définissent).[% endif %]
 > **Champs** : `«n»` (PR), `«jalon»`, `«branche»`,[% if 'relectures' in modules %] `«x»` (passe),[% endif %] `«k»` (l'A qui écrit), `«date»`, les pièces
@@ -44,7 +44,7 @@ et pourquoi c'était hors de portée des autres».
 
 | # |[% if 'relectures' in modules %] Classe |[% endif %] Constat, en une phrase | Rejoué ? | Verdict | Raison | Suite |
 |---|[% if 'relectures' in modules %]---|[% endif %]---|---|---|---|---|
-| [% if 'relectures' in modules %]«C-a1» | «C-a»[% else %]«1»[% endif %] | «…» | «oui : comment, résultat» | «retenu · écarté · non retenu ici : antérieur à la PR · note · déjà tranché · à trancher par [[ humain ]]» | «…» | «commit de correctif … · test … · révision du brief, § … · ligne de `BACKLOG.md` · `docs/JOURNAL.md`[% if 'relectures' in modules %] · annexe de la relecture suivante[% endif %]» |
+| [% if 'relectures' in modules %]«C-a1» | «C-a»[% else %]«1»[% endif %] | «…» | «oui : comment, résultat» | «retenu · écarté · non retenu ici : antérieur à la PR · note · déjà tranché · à trancher par [[ humain ]]» | «…» | «commit de correctif … · test … · révision du brief, § … · ligne de [[ md_backlog ]] · [[ md_journal ]][% if 'relectures' in modules %] · annexe de la relecture suivante[% endif %]» |
 
 ## À trancher par [[ humain ]]
 
@@ -69,7 +69,7 @@ et pourquoi c'était hors de portée des autres».
 [% endif -%]
 - **Révision du brief** : «révision «r+1», sections …» — ou « aucune ».[% if 'relectures' in modules %] Une révision qui porte des
   choix neufs repasse en relecture : «passe bis de B : oui | non, parce que …».[% endif %]
-- **`BACKLOG.md`** : «lignes ajoutées».
+- **[[ md_backlog ]]** : «lignes ajoutées».
 [% if 'relectures' in modules -%]
 - **Pour l'annexe de la relecture suivante** : «points déjà soulevés et tranchés, à ne pas
   remonter ; décisions prises après le brief».
