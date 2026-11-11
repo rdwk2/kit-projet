@@ -114,6 +114,7 @@ _message_after_copy: |
   Généré : couche « [[ couche ]] » de [[ projet ]], préréglage « [[ preset ]] ».
   Modules : [[ modules | join(', ') ]]
   Suite : docs/GUIDE.md du kit, section « Après la génération ».
+  [% if couche == 'espace' %]À faire : dépose le sujet, les consignes, le barème, le calendrier, les données fournies (PDF, txt ou n'importe quel format) dans conception[[ suffixe ]]/ressources/ — la première A les lit avant de te questionner. Facultatif.[% endif %]
 
 # ─── Questions ──────────────────────────────────────────────────────────────
 couche:
@@ -172,8 +173,10 @@ sigle:
 
 description:
   type: str
-  help: "Une phrase : à quoi sert le projet"
-  default: "«À compléter : une phrase sur le but du projet.»"
+  help: >-
+    Une phrase : à quoi sert le projet[% if couche == 'espace' %]. Le projet a un sujet, des consignes, un barème (sur Moodle ou ailleurs) ? Garde la réponse proposée, et dépose ces documents (sujet, consignes, barème, calendrier, données fournies : PDF, txt ou n'importe quel format) dans conception/ressources/ de l'espace : la première A les lit avant de te questionner[% endif %]
+  default: >-
+    [% if couche == 'espace' %]Voir les documents de conception/ressources/ (sujet, consignes, barème, calendrier).[% else %]«À compléter : une phrase sur le but du projet.»[% endif %]
   validator: >-
     [% if '"' in description or '\\' in description %]Sans guillemet droit ni barre oblique inverse : la phrase part dans pyproject.toml.[% endif %]
 

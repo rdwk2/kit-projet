@@ -232,9 +232,11 @@ uv run outils/miroir.py
 
 ### 4.5 La première conversation A
 
-1. Ouvre une conversation neuve, avec accès aux dossiers `conception` et `v_for_cowork`, et rien d'autre.
-2. Prends le modèle le plus capable auquel tu as accès.
-3. Colle le message de `conception/kit/prompts/PREMIERE_A.md`.
+1. Facultatif : dépose le sujet, les consignes, le barème (téléchargés de Moodle, par exemple) dans
+   `conception/ressources/`, tels quels. La première A les lit avant de te poser ses questions.
+2. Ouvre une conversation neuve, avec accès aux dossiers `conception` et `v_for_cowork`, et rien d'autre.
+3. Prends le modèle le plus capable auquel tu as accès.
+4. Colle le message de `conception/kit/prompts/PREMIERE_A.md`.
 
 La première A fait le cadrage : feuille de route, premières décisions, `CONTEXTE.md` rempli. Autour d'un
 dépôt existant (§ 3.3), elle commence par te demander si elle découvre le dépôt avec toi ou si elle

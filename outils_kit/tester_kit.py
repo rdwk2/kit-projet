@@ -147,7 +147,7 @@ def espace_socle(s: str = "") -> list[str]:
         f"{c}/kit/gabarits/ARBITRAGE.md", f"{c}/kit/gabarits/REVUE_PR.md",
         f"{c}/kit/prompts/PREMIERE_A.md", f"{c}/kit/prompts/CONSOLIDATION_KIT.md",
         f"{c}/kit/prompts/SESSION_EXPLICATION.md",
-        f"v_for_cowork{s}/LISEZ_MOI.md",
+        f"v_for_cowork{s}/LISEZ_MOI.md", f"{c}/ressources/LISEZ_MOI.md",
     ]
 
 
@@ -334,7 +334,9 @@ SCENARIOS: list[dict] = [
               "outils/espace.py": ["GITHUB =", "cli.github.com"],
               "outils/clone_c.py": ["gh"]}},
     # Un membre d'un groupe, sur un dépôt généré par le kit : il ne fusionne pas, et ne propose rien seul.
-    {"nom": "espace-membre", "data": {"couche": "espace", "preset": "perso-standard", "role": "membre"},
+    # Sans description donnée : la réponse par défaut renvoie aux ressources du projet.
+    {"nom": "espace-membre", "data": {"couche": "espace", "preset": "perso-standard", "role": "membre",
+                                       "description": None},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
      + ["relecture/LISEZ_MOI.md", "outils/clone_c.py", OUTIL_PISTES],
      "absents": espace_archives() + espace_expert(),
@@ -345,7 +347,9 @@ SCENARIOS: list[dict] = [
                   "conception/kit/METHODE.md": ["**En groupe, comme membre.**", "un autre membre du groupe relit",
                                                 "| 11 | Fusion | les responsables |"],
                   "conception/kit/prompts/PREMIERE_A.md": ["**propositions au groupe**", "le dépôt du groupe, généré",
-                                                           "la première tâche que le groupe me confie"],
+                                                           "la première tâche que le groupe me confie",
+                                                           "— Voir les documents de conception/ressources/",
+                                                           "Si `conception/ressources/` contient autre chose"],
                   "conception/kit/gabarits/BRIEF_JALON.md": ["Ce que demande la tâche confiée"],
                   "conception/kit/gabarits/REVUE_PR.md": ["les responsables fusionnent"]},
      "sans": {"00_LISEZ_MOI_ESPACE.md": ["tu fusionnes"],

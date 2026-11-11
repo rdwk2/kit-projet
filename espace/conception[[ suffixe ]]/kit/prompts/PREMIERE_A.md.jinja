@@ -50,6 +50,8 @@ Pour les installer : `docs/GUIDE.md` du kit.
    cd [[ racine ]]
    uv run outils/miroir.py[% if piste != 'principale' %] --piste [[ piste ]][% endif %]
    ```
+   Facultatif : le sujet, les consignes, le barème (depuis Moodle ou ailleurs) vont, tels quels, dans
+   `[[ racine ]]/conception[[ suffixe ]]/ressources/` ; la première A les lit avant de te questionner.
 3. Conversation neuve ; dossiers connectés (ceux auxquels la conversation a accès) :
    `[[ racine ]]/conception[[ suffixe ]]` et `[[ racine ]]/v_for_cowork[[ suffixe ]]`, **et rien d'autre**. Si
    ton outil ne connecte pas de dossier, ouvre ton agent dans le premier, et donne-lui accès au second.
@@ -65,6 +67,10 @@ Pour les installer : `docs/GUIDE.md` du kit.
 >
 > Lis `conception[[ suffixe ]]/CONTEXTE.md` en entier (le noyau, presque vide : c'est toi qui le
 > remplis), puis ce que son § 0 marque « à l'ouverture » ; rien d'autre en entier.
+> Si `conception[[ suffixe ]]/ressources/` contient autre chose que son `LISEZ_MOI.md` (sujet, consignes,
+> barème, calendrier…), lis d'abord sa liste, puis ce qui décrit le projet : ce que ces documents
+> fixent ne se redemande pas, ce qu'ils exigent devient une contrainte, et un écart entre eux et ce
+> que je dis se signale.
 [% if cadrage_neuf -%]
 > Dans le miroir `v_for_cowork[[ suffixe ]]/[[ slug ]]/` : [[ md_regles ]], `README.md`,
 > [[ md_plan ]].
