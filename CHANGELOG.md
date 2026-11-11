@@ -1,6 +1,13 @@
 # Changements de kit-projet
 
-## 0.6.0 (en cours)
+## 0.6.0 — 2026-11-11
+
+Le dépôt et l'espace IA deviennent deux briques de même rang. L'espace se greffe sur un dépôt qui existe déjà, sert
+à un membre d'un projet de groupe, et marche sans GitHub. Avec les réponses par défaut, rien ne change : le rendu
+est identique à celui de la 0.5.0, octet pour octet.
+
+- **README.** Les deux briques sont présentées au même rang, avec une entrée pour l'espace seul, autour d'un
+  projet existant.
 
 - **Comparaison des rendus.** `outils_kit/comparer_rendus.py` génère chaque scénario du banc depuis un tag et depuis
   le kit actuel, et compare les deux octet par octet. Il prouve qu'un changement additif ne touche pas aux projets

@@ -4,15 +4,18 @@ Un gabarit pour démarrer un projet de code propre, et le mener avec une IA sans
 
 ## À quoi ça sert
 
-En une commande, le kit crée le dépôt git d'un projet déjà prêt : tests, vérifications automatiques,
-règles pour l'agent de code, modèles de documents. Quand le kit évolue, tes projets se mettent à jour
-sans perdre tes modifications.
+Le kit fournit deux briques, à prendre ensemble ou séparément.
 
-Pour un projet plus ambitieux, il ajoute un espace IA : un dossier où des conversations d'IA séparées
-conçoivent le travail, puis relisent celui de l'agent de code.
+- **Le dépôt** : en une commande, le dépôt git d'un projet déjà prêt, avec tests, vérifications
+  automatiques, règles pour l'agent de code et modèles de documents. Quand le kit évolue, tes projets se
+  mettent à jour sans perdre tes modifications.
+- **L'espace IA** : un dossier de travail à côté du dépôt. Des conversations d'IA séparées y conçoivent le
+  travail, puis relisent celui de l'agent de code. Il s'installe aussi autour d'un dépôt qui existe
+  déjà, perso ou de groupe, sur GitHub, sur une autre forge ou seulement sur ta machine.
 
-**Pour qui ?** Tu sais programmer en Python, et tu débutes sur git ou sur les agents de code. Le kit
-marche sous Windows, macOS et Linux, avec Claude ou un autre agent.
+**Pour qui ?** Tu sais programmer, et tu débutes sur git ou sur les agents de code. Le dépôt est outillé
+pour Python ; l'espace IA marche avec n'importe quel langage. Le kit marche sous Windows, macOS et Linux,
+avec Claude ou un autre agent.
 
 ## Le principe
 
@@ -20,11 +23,14 @@ marche sous Windows, macOS et Linux, avec Claude ou un autre agent.
 %%{init: {"theme": "neutral", "themeVariables": {"fontSize": "22px"}}}%%
 flowchart LR
     K["Le kit"] --> D["Le dépôt<br/>ton code"]
-    K -.-> E["L'espace IA<br/>facultatif"]
+    K --> E["L'espace IA<br/>le workflow"]
+    E -.->|"autour d'un dépôt,<br/>du kit ou non"| D
 ```
 
-Le **dépôt** contient ton code et tout ce qui le vérifie. L'**espace IA** est facultatif : il entoure le
-dépôt et accueille les conversations de conception. Pour débuter, le dépôt suffit.
+Le **dépôt** contient ton code et tout ce qui le vérifie. L'**espace IA** accueille les conversations de
+conception et de relecture ; il entoure un dépôt, généré par le kit ou non. Pour un petit projet, le dépôt
+seul suffit. Pour mener avec cette méthode un projet qui existe déjà, ou tes tâches dans un projet de
+groupe, l'espace seul suffit.
 
 ## Démarrer sans prise de tête
 
@@ -33,16 +39,17 @@ projets, et colle ce message. L'agent lit le kit, te pose ses questions, t'expli
 si le kit t'aidera vraiment. Avec ton accord, il lance les commandes à ta place.
 
 ```text
-Je veux peut-être démarrer un projet avec kit-projet : https://github.com/rdwk2/kit-projet
+Je veux peut-être démarrer un projet avec kit-projet, ou mener avec lui un projet qui existe déjà :
+https://github.com/rdwk2/kit-projet
 
 Clone ce dépôt dans un dossier temporaire, puis lis README.md, docs/GUIDE.md, docs/WORKFLOW.md et
 docs/GLOSSAIRE.md.
 
 Ensuite, avant de lancer quoi que ce soit :
-1. Demande-moi ce que je veux faire, si je travaille seul ou à plusieurs, et ce que je connais déjà de
-   git et des agents. Une question à la fois.
-2. Dis-moi franchement si le kit m'aidera pour ce projet. Propose un préréglage et explique-le avec des
-   mots simples.
+1. Demande-moi ce que je veux faire, si le projet a déjà un dépôt, si je travaille seul ou à plusieurs,
+   et ce que je connais déjà de git et des agents. Une question à la fois.
+2. Dis-moi franchement si le kit m'aidera pour ce projet, et lesquelles de ses deux briques (le dépôt,
+   l'espace IA) me servent. Propose un préréglage et explique-le avec des mots simples.
 3. Vérifie ce qui est installé sur ma machine (git, uv, just, gh), et dis-moi ce qui manque.
 
 Puis, avec mon accord, lance toi-même les commandes du guide et vérifie leur résultat. Termine en me
@@ -124,6 +131,23 @@ Le préréglage se choisit dans la commande de l'étape 2, avec `preset=`.
 
 Standard et Complet demandent deux commandes, car ils génèrent aussi l'espace IA : voir le
 [guide, § 3.2](docs/GUIDE.md#32-le-dépôt-et-lespace-ia).
+
+## L'espace IA autour d'un projet existant
+
+Ton projet a déjà son dépôt ? L'espace s'installe à côté, sans rien écrire dedans. Copier demande ce que
+le dépôt a déjà : sa branche principale, les règles de ton agent, la commande qui le vérifie, ses documents.
+Les textes de l'espace citent alors tes fichiers à toi.
+
+```bash
+# À remplacer : mon-projet-ia
+uvx copier copy --data couche=espace --data origine=existant gh:rdwk2/kit-projet mon-projet-ia
+```
+
+- **Dans un projet de groupe**, ajoute `--data role=membre` : l'espace ne couvre que les tâches qui te sont
+  confiées, et les responsables du dépôt fusionnent.
+- **Sans GitHub** (autre forge, ou dépôt seulement sur ta machine), ajoute `--data forge=git`.
+
+Le détail : [guide, § 3.3](docs/GUIDE.md#33-greffer-lespace-sur-un-dépôt-existant).
 
 ## Pour aller plus loin
 
