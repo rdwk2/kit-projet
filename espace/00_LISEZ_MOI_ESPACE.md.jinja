@@ -26,7 +26,7 @@ partage. Une conversation ne lit que ce qu'on lui connecte. Un mot inconnu : `co
 | Dossier | Contenu | Connecté à |
 |---|---|---|
 | `[[ depot_travail ]]` | la **copie de travail** du dépôt, où travaille l'agent de code | la session de l'agent de code (Claude Code, Codex…), seule |
-| `conception/` | ce que la conversation A seule voit : `CONTEXTE.md`, `kit/`, `passations/` | A |
+| `conception/` | ce que la conversation A seule voit : `CONTEXTE.md`, `kit/`, `passations/`, et `ressources/` : le sujet, les consignes, le barème, le calendrier, tels que tu les as reçus (facultatif) | A |
 | `v_for_cowork/` | le **miroir** du dépôt (`[[ slug ]]/`, `git pull` seul), les briefs vivants, les diffs | A[% if 'relectures' in modules %], B (C reçoit ses pièces dans son paquet)[% endif %] ; l'agent de code, le seul sous-dossier du jalon |
 [% if 'archives' in modules -%]
 | `archives_conception/` | ce qui ne sert plus | **personne** ; accès ponctuel, accordé par [[ humain ]] pour un fichier précis |

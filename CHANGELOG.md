@@ -1,5 +1,17 @@
 # Changements de kit-projet
 
+## 0.6.1 (en cours)
+
+- **Ressources du projet.** Chaque espace reçoit `conception/ressources/`, vide, avec son `LISEZ_MOI.md`. On y dépose
+  le sujet, les consignes, le barème, le calendrier ou les données fournies, tels qu'on les a reçus (de Moodle ou
+  d'ailleurs), dans n'importe quel format. A seule le voit. La première A le lit avant de poser ses questions, et
+  ne redemande pas ce que ces documents fixent. Le dossier reste hors du dépôt, et un dossier vide ne change rien.
+- **Description du projet.** Pour l'espace, la question `description` propose par défaut « Voir les documents de
+  conception/ressources/ », et son aide dit quoi y déposer. Le message de fin de génération le rappelle. Pour le
+  dépôt, rien ne change.
+- **Mettre à jour un projet.** `copier recopy` ajoute le dossier et son `LISEZ_MOI.md`. `CONTEXTE.md`, fichier vivant,
+  ne reçoit pas les deux lignes neuves de son index : les ajouter à la main si utile.
+
 ## 0.6.0 — 2026-11-11
 
 Le dépôt et l'espace IA deviennent deux briques de même rang. L'espace se greffe sur un dépôt qui existe déjà, sert

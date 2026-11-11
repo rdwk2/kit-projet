@@ -51,6 +51,7 @@ en cours.
 | un piège machine hors de la tête | `kit/MACHINE.md` ; `MACHINE_PROJET.md` | recherche de l'identifiant |
 | une leçon du projet | `LECONS_PROJET.md` | recherche |
 | un mot inconnu | `kit/VOCABULAIRE.md` | recherche |
+| ce qu'exige le sujet : consignes, barème, calendrier | `conception[[ suffixe ]]/ressources/` | la liste, puis le document visé |
 [% if 'pistes' in modules -%]
 | un point de contact entre pistes | `kit/PISTES.md` | titres, puis section |
 [% endif -%]
@@ -117,6 +118,7 @@ qu'une consigne) : `kit/METHODE.md`, § 3.
 [% if 'archives' in modules -%]
 | Archives de la conception | `[[ racine ]]/archives_conception[[ suffixe ]]/` — jamais connecté par défaut ; contenu : `INVENTAIRE_ARCHIVES.md` |
 [% endif -%]
+| Ressources du projet (sujet, consignes, barème, tels que reçus ; hors dépôt) | `[[ racine ]]/conception[[ suffixe ]]/ressources/` |
 | Index de l'espace | `[[ racine ]]/00_LISEZ_MOI_ESPACE.md` |
 | «Autre emplacement propre au projet» | «chemin» — «ce qu'on y lit, qui, avec quel accès» |
 [% if piste != 'principale' %]
