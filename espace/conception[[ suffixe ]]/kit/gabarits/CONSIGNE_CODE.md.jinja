@@ -31,6 +31,10 @@
 - **Dossier ajouté** : `[[ racine ]]/v_for_cowork[[ suffixe ]]/«jalon»` seulement, en donnant accès à ce seul
   dossier (selon ton agent : ajoute ce dossier à la session, ou donne-lui le chemin du brief) ; il ne porte que le brief, rien du prototype — jamais tout `v_for_cowork[[ suffixe ]]` :
   les rapports et les briefs voisins donnent envie d'en faire plus que prescrit (`kit/METHODE.md`, § 3).
+[% if git_seul -%]
+- **Compte rendu** : à la fin, l'agent l'écrit dans `[[ racine ]]/conception[[ suffixe ]]/passations/`, hors du
+  dépôt ; s'il te demande l'autorisation, accepte cette seule écriture.
+[% endif -%]
 - **Réglages** : **«modèle», `«effort»`** (effort : le réglage de réflexion de l'agent, s'il en a un) —
   recommandé : la ligne « Code — implémentation » du § 0 de `kit/MODELES_ET_EFFORTS.md` (un effort plus
   élevé seulement après un échec constaté ; **jamais de mode multi-agents sur un brief prescriptif** :
@@ -69,7 +73,7 @@
 [% if 'donnees-privees' in modules -%]
 > Le hook du dépôt refuse les commandes qui touchent les données : «liste» ; une recherche passe par
 > ton outil de recherche, un texte qui cite l'une d'elles s'écrit par ton outil d'écriture, un message
-> de commit passe par `git commit -F`, une description de PR par `--body-file`. Tu ne lances rien sur les données
+> de commit passe par `git commit -F`, une description de PR par [% if git_seul %]ton outil d'écriture[% else %]`--body-file`[% endif %]. Tu ne lances rien sur les données
 > réelles, pas même leur aide : ce sont des commandes [[ de_humain ]].
 >
 [% endif -%]
@@ -79,8 +83,16 @@
 > À la fin, [% if 'relectures' in modules %]joue chaque contre-épreuve du § 8.3[% else %]si le brief a un § 8.3, joue chacune de ses contre-épreuves[% endif %], une à une, dans ton arbre de travail[% if langage == 'python' %], sans cache de
 > bytecode (`python -B`, `__pycache__` vidé)[% endif %], et restaure après chacune (`git diff` vide). Écris leur
 > table dans ton dernier message, avec, pour chacune, le test qui a rougi ; une équivalence se joue
+[% if git_seul -%]
+> aussi, ne fait rien rougir, et se déclare avec la raison du brief. Ne déclare la branche prête
+> qu'avec tout cela vert. Le dépôt n'a pas de PR sur GitHub : la description de la PR est un fichier,
+> que tu écris au format du § 9, hors du dépôt, ici et nulle part ailleurs :
+> `[[ racine ]]/conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md` («n» : le nom de ta branche,
+> `/` devenu `-`). Ne pousse rien, sauf si le brief le demande.
+[%- else -%]
 > aussi, ne fait rien rougir, et se déclare avec la raison du brief. N'ouvre la PR qu'avec tout cela
 > vert ; sa description suit le § 9.
+[%- endif %]
 >
 > «Précision propre à cette session — ou rien.»
 

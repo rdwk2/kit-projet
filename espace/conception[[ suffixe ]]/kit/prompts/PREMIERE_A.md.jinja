@@ -35,13 +35,15 @@ Pour les installer : `docs/GUIDE.md` du kit.
 [% if langage == 'python' -%]
 | just | `just --version` |
 [% endif -%]
+[% if not git_seul -%]
 | un compte GitHub et `gh` | `gh auth status` |
+[% endif -%]
 | un outil de conversation qui lit des dossiers | ouvre-le une fois |
 | ton agent de code (Claude Code, Codex…) | ouvre-le une fois |
 
 ## 1. Avant d'ouvrir — à faire toi-même
 
-1. Le dépôt existe sur GitHub et la copie de travail est à `[[ depot_travail ]]`
+1. Le dépôt existe [% if git_seul %](référence : `[[ source_git ]]`)[% else %]sur GitHub[% endif %] et la copie de travail est à `[[ depot_travail ]]`
    (`docs/GUIDE.md` du kit, « Après la génération »).
 2. Le miroir (une copie du dépôt en lecture seule, pour les conversations) est cloné :
    ```bash

@@ -237,7 +237,7 @@ connecté, par un script qui ne fait que déplacer (`kit/ARCHIVES.md`).
 | 8 | Relecture profonde | C, neuve | 06 + annexe, brief, plan validé, diff | `RELECTURE_PR-«n».md` | verdict de C |
 | 9 | Arbitrage | A | rapport de C | `ARBITRAGE_PR-«n».md`, consigne de correctifs | — |
 | 10 | Correctifs | Code | consigne de correctifs | un commit par constat, ou par nature s'ils sont nombreux | CI verte |
-| 11 | Fusion | [% if membre %]les responsables[% else %][[ humain ]][% endif %] | état final | commentaire de revue, *Squash and merge*, `git pull` du miroir | — |
+| 11 | Fusion | [% if membre %]les responsables[% else %][[ humain ]][% endif %] | état final | [% if git_seul %]commentaire de revue, fusion par git, `git pull` du miroir[% else %]commentaire de revue, *Squash and merge*, `git pull` du miroir[% endif %] | — |
 | 12 | Clôture | A | tout ce qui précède | CONTEXTE à jour, message d'ouverture suivant | règle de clôture (§ 10) |
 
 **Quand ouvrir chaque conversation** : A à l'ouverture du jalon ; B quand le brief est prêt à
@@ -254,7 +254,7 @@ une phrase, à l'ouverture du jalon.
 2. **Plan** (Code, mode plan) ; A le relit contre le brief ; [[ humain ]] valide.
 3. **Implémentation** (Code) : branche, commits, PR, CI verte.
 4. **Relecture** : [[ humain ]] ; et, pour une PR qui porte une décision, une relecture neuve.
-5. **Fusion** ([% if membre %]les responsables du dépôt[% else %][[ humain ]][% endif %]) : commentaire de revue, *Squash and merge*, `git pull` du miroir.
+5. **Fusion** ([% if membre %]les responsables du dépôt[% else %][[ humain ]][% endif %]) : [% if git_seul %]commentaire de revue, fusion par git, `git pull` du miroir[% else %]commentaire de revue, *Squash and merge*, `git pull` du miroir[% endif %].
 6. **Clôture** (A) : règle de clôture (§ 10).
 [%- endif %]
 
@@ -296,16 +296,18 @@ vite sans rien perdre.
 ## 6. La relecture de PR
 
 **Le rituel.** Avant chaque fusion, [% if en_groupe %]un autre membre du groupe relit et approuve la PR[% if 'groupe' in modules %]
-(`docs/RELIRE_UNE_PR.md`)[% endif %] ; un commentaire de revue dit ce qui a été vérifié[% else %][[ humain ]] laisse un commentaire de revue (option *Comment* :
+(`docs/RELIRE_UNE_PR.md`)[% endif %] ; un commentaire de revue dit ce qui a été vérifié[% elif git_seul %][[ humain ]] garde un commentaire de revue disant ce qui a été vérifié[% else %][[ humain ]] laisse un commentaire de revue (option *Comment* :
 GitHub interdit d'approuver sa propre PR) disant ce qui a été vérifié[% endif %] — écrit par A dans
-`passations/REVUE_PR-«n».md`, publié par `uv run outils/revue_pr.py «n»` (demande `gh`, connecté
-à ton compte). Vingt secondes, et c'est la trace visible que la relecture a eu lieu.
+`passations/REVUE_PR-«n».md`, [% if git_seul %]gardé tel quel, ou collé dans la demande de fusion s'il y a une
+forge[% else %]publié par `uv run outils/revue_pr.py «n»` (demande `gh`, connecté
+à ton compte)[% endif %]. Vingt secondes, et c'est la trace visible que la relecture a eu lieu.
 
 **Deux portes distinctes** : l'acceptation dans la session de code (« est-ce
-bien ce que j'ai demandé ») ; la PR sur GitHub (« est-ce fusionnable »). Sur GitHub, les
+bien ce que j'ai demandé ») ; la PR [% if git_seul %]elle-même, son diff contre `[[ branche_principale ]]` (« est-ce fusionnable »). Pour
+ne relire qu'une plage de commits après un correctif : `git diff «sha avant»..«branche»`.[% else %]sur GitHub (« est-ce fusionnable »). Sur GitHub, les
 cases *Viewed* sont un bloc-notes, pas la relecture ; un push ne décoche que les fichiers
 qu'il modifie ; le sélecteur « Changes from all commits » permet de ne relire qu'une plage
-de commits après un correctif.
+de commits après un correctif.[% endif %]
 
 **Ce que la relecture par conversation apporte, et ce qu'elle n'apporte pas.** Elle ne remplace
 pas la lecture du code par [[ humain ]] ; elle a le *pourquoi* des décisions. Elle attrape « ça ne

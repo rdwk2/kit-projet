@@ -1,3 +1,4 @@
+[% set num = 'str' if forge == 'git' else 'int' -%]
 # /// script
 # requires-python = ">=3.10"
 # ///
@@ -53,8 +54,8 @@ VERIF = [[ commande_verif | tojson ]]
 """La commande qui vérifie tout le dépôt, donnée à la création de l'espace ; vide : aucune."""
 [% endif %]
 
-def dossier_c(numero: int, piste: str | None, variante: str) -> Path:
-    nom = f"c-pr{numero}{'-' + variante if variante else ''}{espace.suffixe(piste)}"
+def dossier_c(numero: [[ num ]], piste: str | None, variante: str) -> Path:
+    nom = f"c-pr{[% if forge == 'git' %]espace.ident(numero)[% else %]numero[% endif %]}{'-' + variante if variante else ''}{espace.suffixe(piste)}"
     return espace.RACINE / "relecture" / nom
 
 
@@ -138,7 +139,7 @@ def verifier_poste(clone: Path) -> bool:
 [%- endif %]
 
 
-def preparer(numero: int, paquet: str, piste: str | None, variante: str, sans_check: bool) -> int:
+def preparer(numero: [[ num ]], paquet: str, piste: str | None, variante: str, sans_check: bool) -> int:
     poste = dossier_c(numero, piste, variante)
     if poste.exists():
         sys.exit(
@@ -161,9 +162,11 @@ def preparer(numero: int, paquet: str, piste: str | None, variante: str, sans_ch
             )
     prep.mkdir(parents=True)
     clone = prep / espace.SLUG
-    espace.cloner(f"https://github.com/{espace.GITHUB}.git", clone)
+[% if forge == 'git' %]    espace.cloner(espace.source(), clone)
+    espace.lancer(["git", "switch", numero], clone)
+[% else %]    espace.cloner(f"https://github.com/{espace.GITHUB}.git", clone)
     espace.lancer(["gh", "pr", "checkout", str(numero)], clone)
-    shutil.copytree(source_paquet, prep / "paquet")
+[% endif %]    shutil.copytree(source_paquet, prep / "paquet")
     renommer(prep, poste)
 
     vert = True if sans_check else verifier_poste(poste / espace.SLUG)
@@ -173,9 +176,9 @@ def preparer(numero: int, paquet: str, piste: str | None, variante: str, sans_ch
     return 0 if vert else 1
 
 
-def nom_pour_a(rapport: Path, numero: int, variante: str) -> str:
+def nom_pour_a(rapport: Path, numero: [[ num ]], variante: str) -> str:
     """RELECTURE_PR-42.md d'une C « bornee » devient RELECTURE_PR-42_bornee.md."""
-    prefixe = f"RELECTURE_PR-{numero}"
+    prefixe = f"RELECTURE_PR-{[% if forge == 'git' %]espace.ident(numero)[% else %]numero[% endif %]}"
     nom = rapport.name
     reste = nom[len(prefixe):]
     if not variante or not nom.startswith(prefixe) or reste[:1] not in {".", "_"}:
@@ -185,7 +188,7 @@ def nom_pour_a(rapport: Path, numero: int, variante: str) -> str:
     return f"{prefixe}_{variante}{reste}"
 
 
-def recuperer(numero: int, piste: str | None, variante: str) -> None:
+def recuperer(numero: [[ num ]], piste: str | None, variante: str) -> None:
     poste = dossier_c(numero, piste, variante)
     if not poste.is_dir():
         sys.exit(f"Poste introuvable : {poste}" + ("" if variante else " (une C bornée ou seconde : --variante «nom»)"))
@@ -208,7 +211,7 @@ def recuperer(numero: int, piste: str | None, variante: str) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("numero", type=int)
+[% if forge == 'git' %]    p.add_argument("numero", help="la branche de la PR")[% else %]    p.add_argument("numero", type=int)[% endif %]
     p.add_argument("--paquet", help="nom du dossier du paquet dans conception/passations/")
     p.add_argument("--piste", default=None)
     p.add_argument(

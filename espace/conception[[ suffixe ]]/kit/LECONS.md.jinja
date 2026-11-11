@@ -496,7 +496,7 @@ décision (`kit/METHODE.md` § 2).*
   Parce que : la CI ne dit pas si un test tue sa mutation ; des correctifs écrits et vérifiés par un même script, qui générait aussi leur document, n'ont eu aucune divergence, et cette vérification mécanique a tenu lieu de relecture bornée. *Par défaut, l'agent de code écrit ces tests (`kit/METHODE.md`, § 1) et A les vérifie par script.*\
   Niveau : intermédiaire
 
-- **ARB-6** — **Écrire un feu vert de fusion complet : la règle de relecture bornée appliquée (`kit/METHODE.md` § 6) et pourquoi — ce qu'elle aurait vérifié, comment c'est déjà vérifié, le risque qui reste —, puis le commentaire de revue (`passations/REVUE_PR-«n».md`) et la commande `uv run outils/revue_pr.py «n»`.**\
+- **ARB-6** — **Écrire un feu vert de fusion complet : la règle de relecture bornée appliquée (`kit/METHODE.md` § 6) et pourquoi — ce qu'elle aurait vérifié, comment c'est déjà vérifié, le risque qui reste —, puis le commentaire de revue (`passations/REVUE_PR-«n».md`)[% if not git_seul %] et la commande `uv run outils/revue_pr.py «n»`[% endif %].**\
   Parce que : il a fallu demander pourquoi il n'y avait pas de relecture, devant un feu vert qui appliquait la règle sans la dire ; un feu vert a oublié le commentaire de revue.\
   Niveau : intermédiaire
 

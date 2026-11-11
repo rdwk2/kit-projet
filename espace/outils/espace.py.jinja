@@ -24,8 +24,16 @@ RACINE = Path(__file__).resolve().parent.parent
 SLUG = "[[ slug ]]"
 """Nom du dossier du dépôt (miroir, copie de travail, clones de relecture)."""
 
+[% if forge == 'git' -%]
+SOURCE = r"[[ source_git ]]"
+"""Le dépôt de référence, sans GitHub : une URL, ou un chemin local (`~` compris)."""
+
+BRANCHE = "[[ branche_principale ]]"
+"""La branche principale du dépôt, celle où l'on fusionne."""
+[%- else -%]
 GITHUB = "[[ github ]]"
 """Dépôt GitHub, propriétaire/nom."""
+[%- endif %]
 
 HUMAIN = "[[ humain ]]"
 """La personne qui tient [% if role == 'membre' %]cet espace (un membre du groupe)[% else %]le projet[% endif %] : les textes générés par ces scripts la nomment."""
@@ -89,7 +97,19 @@ def cloner(url: str, cible: Path) -> None:
     demande = os.name == "nt" and os.environ.get("KIT_SCHANNEL") == "1"
     options = ["-c", "http.sslBackend=schannel"] if demande else []
     lancer(["git", "clone", *options, url, str(cible)], cible.parent)
+[% if forge == 'git' %]
 
+def source() -> str:
+    """L'adresse à cloner : `SOURCE`, avec `~` développé s'il s'agit d'un chemin local."""
+    return str(Path(SOURCE).expanduser()) if SOURCE.startswith("~") else SOURCE
+
+
+def ident(branche: str) -> str:
+    """Le nom d'une branche, sûr dans un nom de fichier : `travail/essai` donne `travail-essai`."""
+    if not re.fullmatch(r"[A-Za-z0-9._/-]+", branche):
+        sys.exit(f"Nom de branche refusé : {branche!r} (lettres, chiffres, . _ / - seulement).")
+    return branche.replace("/", "-")
+[% endif %]
 
 def lancer(cmd: list[str], dossier: Path, *, capturer: bool = False) -> bytes:
     """Lance une commande dans `dossier` ; s'arrête net si elle échoue.
@@ -107,8 +127,12 @@ def lancer(cmd: list[str], dossier: Path, *, capturer: bool = False) -> bytes:
         if not dossier.is_dir():
             sys.exit(f"Dossier introuvable : {dossier}. Pour le miroir : uv run outils/miroir.py.")
         sys.exit(
+[%- if forge == 'git' %]
+            f"{cmd[0]} introuvable : installe git (https://git-scm.com), puis ferme et rouvre le terminal."
+[%- else %]
             f"{cmd[0]} introuvable : installe git (https://git-scm.com) et GitHub CLI "
             "(https://cli.github.com), puis ferme et rouvre le terminal."
+[%- endif %]
         )
     if resultat.returncode != 0:
         if capturer and resultat.stderr:

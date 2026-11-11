@@ -73,9 +73,13 @@
 | **Feu vert** | Le message de la conception qui valide une étape, avec ses précisions : le plan avant le code, les correctifs avant la fusion. | Un feu vert de fusion contient toujours le commentaire de revue et sa commande. |
 | **Note d'entrée, consigne** | Le premier message d'une session de code : ce qu'elle lit, dans quel ordre, ce qu'elle produit. | La note d'entrée dans le sous-dossier du jalon de `v_for_cowork[[ suffixe ]]/`. |
 | **Message en cours de session** | Une consigne passée à l'agent de code après son plan ; c'est là qu'une prescription se perd le plus souvent. | Les prescriptions P1, P2… de la consigne. |
-| **Compte rendu** | Le rapport de fin de session de l'agent de code, pour la conception seule. | `passations/COMPTE_RENDU_CODE_PR-«n».md` (`uv run outils/compte_rendu_pr.py «n»`). |
+| **Compte rendu** | Le rapport de fin de session de l'agent de code, pour la conception seule. | `passations/COMPTE_RENDU_CODE_PR-«n».md` ([% if git_seul %]écrit par l'agent de code, au chemin que donne la consigne[% else %]`uv run outils/compte_rendu_pr.py «n»`[% endif %]). |
 | **Correctifs** | Le message qui transmet à l'agent de code les constats retenus par l'arbitrage. | Des tests seuls, ou un correctif de `src/` exact. |
+[% if git_seul -%]
+| **Revue** | Le commentaire de revue écrit sur la PR avant la fusion. | `passations/REVUE_PR-«n».md`, collé dans la demande de fusion s'il y a une forge. |
+[% else -%]
 | **Revue** | Le commentaire de revue posté sur la PR avant la fusion. | `uv run outils/revue_pr.py «n»`. |
+[% endif -%]
 | **Contrôle réel** | L'exécution d'une PR sur les vraies données, lancée par [[ humain ]] avant la fusion, puisque l'agent n'y a pas accès. | Une entrée du `JOURNAL` qui le dit. |
 | **Fiche de décision** (ADR, *decision record*) | Un fichier qui fige une décision : contexte, options, choix, raisons, conséquences ; elle fait foi sur tout brief archivé. | `docs/decisions/0007-….md`, citée « `0007` D3 ». |
 
@@ -200,22 +204,29 @@ Pour qui débute sur git : ces mots suffisent à lire le kit.
 
 | Terme | Définition | Exemple |
 |---|---|---|
-| **Dépôt** | Le projet et tout son historique. | `https://github.com/[[ github ]]`. |
+| **Dépôt** | Le projet et tout son historique. | [% if git_seul %]`[[ source_git ]]`[% else %]`https://github.com/[[ github ]]`[% endif %]. |
 | **Commit** | Une étape enregistrée du travail, avec un message. | `feat: lecture du fichier`. |
 | **Branche** | Une ligne de travail à part, pour ne pas toucher à `[[ branche_principale ]]`. | Une branche par tâche. |
 | **`[[ branche_principale ]]`** | La branche de référence : ce qu'elle contient marche. | Le miroir suit `[[ branche_principale ]]`. |
 | **Clone** | Une copie d'un dépôt sur ta machine. | La copie de travail, le miroir. |
+[% if git_seul -%]
+| **PR** (pull request) | Une demande de fusion, où l'on relit les changements avant de les accepter. Sans GitHub, c'est la branche elle-même, désignée par son nom : `«n»` dans les textes du kit ; sa description est le compte rendu de l'agent de code, `passations/COMPTE_RENDU_CODE_PR-«n».md`. | La PR `travail/lecture`. |
+| **Fusion** | Faire entrer une branche dans `[[ branche_principale ]]`. | `git merge --squash «branche»`, puis `git commit`. |
+[% else -%]
 | **PR** (pull request) | Une demande de fusion, où l'on relit les changements avant de les accepter. | La PR #12. |
 | **Fusion** | Faire entrer une branche dans `[[ branche_principale ]]`. | *Squash and merge*. |
+[% endif -%]
 | **Diff** | La liste des lignes changées entre deux états. | `pr-«n».diff`. |
 | **Tête** | Le dernier commit d'une branche ou d'une PR. | Une relecture porte sur la tête de la PR. |
 | **Arbre** | Le contenu exact des fichiers d'un commit, sans son historique. Deux commits peuvent avoir le même arbre. | `git rev-parse "HEAD^{tree}"`. |
-| **CI** | Les vérifications que GitHub lance tout seul à chaque envoi. | « CI verte » : tout passe. |
+| **CI** | Les vérifications que [% if git_seul %]la forge, s'il y en a une,[% else %]GitHub[% endif %] lance tout seul à chaque envoi. | « CI verte » : tout passe. |
 | **Hook** | Un script lancé automatiquement avant une action, pour la contrôler. | [% if 'donnees-privees' in modules %]Le hook de `.claude/settings.json`, pour Claude Code ; un autre agent n'a que la consigne.[% else %]Claude Code en propose ; sinon, la consigne seule.[% endif %] |
 | **Tag** | Une étiquette posée sur un commit, pour marquer une version. | `v1.0.0`. |
 | **Rebase** | Reposer une branche sur un autre point de départ, ce qui réécrit ses commits. | Le kit l'évite sur une branche déjà relue. |
+[% if not git_seul -%]
 | ***Squash and merge*** | Le bouton de GitHub qui fusionne une PR en un seul commit sur `[[ branche_principale ]]`. | En bas de la PR, dans le menu du bouton de fusion. |
 | ***Comment*** | Une revue sans approbation. GitHub interdit d'approuver sa propre PR. | Dans la PR : *Files changed*, *Review changes*, *Comment*. |
 | ***Viewed*** | La case qu'on coche sur chaque fichier d'une PR : un bloc-notes, pas la relecture. | Dans la PR : *Files changed*, en haut de chaque fichier. |
 | **« Changes from all commits »** | Le menu qui limite le diff à une plage de commits. | Dans la PR : *Files changed*, en haut à gauche. |
 | **`gh`** | GitHub en ligne de commande. | `gh auth status` dit si tu es connecté. |
+[%- endif %]

@@ -18,7 +18,17 @@
   (`kit/VOCABULAIRE.md`, `kit/METHODE.md`, `REVUE_PR`, `COMMANDES`). La première A découvre le dépôt ou attend
   la première tâche, et ce qui manque devient une proposition au groupe. Le GUIDE ne déconseille plus l'espace
   à un membre qui le veut.
-- **Mettre à jour un projet.** Rien ne change : `origine` vaut `kit` et `role` vaut `pilote` par défaut, et le rendu est identique à celui
+- **Sans GitHub.** Une nouvelle question, `forge`, vaut `github` par défaut. Avec `git`, l'espace marche avec une
+  autre forge ou un dépôt local seulement. Copier demande l'adresse du dépôt de référence (`source_git`) au lieu du
+  compte GitHub. Une PR y est une branche, désignée par son nom.
+  - `miroir.py`, `diff_pr.py`, `tete_pr.py` et `clone_c.py` gardent leurs noms et leurs commandes, mais travaillent
+    en git local.
+  - `revue_pr.py` et `compte_rendu_pr.py` disparaissent : le compte rendu de l'agent de code est un fichier qu'il
+    écrit, le commentaire de revue reste dans un fichier, et la fusion se fait par `git merge --squash`.
+  - Les textes de procédure suivent (`00_LISEZ_MOI_ESPACE`, `METHODE`, `VOCABULAIRE`, `COMMANDES`, `MACHINE`,
+    `CONSIGNE_CODE`, `DEMARRAGE_C`, `ANNEXE_C`, `REVUE_PR`). Les leçons sur GitHub restent.
+  - Le banc fait tourner ces outils pour de vrai, sur un dépôt local créé pour l'essai.
+- **Mettre à jour un projet.** Rien ne change : `origine` vaut `kit`, `role` vaut `pilote` et `forge` vaut `github` par défaut, et le rendu est identique à celui
   de la 0.5.0 (`outils_kit/comparer_rendus.py`).
 
 ## 0.5.0 — 2026-11-10

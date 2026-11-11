@@ -57,6 +57,9 @@ _exclude:
   - "[% if piste != 'principale' %]/00_LISEZ_MOI_ESPACE.md*[% endif %]"
   - "[% if piste != 'principale' %]/outils[% endif %]"
   - "[% if piste != 'principale' or 'relectures' not in modules %]/relecture[% endif %]"
+  # ── couche espace : sans GitHub, pas de revue publiée ni de description de PR à lire
+  - "[% if forge == 'git' %]outils/revue_pr.py[% endif %]"
+  - "[% if forge == 'git' %]outils/compte_rendu_pr.py[% endif %]"
   # ── couche espace : module relectures
   - "[% if 'relectures' not in modules %]v_for_cowork*/06_*[% endif %]"
   - "[% if 'relectures' not in modules %]v_for_cowork*/07_*[% endif %]"
@@ -139,6 +142,15 @@ role:
     "Je contribue à un projet de groupe : je prends les tâches qu'on me confie, d'autres fusionnent": membre
   default: pilote
 
+forge:
+  type: str
+  when: "[[ couche == 'espace' ]]"
+  help: "Où vit le dépôt de référence ?"
+  choices:
+    "Sur GitHub : les PR, la revue et la fusion passent par GitHub (et l'outil gh)": github
+    "Ailleurs, ou nulle part : GitLab, Gitea, un serveur, ou un dépôt git local seulement": git
+  default: github
+
 projet:
   type: str
   help: "Nom lisible du projet (ex. : Mon projet)"
@@ -191,6 +203,7 @@ racine:
 
 github:
   type: str
+  when: "[[ couche == 'depot' or forge == 'github' ]]"
   help: "Dépôt GitHub, sous la forme compte/nom (ex. : alice/mon-projet)"
   validator: >-
     [% if not (github | regex_search('^[^/ ]+/[^/ ]+$')) %]Sous la forme compte/nom.[% endif %]
@@ -262,6 +275,7 @@ python_version:
 
 public:
   type: bool
+  when: "[[ couche == 'depot' or forge == 'github' ]]"
   help: "Le dépôt sera-t-il public ? (privé : les conversations lisent GitHub par une copie locale)"
   default: false
 
@@ -299,6 +313,13 @@ depot_travail:
   help: >-
     Dossier où tourne l'agent de code de cette piste (une copie du dépôt par piste)[% if origine == 'existant' %] : le chemin de ton dépôt existant[% endif %]
   default: "[[ racine ]]/[[ slug ]][% if piste != 'principale' %]_[[ piste ]][% endif %]"
+
+source_git:
+  type: str
+  when: "[[ couche == 'espace' and forge == 'git' ]]"
+  help: >-
+    Adresse du dépôt de référence, d'où se clonent le miroir et les postes de relecture : une URL (GitLab…) ou un chemin local (par défaut, la copie de travail elle-même)
+  default: "[[ depot_travail ]]"
 
 # ─── Couche espace, dépôt existant : ce que les textes citent à la place des fichiers du kit
 branche_principale:
@@ -443,6 +464,19 @@ cadrage_neuf:
   type: bool
   when: false
   default: "[[ origine != 'existant' and role != 'membre' ]]"
+
+# Sans GitHub : la PR se désigne par sa branche, la fusion se fait par git.
+git_seul:
+  type: bool
+  when: false
+  default: "[[ couche == 'espace' and forge == 'git' ]]"
+
+# Le geste de fusion, tel que les textes l'écrivent.
+md_fusion:
+  type: str
+  when: false
+  default: >-
+    [% if couche == 'espace' and forge == 'git' %]dans la copie de travail, `git switch [[ branche_principale ]]`, `git merge --squash «branche»`, `git commit`, et `git push` s'il y a un remote[% else %]*Squash and merge*[% endif %]
 
 # Un membre de groupe : l'intégration revient aux responsables du dépôt.
 membre:

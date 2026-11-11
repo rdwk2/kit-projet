@@ -8,10 +8,17 @@ Le miroir (v_for_cowork/<dépôt>) ne reçoit que des `git pull` : c'est `[[ bra
 fusionné, ce que lisent A et B (C reçoit ses pièces dans son paquet). S'il a été modifié par accident :
 `git reset --hard origin/[[ branche_principale ]]` le remet à neuf.
 
+[% if forge == 'git' -%]
+`v_for_cowork/ETAT_DISTANT.txt` reçoit, avec l'heure, la sortie de `git ls-remote origin` : la
+tête de `[[ branche_principale ]]` et celle de chaque branche du dépôt de référence (`outils/espace.py`, SOURCE). Une
+conversation le lit au lieu d'interroger le dépôt elle-même. Le relancer chaque fois que l'A a
+besoin de l'état distant.
+[%- else -%]
 `v_for_cowork/ETAT_DISTANT.txt` reçoit, avec l'heure, la sortie de `git ls-remote origin` : la
 tête de `[[ branche_principale ]]` et celle de chaque PR (`refs/pull/«n»/head`). Une conversation le lit au lieu
 d'interroger GitHub — c'est le seul moyen pour un dépôt privé, qu'elle ne peut pas lire sans
 identifiants (kit/MACHINE.md, GH-4). Le relancer chaque fois que l'A a besoin de l'état distant.
+[%- endif %]
 
 Usage : uv run outils/miroir.py [--piste analyse]
 """
@@ -30,7 +37,13 @@ def main() -> None:
     miroir = espace.miroir(args.piste)
     if not (miroir / ".git").exists():
         espace.v_for_cowork(args.piste).mkdir(parents=True, exist_ok=True)
+[%- if forge == 'git' %]
+        espace.cloner(espace.source(), miroir)
+        # Cloné depuis une copie de travail, le miroir prendrait sa branche du moment.
+        espace.lancer(["git", "switch", espace.BRANCHE], miroir)
+[%- else %]
         espace.cloner(f"https://github.com/{espace.GITHUB}.git", miroir)
+[%- endif %]
     else:
         espace.lancer(["git", "pull", "--ff-only"], miroir)
     tete = espace.lancer(["git", "rev-parse", "--short", "HEAD"], miroir, capturer=True).decode().strip()

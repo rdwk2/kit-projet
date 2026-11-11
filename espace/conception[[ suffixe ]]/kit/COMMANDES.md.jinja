@@ -31,7 +31,7 @@ tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
 | Transporter un relais, et sa réponse | Terminal, à chaque relais | `cd [[ racine ]]` puis `cp conception[[ suffixe ]]/relais/RELAIS_[[ piste ]]_«nn»*.* conception/relais/` (ou `Copy-Item` sous PowerShell) ; la réponse : `cp conception/relais/REPONSE_RELAIS_[[ piste ]]_«nn».md conception[[ suffixe ]]/relais/` |
 [% endif -%]
 | Diff d'une PR | Terminal | `cd [[ racine ]]` puis `uv run outils/diff_pr.py «n»[[ opt_piste ]]` → `v_for_cowork[[ suffixe ]]/pr-«n».diff` |
-| Compte rendu de Code (pour A seulement) | Terminal | `cd [[ racine ]]` puis `uv run outils/compte_rendu_pr.py «n»[[ opt_piste ]]` → `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md` |
+| Compte rendu de Code (pour A seulement) | [% if git_seul %]écrit par l'agent de code | `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md` (chemin donné par la consigne ; «n» : le nom de la branche)[% else %]Terminal | `cd [[ racine ]]` puis `uv run outils/compte_rendu_pr.py «n»[[ opt_piste ]]` → `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md`[% endif %] |
 [% if 'relectures' in modules -%]
 | Poste de C | Terminal, puis l'agent | `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --paquet C_PR-«n»[[ opt_piste ]]` ; puis l'agent **dans** `[[ racine ]]/relecture/c-pr«n»[[ suffixe ]]/`, mode normal, aucun dossier ajouté : « Lis paquet/DEMARRAGE.md et exécute-le. » ; modèle et effort : ceux du `DEMARRAGE.md` |
 | C bornée ou seconde C, même PR | Terminal, puis l'agent | `cd [[ racine ]]` puis `uv run outils/clone_c.py «n» --paquet C_PR-«n»_«variante» --variante «variante»[[ opt_piste ]]` (ex. `bornee`, `seconde`) ; poste `relecture/c-pr«n»-«variante»[[ suffixe ]]/` ; un poste raté se refait par la même commande |
@@ -43,7 +43,11 @@ tapée à la main (`kit/MACHINE.md`, PS-1 et CMD-1).
 [% if 'expert' in modules -%]
 | Passe experte, session à part | Terminal, puis une conversation neuve | les commandes du gabarit rempli (`kit/gabarits/PASSE_EXPERTE.md`, `kit/gabarits/SESSION_A_PART.md`) ; leur poste n'est jamais connecté à une A |
 [% endif -%]
+[% if git_seul -%]
+| Commentaire de revue, puis fusion | Terminal | le commentaire reste dans `conception[[ suffixe ]]/passations/REVUE_PR-«n».md` (à coller dans la demande de fusion s'il y a une forge) ; [% if membre %]les responsables fusionnent[% else %][[ md_fusion ]][% endif %] ; puis `cd [[ racine ]]` et `uv run outils/miroir.py[[ opt_piste ]]` |
+[% else -%]
 | Commentaire de revue, puis fusion | Terminal, puis GitHub | `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` ; sur GitHub, [% if membre %]les responsables fusionnent[% else %]*Squash and merge*[% endif %] ; puis `uv run outils/miroir.py[[ opt_piste ]]` |
+[% endif -%]
 [% if 'archives' in modules -%]
 | Archivage | Terminal, quand l'A qui clôt le demande | `cd [[ racine ]]` puis `uv run outils/archiver.py conception[[ suffixe ]]/passations/A_ARCHIVER_A«n».txt[[ opt_piste ]]` (essai à blanc), puis la même commande suivie de `--executer` |
 [% endif -%]

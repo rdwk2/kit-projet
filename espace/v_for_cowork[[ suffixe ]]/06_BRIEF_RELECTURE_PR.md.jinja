@@ -101,7 +101,7 @@ préférence :
 1. **tu le calcules toi-même** depuis la base de fusion, dans ton clone (il est sur la tête
    de la PR) : `git fetch origin`, puis `git diff origin/[[ branche_principale ]]...HEAD` ;
 2. sinon, `pr-«n».diff`, [[ que_humain ]] produit avec `uv run outils/diff_pr.py «n»`, et qui est le
-   diff exact de GitHub.
+   diff exact [% if git_seul %]depuis la base de fusion, calculé dans la copie de travail[% else %]de GitHub[% endif %].
 
 ---
 
@@ -254,7 +254,7 @@ pas une valeur réelle que tu trouverais : cite le fichier et la ligne.
   apprend à ne plus lire les relectures. **« Rien trouvé » est une conclusion valide et
   attendue.**
 - **Ne relis pas le style** : la CI l'a vérifié ([[ statiques ]]).
-- **N'écris rien dans le dépôt, ne pousse rien, ne commente pas la PR sur GitHub.** Tu
+- **N'écris rien dans le dépôt, ne pousse rien, ne commente pas la PR[% if not git_seul %] sur GitHub[% endif %].** Tu
   produis un rapport, et au plus un patch proposé, à part. L'application est arbitrée
   ailleurs.
 

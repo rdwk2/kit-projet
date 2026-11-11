@@ -145,7 +145,7 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
   - Parade, sous Windows seulement : `git -c http.sslBackend=schannel fetch origin` ; cloner de même.
     Les scripts d'`outils/` le font si la variable d'environnement `KIT_SCHANNEL` vaut `1`.
     ```bash
-    git -c http.sslBackend=schannel clone https://github.com/[[ github ]].git «dossier»
+    git -c http.sslBackend=schannel clone [% if git_seul %]«adresse du dépôt»[% else %]https://github.com/[[ github ]].git[% endif %] «dossier»
     git config --global http.sslBackend schannel   # (proposée : réglage permanent)
     ```
 - **AV-3 — Interpréteur neuf bloqué**
@@ -334,7 +334,7 @@ Certains antivirus interceptent HTTPS ou bloquent un interpréteur neuf : ces en
     Le dépôt est privé : aucune lecture sans identifiants — ni `git ls-remote`, ni `git fetch`, ni
     API sans jeton ; ne pas les tenter depuis une conversation.[% endif %]
     L'état de la CI vient [[ de_humain ]] ; une description se relit dans le fichier écrit par
-    `outils/compte_rendu_pr.py` (R2), comparée sans tenir compte des fins de ligne.
+    [% if git_seul %]l'agent de code (R2)[% else %]`outils/compte_rendu_pr.py` (R2)[% endif %], comparée sans tenir compte des fins de ligne.
 
 ## 12. Tableurs et affichage (AFF)
 
@@ -414,10 +414,19 @@ d'`outils/` existe, c'est lui la recette ; l'ancienne recette reste citée pour 
 cd [[ racine ]]
 uv run outils/diff_pr.py «n»[[ opt_piste ]]
 ```
-*Ce que le script remplace* : `cmd /c "gh pr diff «n» > ../pr-«n».diff"` lancé dans le miroir — la seule
-redirection sûre sous PowerShell 5.1 (PS-1, CMD-1). Le script capture les octets de `gh` sans les
+*Ce que le script remplace* : `cmd /c "[% if git_seul %]git diff [[ branche_principale ]]...«branche»[% else %]gh pr diff «n»[% endif %] > ../pr-«n».diff"` lancé dans le miroir — la seule
+redirection sûre sous PowerShell 5.1 (PS-1, CMD-1). Le script capture les octets de `[% if git_seul %]git[% else %]gh[% endif %]` sans les
 décoder et refuse un fichier vide.
 
+[% if git_seul -%]
+**R2 — Description d'une PR (compte rendu de l'agent de code, pour A seulement)** : sans GitHub,
+l'agent de code l'écrit lui-même dans `conception[[ suffixe ]]/passations/COMPTE_RENDU_CODE_PR-«n».md`, au
+chemin que donne la consigne. Rien à lancer.
+
+**R3 — Commentaire de revue, puis fusion** : le commentaire reste dans
+`conception[[ suffixe ]]/passations/REVUE_PR-«n».md` (collé dans la demande de fusion s'il y a une forge) ;
+puis [% if membre %]les responsables fusionnent[% else %][[ md_fusion ]][% endif %] ; puis R12.
+[%- else -%]
 **R2 — Description d'une PR (compte rendu de l'agent de code, pour A seulement)**
 ```bash
 cd [[ racine ]]
@@ -433,6 +442,7 @@ uv run outils/revue_pr.py «n»[[ opt_piste ]]
 ```
 Le script publie `conception[[ suffixe ]]/passations/REVUE_PR-«n».md` avec `gh pr review «n» --comment
 --body-file …` (lu tel quel, accents compris). Puis, sur GitHub, *Squash and merge* ; puis R12.
+[%- endif %]
 
 **R4 — Sortie de Python vers un fichier** : PS-5.
 

@@ -6,11 +6,17 @@
 > *Fichier du kit (kit-projet [[ version_kit ]]) : ne pas modifier ce gabarit dans le projet ; une
 > amélioration va dans `REMONTEES_KIT.md`.*
 > **Écrit par** A, sur l'état final de la branche (tête `«sha»`, CI verte), une fois les correctifs
+[% if git_seul -%]
+> poussés. **Gardé par** [[ humain ]] dans `passations/REVUE_PR-«n».md`, juste avant la fusion ; s'il y a
+> une forge, collé en commentaire de la demande de fusion[% if en_groupe %] (un camarade relit et approuve)[% endif %] ; puis la fusion ([% if membre %]par les
+> responsables[% else %][[ md_fusion ]][% endif %]) ; puis `cd [[ racine ]]` et `uv run outils/miroir.py[[ opt_piste ]]`.
+[% else -%]
 > poussés. **Publié par** [[ humain ]], juste avant la fusion :
 > `cd [[ racine ]]` puis `uv run outils/revue_pr.py «n»[[ opt_piste ]]` (option *Comment*[% if en_groupe %] ; un camarade relit et
 > approuve[% if 'groupe' in modules %] : `docs/RELIRE_UNE_PR.md`[% endif %][% else %] : GitHub interdit
 > d'approuver sa propre PR[% endif %]) ; puis, sur GitHub, [% if membre %]les responsables fusionnent (*Squash and merge*)[% else %]*Squash and merge*[% endif %] ; puis
 > `uv run outils/miroir.py[[ opt_piste ]]`.
+[% endif -%]
 > **Règles** : le commentaire dit ce qui a été vérifié — vingt secondes, et c'est la trace visible
 > que la relecture a eu lieu (`kit/METHODE.md`, § 6) ; il porte donc sur l'état final. Aucune
 > donnée personnelle (ni chiffre tiré des données, ni chemin personnel) : il est public dans la
