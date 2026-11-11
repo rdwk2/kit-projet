@@ -1,4 +1,5 @@
 %%{init: {"theme": "neutral", "themeVariables": {"fontSize": "22px"}}}%%
 flowchart LR
     K["Le kit"] --> D["Le dépôt<br/>ton code"]
-    K -.-> E["L'espace IA<br/>facultatif"]
+    K --> E["L'espace IA<br/>le workflow"]
+    E -.->|"autour d'un dépôt,<br/>du kit ou non"| D
