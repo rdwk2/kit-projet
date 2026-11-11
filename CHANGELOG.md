@@ -1,6 +1,6 @@
 # Changements de kit-projet
 
-## 0.6.1 (en cours)
+## 0.6.1 — 2026-11-11
 
 - **Ressources du projet.** Chaque espace reçoit `conception/ressources/`, vide, avec son `LISEZ_MOI.md`. On y dépose
   le sujet, les consignes, le barème, le calendrier ou les données fournies, tels qu'on les a reçus (de Moodle ou
