@@ -157,6 +157,9 @@ ESPACE_RACINE = [
     "outils/_commun.py", "outils/lire_section.py", "outils/mesurer_noyau.py", "outils/verifier_deplacement.py",
 ]
 OUTIL_PISTES = "outils/extraire_piste.py"
+# Ce qu'un espace sans GitHub n'a pas, et ne cite nulle part.
+OUTILS_GITHUB = ["outils/revue_pr.py", "outils/compte_rendu_pr.py"]
+OUTILS_GITHUB_NOMS = ["revue_pr.py", "compte_rendu_pr.py"]
 # Ce qu'un projet sans le module pistes ne cite nulle part : il n'a pas ces fichiers.
 CITES_PISTES = ["PISTES.md", "NOTE_PISTE", "RELAIS.md", "MESSAGE_FUSION_PISTE", "extraire_piste"]
 
@@ -305,6 +308,31 @@ SCENARIOS: list[dict] = [
               "conception/kit/gabarits/BRIEF_JALON.md": ["CLAUDE.md", "just check", "docs/JOURNAL.md",
                                                          "docs/decisions/", "`BACKLOG.md`"],
               "conception/kit/gabarits/DEMARRAGE_C.md": ["just check", "est rouge"]}},
+    # Sans GitHub : un dépôt git local, sans remote, créé par le banc ; les outils y tournent pour de vrai.
+    {"nom": "espace-git", "git_reel": True,
+     "data": {"couche": "espace", "preset": "perso-standard", "forge": "git", "origine": "existant",
+              "regles_agent": "", "commande_verif": "", "github": None},
+     "presents": espace_socle() + [o for o in ESPACE_RACINE if o not in OUTILS_GITHUB] + espace_relectures()
+     + ["relecture/LISEZ_MOI.md", "outils/clone_c.py"],
+     "absents": OUTILS_GITHUB + espace_archives() + espace_expert(),
+     "jamais_cite": OUTILS_GITHUB_NOMS + ["github.com/"],
+     "contient": {"00_LISEZ_MOI_ESPACE.md": ["`git merge --squash «branche»`", "une PR se désigne par sa branche"],
+                  "conception/kit/gabarits/CONSIGNE_CODE.md": ["/conception/passations/COMPTE_RENDU_CODE_PR-«n».md",
+                                                               "Ne déclare la branche prête"],
+                  "conception/kit/VOCABULAIRE.md": ["Sans GitHub, c'est la branche elle-même"],
+                  "conception/CONTEXTE.md": ["| Dépôt de référence (sans GitHub) |"],
+                  "outils/espace.py": ['SOURCE = r"', 'BRANCHE = "main"']},
+     "sans": {"00_LISEZ_MOI_ESPACE.md": ["gh auth", "Squash and merge"],
+              "conception/kit/prompts/PREMIERE_A.md": ["gh auth status", "sur GitHub"],
+              "conception/kit/gabarits/CONSIGNE_CODE.md": ["N'ouvre la PR", "--body-file"],
+              "conception/kit/gabarits/DEMARRAGE_C.md": ["gh pr view", "commentaire GitHub"],
+              "conception/kit/gabarits/ANNEXE_C.md": ["gh pr view"],
+              "conception/kit/gabarits/REVUE_PR.md": ["Squash and merge", "Publié par"],
+              "conception/kit/METHODE.md": ["Squash and merge", "GitHub interdit"],
+              "conception/kit/COMMANDES.md": ["Squash and merge"],
+              "v_for_cowork/06_BRIEF_RELECTURE_PR.md": ["diff exact de GitHub", "sur GitHub"],
+              "outils/espace.py": ["GITHUB =", "cli.github.com"],
+              "outils/clone_c.py": ["gh"]}},
     # Un membre d'un groupe, sur un dépôt généré par le kit : il ne fusionne pas, et ne propose rien seul.
     {"nom": "espace-membre", "data": {"couche": "espace", "preset": "perso-standard", "role": "membre"},
      "presents": espace_socle() + ESPACE_RACINE + espace_relectures() + espace_pistes()
@@ -352,8 +380,72 @@ def generer(dest: Path, data: dict) -> None:
     assert SOURCE is not None
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        run_copy(str(SOURCE), dest, data={**BASE, **data}, defaults=True, vcs_ref="HEAD",
+        # Une réponse à None retire celle de BASE : la question ne doit pas être posée.
+        donnees = {k: v for k, v in {**BASE, **data}.items() if v is not None}
+        run_copy(str(SOURCE), dest, data=donnees, defaults=True, vcs_ref="HEAD",
                  quiet=True, unsafe=False, overwrite=True)
+
+
+def preparer_depot_git(racine: Path) -> Path:
+    """Un dépôt git local, sans remote : `main` avec un fichier, et une branche `travail/essai`
+    qui le modifie. La copie de travail reste sur la branche, comme après une session de code."""
+    depot = racine / "depot-git"
+    depot.mkdir()
+
+    def git(*args: str) -> None:
+        subprocess.run(["git", *GIT_ID, *args], cwd=depot, check=True, capture_output=True)
+
+    git("init", "-q", "-b", "main")
+    (depot / "a.txt").write_text("ligne de main\n", encoding="utf-8")
+    git("add", "-A")
+    git("commit", "-qm", "main")
+    git("switch", "-q", "-c", "travail/essai")
+    (depot / "a.txt").write_text("ligne de main\nligne de la branche\n", encoding="utf-8")
+    git("commit", "-qam", "branche")
+    return depot
+
+
+def verifier_git_reel(dest: Path, depot: Path) -> list[str]:
+    """Sans GitHub, les outils tournent pour de vrai sur un dépôt local : miroir, diff, tête, poste de C."""
+    erreurs: list[str] = []
+
+    def lancer(*args: str) -> bool:
+        r = lancer_script(dest, *args)
+        if r.returncode:
+            erreurs.append(f"{' '.join(args)} échoue : {(r.stdout + r.stderr)[-600:]}")
+        return r.returncode == 0
+
+    slug = BASE["slug"]
+    miroir = dest / "v_for_cowork" / slug
+    if lancer("outils/miroir.py"):
+        branche = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=miroir, capture_output=True,
+                                 text=True, check=False).stdout.strip()
+        if branche != "main":
+            erreurs.append(f"le miroir est sur {branche!r}, pas sur main")
+        etat = dest / "v_for_cowork" / "ETAT_DISTANT.txt"
+        if "refs/heads/travail/essai" not in (etat.read_text(encoding="utf-8") if etat.is_file() else ""):
+            erreurs.append("ETAT_DISTANT.txt ne liste pas la branche travail/essai")
+    if lancer("outils/diff_pr.py", "travail/essai"):
+        diff = dest / "v_for_cowork" / "pr-travail-essai.diff"
+        if "+ligne de la branche" not in (diff.read_text(encoding="utf-8") if diff.is_file() else ""):
+            erreurs.append("pr-travail-essai.diff ne contient pas la ligne de la branche")
+    if lancer("outils/tete_pr.py", "travail/essai"):
+        for nom in ("TETE_PR-travail-essai.tar", "TETE_PR-travail-essai.txt"):
+            if not (dest / "conception" / "passations" / nom).is_file():
+                erreurs.append(f"tete_pr.py n'a pas écrit {nom}")
+    paquet = dest / "conception" / "passations" / "C_PR-essai"
+    paquet.mkdir(parents=True)
+    (paquet / "DEMARRAGE.md").write_text("# Démarrage d'essai\n", encoding="utf-8")
+    if lancer("outils/clone_c.py", "travail/essai", "--paquet", "C_PR-essai", "--sans-check"):
+        poste = dest / "relecture" / "c-prtravail-essai"
+        clone = poste / slug / "a.txt"
+        if "ligne de la branche" not in (clone.read_text(encoding="utf-8") if clone.is_file() else ""):
+            erreurs.append("le poste de C n'est pas sur la tête de la branche")
+        (poste / "RELECTURE_PR-travail-essai.md").write_text("# Rapport d'essai\n", encoding="utf-8")
+        if lancer("outils/clone_c.py", "travail/essai", "--recuperer") and not (
+                dest / "conception" / "passations" / "RELECTURE_PR-travail-essai.md").is_file():
+            erreurs.append("--recuperer n'a pas rapatrié le rapport")
+    return erreurs
 
 
 def verifier_structure(dest: Path, presents: list[str], absents: list[str]) -> list[str]:
@@ -681,6 +773,11 @@ def main() -> int:
         dest = racine / sc["nom"]
         erreurs: list[str] = []
         try:
+            depot_git = None
+            if sc.get("git_reel"):
+                depot_git = preparer_depot_git(racine)
+                sc = {**sc, "data": {**sc["data"], "depot_travail": depot_git.as_posix(),
+                                     "source_git": depot_git.as_posix()}}
             generer(dest, sc["data"])
             erreurs += verifier_structure(dest, sc["presents"], sc["absents"])
             if "piste" in sc:
@@ -703,6 +800,8 @@ def main() -> int:
             erreurs += verifier_chemins(dest)
             if sc.get("recopy"):
                 erreurs += verifier_recopy(dest)
+            if depot_git is not None:
+                erreurs += verifier_git_reel(dest, depot_git)
             if sc.get("update"):
                 erreurs += verifier_update(racine, sc["data"])
             if args.complet and sc.get("python"):

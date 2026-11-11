@@ -18,7 +18,7 @@ partage. Une conversation ne lit que ce qu'on lui connecte. Un mot inconnu : `co
 
 > **Fichier vivant** de [[ projet ]] : créé par kit-projet [[ version_kit ]], tenu ensuite
 > par [[ humain ]] et les conversations A. C'est l'index de l'espace : ce qu'il y a, qui connecte
-> quoi, comment ouvrir. Le dépôt ([[ github ]]) est la source de vérité du code ; cet espace
+> quoi, comment ouvrir. Le dépôt ([% if git_seul %]`[[ source_git ]]`[% else %][[ github ]][% endif %]) est la source de vérité du code ; cet espace
 > porte ce que le dépôt ne porte pas.
 
 ## Ce qu'il y a ici
@@ -65,19 +65,22 @@ Connecter un dossier, c'est donner accès à ce dossier, et à lui seul. Le gest
 [% if langage == 'python' -%]
 | **just** | les commandes du projet | `uv tool install rust-just`, puis `uv tool update-shell` ; ferme et rouvre le terminal |
 [% endif -%]
+[% if not git_seul -%]
 | **Un compte GitHub** | héberger le dépôt, faire tourner la CI | <https://github.com> |
 | **gh**, connecté | GitHub en ligne de commande : lire les PR, poster une revue, cloner un dépôt privé | <https://cli.github.com>, puis `gh auth login` et `gh auth setup-git` |
+[% endif -%]
 | **Un agent** | concevoir avec A, écrire le code | un agent de code (Claude Code, Codex…), avec ou sans outil de conversation à côté |
 
-Pour vérifier : `git --version`, `uv --version`, [% if langage == 'python' %]`just --version`, [% endif %]`gh auth status`.
+Pour vérifier : `git --version`, `uv --version`, [% if langage == 'python' %]`just --version`, [% endif %][% if git_seul %]`git config user.name`[% else %]`gh auth status`[% endif %].
 Le détail : `docs/GUIDE.md` du kit, § 1.
 
 ## Premiers pas (une fois)
 
-1. Le dépôt existe sur GitHub et la copie de travail est à `[[ depot_travail ]]`
+1. Le dépôt existe [% if git_seul %](référence : `[[ source_git ]]`)[% else %]sur GitHub[% endif %] et la copie de travail est à `[[ depot_travail ]]`
    (`docs/GUIDE.md` du kit, « Après la génération »).
-2. Le miroir, une seconde copie du dépôt, en lecture seule, pour les conversations. Le dépôt doit
-   déjà être sur GitHub. En cas d'échec sur un dépôt privé : `gh auth login`, puis `gh auth setup-git`.
+2. Le miroir, une seconde copie du dépôt, en lecture seule, pour les conversations.[% if git_seul %] Il se clone
+   depuis le dépôt de référence, sur `[[ branche_principale ]]`.[% else %] Le dépôt doit
+   déjà être sur GitHub. En cas d'échec sur un dépôt privé : `gh auth login`, puis `gh auth setup-git`.[% endif %]
    ```bash
    cd [[ racine ]]
    uv run outils/miroir.py
@@ -91,20 +94,20 @@ Le détail : `docs/GUIDE.md` du kit, § 1.
 
 Toutes depuis la racine de l'espace (`cd [[ racine ]]`)[% if 'pistes' in modules %] ; ajouter `--piste «nom»` pour une
 piste supplémentaire[% endif %]. La liste complète, propre au projet, est au § 2 de
-`conception/CONTEXTE.md`.
+`conception/CONTEXTE.md`.[% if git_seul %] Sans GitHub, une PR se désigne par sa branche : «n» est son nom.[% endif %]
 
 | Quand | Commande |
 |---|---|
 | Après chaque fusion | `uv run outils/miroir.py` |
 | PR ouverte, pour [% if 'relectures' in modules %]B, C ou [% endif %]A | `uv run outils/diff_pr.py «n»` → `v_for_cowork/pr-«n».diff` |
-| Compte rendu de l'agent de code, pour A seulement | `uv run outils/compte_rendu_pr.py «n»` |
+| Compte rendu de l'agent de code, pour A seulement | [% if git_seul %]écrit par l'agent de code dans `conception/passations/COMPTE_RENDU_CODE_PR-«n».md`[% else %]`uv run outils/compte_rendu_pr.py «n»`[% endif %] |
 [% if 'relectures' in modules -%]
 | Poste de C | `uv run outils/clone_c.py «n» --paquet «nom»`, puis `cd relecture/c-pr«n»` et lancer ton agent de code (mode normal) ; à la fin : `uv run outils/clone_c.py «n» --recuperer` ; une C bornée ou seconde : `--variante «nom»` aux deux commandes (poste `relecture/c-pr«n»-«nom»`) |
 [% endif -%]
 [% if 'mutation' in modules -%]
 | Tête de la PR pour le balayage de A | `uv run outils/tete_pr.py «n»` → `conception/passations/TETE_PR-«n».tar` |
 [% endif -%]
-| Avant la fusion | `uv run outils/revue_pr.py «n»` (commentaire écrit par A), puis [% if membre %]demande la relecture : les responsables fusionnent[% else %]*Squash and merge* sur GitHub[% endif %] |
+| Avant la fusion | [% if git_seul %]le commentaire écrit par A reste dans `conception/passations/REVUE_PR-«n».md` (à coller dans la demande de fusion s'il y a une forge), puis [% if membre %]demande la relecture : les responsables fusionnent[% else %][[ md_fusion ]][% endif %][% else %]`uv run outils/revue_pr.py «n»` (commentaire écrit par A), puis [% if membre %]demande la relecture : les responsables fusionnent[% else %]*Squash and merge* sur GitHub[% endif %][% endif %] |
 [% if 'archives' in modules -%]
 | Archivage (liste écrite par A) | `uv run outils/archiver.py conception/passations/A_ARCHIVER_«étape».txt`, relu, puis avec `--executer` |
 [% endif -%]

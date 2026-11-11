@@ -63,7 +63,7 @@ flowchart TB
   end
   H(("[[ humain ]]"))
   OUT["outils (jamais connecté)<br/>extraire_piste.py"]
-  GH[("GitHub : [[ branche_principale ]]")]
+  GH[("[% if git_seul %]Dépôt de référence[% else %]GitHub[% endif %] : [[ branche_principale ]]")]
   subgraph PN["Nouvelle piste"]
     AN(["A de la piste"])
 [% if 'relectures' in modules -%]
@@ -556,7 +556,7 @@ uv run outils/extraire_piste.py --vers «piste»
 #    de la piste (par défaut [[ racine ]]/[[ slug ]]_«piste»), aussi court que possible
 #    (sous Windows, un chemin court évite la limite de 260 caractères)
 cd [[ racine ]]
-git clone https://github.com/[[ github ]].git [[ slug ]]_«piste»
+git clone [% if git_seul %][[ source_git ]][% else %]https://github.com/[[ github ]].git[% endif %] [[ slug ]]_«piste»
 cd [[ racine ]]/[[ slug ]]_«piste»
 cp «copie de travail de la référence»/.env .env   # si le projet a un .env (ou Copy-Item sous PowerShell)
 uv sync --locked
@@ -618,8 +618,8 @@ Copy-Item conception_«piste»/relais/RELAIS_«piste»_«nn»*.* conception/rela
 Copy-Item conception/relais/REPONSE_RELAIS_«piste»_«nn».md conception_«piste»/relais/
 ```
 
-Les autres scripts prennent aussi `--piste «piste»` : `diff_pr.py`, `compte_rendu_pr.py`,
-`revue_pr.py`[% if 'archives' in modules %], `archiver.py`[% endif %]. Tout bloc commence par `cd` sur un chemin absolu.
+Les autres scripts prennent aussi `--piste «piste»` : `diff_pr.py`[% if git_seul %], `tete_pr.py`[% else %], `compte_rendu_pr.py`,
+`revue_pr.py`[% endif %][% if 'archives' in modules %], `archiver.py`[% endif %]. Tout bloc commence par `cd` sur un chemin absolu.
 
 ### 10.3 Le message d'ouverture de la première A de la piste
 

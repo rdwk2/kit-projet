@@ -132,9 +132,10 @@ correctifs, le contrôle réel [[ de_humain ]] et la fusion. »
      sinon, dis-le en tête du rapport ;
 5. dans le dépôt, à la tête : «les fiches de décision, avec les sections précises» ;
    [[ md_plan ]] («jalon») ; [[ md_regles ]] (règles «…») ; «les autres fichiers de
-   référence». Pour les métadonnées de la PR, `gh pr view «n» --json
+   référence». [% if git_seul %]Pour les métadonnées de la PR, git seulement : `git log --oneline
+   origin/[[ branche_principale ]]..HEAD` et `git rev-parse HEAD` ; jamais le compte rendu de l'agent de code (§ 2).[% else %]Pour les métadonnées de la PR, `gh pr view «n» --json
    number,state,headRefName,headRefOid,baseRefName,baseRefOid` — la seule commande `gh` permise,
-   jamais `body` ni `comments` (§ 2).
+   jamais `body` ni `comments` (§ 2).[% endif %]
 
 Reconstitue et exécute plutôt que de lire seulement.
 

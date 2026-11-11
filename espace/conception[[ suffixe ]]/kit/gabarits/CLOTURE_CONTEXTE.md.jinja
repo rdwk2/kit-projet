@@ -98,7 +98,7 @@ Format d'une entrée :
 par [[ humain ]] le «date». Découpage : «k» PR.
 *Titre d'avant («date») : « … ».*
 
-- **[[ prefixe_jalon ]]«n»-«i» — «titre» : fusionné, PR #«p»** (*Squash and merge* `«sha»` sur `[[ branche_principale ]]`, «date» ; arbre identique à la tête relue ; «N» tests).
+- **[[ prefixe_jalon ]]«n»-«i» — «titre» : fusionné, PR #«p»** ([% if git_seul %]`git merge --squash`[% else %]*Squash and merge*[% endif %] `«sha»` sur `[[ branche_principale ]]`, «date» ; arbre identique à la tête relue ; «N» tests).
   Brief `«fichier»`, révision «r» (`«empreinte»…`) ; Code : «modèle» `«effort»`.
 [% if 'relectures' in modules %]  Relectures : B «passes, constats retenus» ; C «complète ou bornée, verdict» (`RELECTURE_PR-«p».md`).
 [% endif -%]

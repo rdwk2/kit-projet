@@ -4,14 +4,17 @@
 """Met la tête d'une PR à la portée de A : une archive tar de l'arbre, dans
 conception/passations/TETE_PR-<n>.tar, avec sa fiche TETE_PR-<n>.txt (commit, arbre, branche).
 
-    uv run outils/tete_pr.py 42 [--piste analyse]
+[% if forge == 'git' %]    uv run outils/tete_pr.py travail/ma-branche [--piste analyse]
 
+(Sans GitHub, une PR se désigne par sa branche ; `<n>` est son nom, `/` devenu `-`.)
+[% else %]    uv run outils/tete_pr.py 42 [--piste analyse]
+[% endif %]
 Pourquoi : A ne voit que le miroir, qui ne porte que `[[ branche_principale ]]` (jamais de `git fetch` dedans) ; or
 le balayage de mutation (kit/MUTATION.md, si le module est actif) et certaines vérifications
 d'annexe se font sur la tête de la PR. A extrait l'archive dans son propre espace de travail et
 vérifie l'arbre (le format tar garde les modes de fichiers, que le zip perd).
 
-Le commit de tête est lu par `gh pr view` ; l'archive se fait par `git archive` dans la copie
+Le commit de tête est lu par [% if forge == 'git' %]`git rev-parse` de la branche[% else %]`gh pr view`[% endif %] ; l'archive se fait par `git archive` dans la copie
 de travail de la piste (qui a les commits de l'agent de code), après un `git fetch origin` si
 le commit n'y est pas. Rien n'est modifié dans la copie de travail : ni branche, ni fichier.
 """
@@ -22,7 +25,45 @@ import subprocess
 
 import espace
 
+[% if forge == 'git' %]
+def resoudre(depot, branche: str) -> str | None:
+    """Le commit de tête de la branche, local ou suivi depuis `origin` ; None s'il n'y est pas."""
+    for ref in (branche, f"origin/{branche}"):
+        r = subprocess.run(["git", "rev-parse", "--verify", "-q", f"{ref}^{{commit}}"], cwd=depot,
+                           capture_output=True)
+        if r.returncode == 0:
+            return r.stdout.decode().strip()
+    return None
 
+
+def main() -> None:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("branche", help="la branche de la PR")
+    p.add_argument("--piste", default=None)
+    args = p.parse_args()
+
+    branche, nom = args.branche, espace.ident(args.branche)
+    depot = espace.depot_travail(args.piste)
+    if not (depot / ".git").exists():
+        raise SystemExit(f"Copie de travail introuvable : {depot}")
+    commit = resoudre(depot, branche)
+    if commit is None and subprocess.run(["git", "remote"], cwd=depot, capture_output=True).stdout.strip():
+        espace.lancer(["git", "fetch", "origin"], depot)
+        commit = resoudre(depot, branche)
+    if commit is None:
+        raise SystemExit(f"Branche introuvable dans {depot} : {branche}")
+    arbre = espace.lancer(["git", "rev-parse", f"{commit}^{{tree}}"], depot, capturer=True).decode().strip()
+    archive = espace.lancer(["git", "archive", "--format=tar", commit], depot, capturer=True)
+    espace.ecrire_octets(espace.passations(args.piste) / f"TETE_PR-{nom}.tar", archive)
+    fiche = (
+        f"PR de la branche {branche}\ncommit : {commit}\narbre : {arbre}\n"
+        f"archivé le : {datetime.datetime.now():%Y-%m-%d %H:%M}\n"
+        "vérifier après extraction (tar, qui garde les modes), dans un dépôt neuf :\n"
+        "git add -A puis git write-tree doit redonner l'arbre ci-dessus\n"
+    )
+    espace.ecrire_octets(espace.passations(args.piste) / f"TETE_PR-{nom}.txt", fiche.encode())
+    print(f"Tête de la branche {branche} : {commit[:12]} (arbre {arbre[:12]}), pour A.")
+[%- else %]
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("numero", type=int)
@@ -56,6 +97,7 @@ def main() -> None:
     )
     espace.ecrire_octets(espace.passations(args.piste) / f"TETE_PR-{args.numero}.txt", fiche.encode())
     print(f"Tête de la PR #{args.numero} : {commit[:12]} (arbre {arbre[:12]}), pour A.")
+[%- endif %]
 
 
 if __name__ == "__main__":

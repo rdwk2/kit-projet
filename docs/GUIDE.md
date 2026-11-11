@@ -110,8 +110,9 @@ Avec `--defaults`, Copier ne pose aucune question : une question sans valeur par
 ### 3.3 Greffer l'espace sur un dépôt existant
 
 Ton projet a déjà son dépôt, perso ou de groupe, fait sans le kit ? L'espace IA s'installe à côté,
-**sans rien écrire dans ton dépôt**. Il faut seulement que le dépôt soit sur GitHub et que tu en aies une
-copie de travail sur ta machine.
+**sans rien écrire dans ton dépôt**. Il faut seulement que tu en aies une copie de travail sur ta machine.
+Le dépôt peut être sur GitHub, sur une autre forge (GitLab, Gitea…) ou seulement sur ta machine : voir
+« Sans GitHub », plus bas.
 
 ```text
 ~/dev/
@@ -142,6 +143,14 @@ Les textes de l'espace citent alors tes fichiers à toi. Un document que ton dé
 exigé : les textes écrivent « (absent de ce dépôt) » et ne demandent jamais de l'écrire. La première A
 te propose deux ouvertures : découvrir le dépôt avec toi, et proposer ce qui manque, ou attendre ta
 première mission (§ 4.5).
+
+**Sans GitHub**, ajoute `--data forge=git`. Copier ne demande plus de compte GitHub, mais l'adresse du dépôt
+de référence (`source_git`) : une URL, ou un chemin sur ta machine, par défaut la copie de travail elle-même.
+Une PR est alors une branche, désignée par son nom : `uv run outils/diff_pr.py travail/ma-branche`,
+`uv run outils/clone_c.py travail/ma-branche --paquet «nom»`. Le compte rendu de l'agent de code est un fichier qu'il
+écrit dans `conception/passations/`, le commentaire de revue reste dans un fichier, et la fusion se fait par git
+(`git merge --squash`). `gh` n'est pas nécessaire. Sur une forge comme GitLab, ouvre la demande de fusion à la main
+et colle-y le commentaire de revue : le kit n'a pas d'outil propre à chaque forge.
 
 **Tu as ajouté un document au dépôt ?** Relance la commande de l'espace, sans `--defaults` : Copier
 repose ses questions avec tes réponses précédentes, et tu coches le nouveau document.

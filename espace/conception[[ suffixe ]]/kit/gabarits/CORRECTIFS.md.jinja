@@ -67,7 +67,7 @@ raison : «raison» ; dérogation : «aucune | dérogation».
 > [[ verif ]] doit passer[% if 'donnees-privees' in modules %] ; les messages de commit par `git commit -F`[% endif %].
 >
 > **Ce qui n'est pas à faire** : «les constats écartés, chacun avec sa raison en une phrase ; les
-> lignes parties au [[ md_backlog ]]». Pas de commentaire GitHub, pas de changement de la description
+> lignes parties au [[ md_backlog ]]». Pas de commentaire[% if not git_seul %] GitHub[% endif %], pas de changement de la description
 > de la PR : la revue dira ce qui a été fait.
 >
 > Quand c'est fait : `git push origin «branche»`. Ton dernier message : le SHA et l'arbre de chaque

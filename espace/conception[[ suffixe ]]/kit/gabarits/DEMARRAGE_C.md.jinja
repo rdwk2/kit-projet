@@ -40,7 +40,7 @@ ce texte ne configure pas l'outil.
 ## Qui tu es
 
 Tu es la C «complète | bornée — les correctifs seulement | seconde C, «variante»» de la PR #«n»
-(«jalon», «titre») du projet `[[ github ]]`. Tu n'as participé ni à sa conception, ni à la relecture du
+(«jalon», «titre») du projet [% if git_seul %][[ projet ]][% else %]`[[ github ]]`[% endif %]. Tu n'as participé ni à sa conception, ni à la relecture du
 brief et du plan, ni à son implémentation : c'est voulu. «Une autre C, d'un autre moteur, relit la
 même PR en parallèle sans voir ton rapport : ton regard vaut par sa différence.» Il ne s'agit ni de
 produire un plan, ni de corriger le code.
@@ -78,8 +78,9 @@ Le brief et les décisions de l'annexe priment sur les passages correspondants d
 ## Ce que tu n'ouvres pas
 
 Ce que le § 2 du brief de C exclut, dont la description de la PR et ses commentaires. Pour ses
-métadonnées, seulement `gh pr view «n» --json number,state,headRefName,headRefOid,baseRefName,baseRefOid`
-(jamais `body` ni `comments`).[% if doc_journal %] [[ md_journal ]] fait partie du diff : tu le relis comme livrable,
+[% if git_seul %]métadonnées, git seulement : `git log --oneline origin/[[ branche_principale ]]..HEAD` et
+`git rev-parse HEAD`.[% else %]métadonnées, seulement `gh pr view «n» --json number,state,headRefName,headRefOid,baseRefName,baseRefOid`
+(jamais `body` ni `comments`).[% endif %][% if doc_journal %] [[ md_journal ]] fait partie du diff : tu le relis comme livrable,
 jamais comme preuve.[% endif %]
 
 ## Avant les mutations
@@ -113,7 +114,7 @@ ou une seconde C : le rapatriement vers A le renomme. N'écris rien ailleurs, ni
 Il donne les SHA, la provenance du diff, les vérifications réellement exécutées, chaque mutation
 avec son résultat, les constats reproductibles et le verdict ; si tu t'arrêtes avant la fin, il dit
 où ; si une mutation obligatoire n'a pas pu être exécutée, le verdict le dit. Aucun commit, push,
-commentaire GitHub ni fusion : ton rapport revient à la conception, qui arbitre.
+commentaire[% if not git_seul %] GitHub[% endif %] ni fusion : ton rapport revient à la conception, qui arbitre.
 
 ## Empreintes du paquet
 

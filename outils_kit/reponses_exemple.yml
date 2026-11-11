@@ -25,3 +25,7 @@ public: false              # true si le dépôt est (ou sera) public
 # docs_existants: [plan, backlog]       # parmi plan, backlog, decisions, journal, pieges
 # chemin_plan: docs/ROADMAP.md
 # chemin_backlog: BACKLOG.md
+# role: membre                          # contributeur d'un projet de groupe (défaut : pilote)
+# espace sans GitHub (forge ailleurs, ou dépôt local seulement) : la ligne github ne sert plus
+# forge: git
+# source_git: ~/dev/mon-projet          # URL ou chemin du dépôt de référence

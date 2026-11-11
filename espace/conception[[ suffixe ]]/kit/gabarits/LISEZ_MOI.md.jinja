@@ -66,7 +66,7 @@ flowchart LR
     FV --> DC["DEMARRAGE_C + ANNEXE_C<br/>(C)"]
     DC --> AR["ARBITRAGE<br/>PR (A)"]
     AR --> CO["CORRECTIFS<br/>(Code)"]
-    CO --> RV["REVUE_PR<br/>([[ humain ]] publie)"]
+    CO --> RV["REVUE_PR<br/>([[ humain ]] [% if git_seul %]la garde[% else %]publie[% endif %])"]
     RV --> OU["OUVERTURES_A<br/>(A suivante)"]
 ```
 [% else -%]
@@ -76,7 +76,7 @@ flowchart LR
     CC --> FV["FEU_VERT_PLAN<br/>(Code)"]
     FV --> AR["ARBITRAGE<br/>relecture neuve (A)"]
     AR --> CO["CORRECTIFS<br/>(Code)"]
-    CO --> RV["REVUE_PR<br/>([[ humain ]] publie)"]
+    CO --> RV["REVUE_PR<br/>([[ humain ]] [% if git_seul %]la garde[% else %]publie[% endif %])"]
     RV --> OU["OUVERTURES_A<br/>(A suivante)"]
 ```
 [% endif -%]
@@ -90,7 +90,7 @@ flowchart LR
 | `FEU_VERT_PLAN.md` | le plan relu : feu vert ou demande de révision ; plus tard, une précision en cours de session | A | `passations/FEU_VERT_PLAN_«jalon».md` ; `passations/MESSAGE_CODE_«jalon»_«k».md` | [[ humain ]] les colle dans la session de code[% if 'relectures' in modules %] ; le feu vert part aussi dans le paquet de la C[% endif %] |
 | `ARBITRAGE.md` | après chaque rapport de relecture | A | `passations/ARBITRAGE_PR-«n».md`[% if 'relectures' in modules %] ; pour une passe de B : `passations/ARBITRAGE_B_«jalon»_PASSE«x».md`[% endif %] | [[ humain ]], qui tranche ce qui lui appartient ; il nourrit les correctifs, la révision du brief, l'annexe suivante |
 | `CORRECTIFS.md` | après l'arbitrage d'une PR ; ou pour faire fusionner `[[ branche_principale ]]` dans une branche déjà relue | A | `passations/CORRECTIFS_PR-«n».md` ou `passations/FUSION_MAIN_PR-«n».md` ; fichiers joints dans `v_for_cowork[[ suffixe ]]/«jalon»/correctifs-pr«n»/` | [[ humain ]] la colle dans la session de code de la PR |
-| `REVUE_PR.md` | juste avant la fusion, sur l'état final | A | `passations/REVUE_PR-«n».md` | [[ humain ]] la publie : `uv run outils/revue_pr.py «n»` |
+| `REVUE_PR.md` | juste avant la fusion, sur l'état final | A | `passations/REVUE_PR-«n».md` | [% if git_seul %][[ humain ]] la garde, ou la colle dans la demande de fusion[% else %][[ humain ]] la publie : `uv run outils/revue_pr.py «n»`[% endif %] |
 [% if 'relectures' in modules -%]
 | `DEPART_B.md` | avant chaque passe de B | A | `passations/DEPART_B_«jalon»_PASSE«x».md` | [[ humain ]] le colle dans la conversation B |
 | `DEMARRAGE_C.md` | la PR ouverte et prête à relire | A, avec le paquet | `passations/C_PR-«n»/DEMARRAGE.md`, plus les pièces du paquet | [[ humain ]] : `uv run outils/clone_c.py «n» --paquet C_PR-«n»` ; la C le lit |

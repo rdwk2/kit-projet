@@ -97,7 +97,11 @@ qu'une consigne) : `kit/METHODE.md`, § 3.
 |---|---|
 | Copie de travail (l'agent de code seul y écrit) | `[[ depot_travail ]]` |
 | Miroir du dépôt (lecture seule ; `git pull` par [[ humain ]] après chaque fusion) | `[[ racine ]]/v_for_cowork[[ suffixe ]]/[[ slug ]]/` |
+[% if git_seul -%]
+| Dépôt de référence (sans GitHub) | `[[ source_git ]]` — le miroir et les postes de C s'y clonent ; une PR y est une branche |
+[% else -%]
 | GitHub | `https://github.com/[[ github ]]` — `[[ branche_principale ]]` protégée[% if langage == 'python' %], CI obligatoire[% endif %] (réglage sur GitHub : `docs/GUIDE.md` du kit, « Après la génération ») |
+[% endif -%]
 | Conception (A seule) | `[[ racine ]]/conception[[ suffixe ]]/` : ce fichier, `LECONS_PROJET.md`, `MACHINE_PROJET.md`, `kit/`, `passations/`, `00_LISEZ_MOI.md`, `REMONTEES_KIT.md` |
 | Dossier vu par A[% if 'relectures' in modules %] et B[% endif %] (l'agent de code : un sous-dossier ; [% if 'relectures' in modules %]C : jamais, elle reçoit un paquet[% else %]une relecture neuve : un paquet[% endif %]) | `[[ racine ]]/v_for_cowork[[ suffixe ]]/` : le miroir, [% if 'relectures' in modules %]les briefs `06_` et `07_` et leurs annexes, [% endif %]un sous-dossier par jalon (`BRIEF_«jalon».md` et ses pièces), les diffs `pr-«n».diff` |
 | Outils [[ de_humain ]] | `[[ racine ]]/outils/`, lancés par `uv run outils/«script».py` depuis `[[ racine ]]` |

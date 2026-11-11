@@ -337,7 +337,7 @@ Par fichier de tests neuf, ses cas. Pour les écrire :
   plus de 300 lignes, avec leur raison ; les comptes de tests réussis et sautés ; les contre-épreuves
   jouées, rouges et équivalentes ; tout écart au brief, avec sa raison ; la ligne d'attribution.
 [%- if 'donnees-privees' in modules %]
-- Messages de commit par `git commit -F <fichier>`, corps de PR par `--body-file` : aucun ne cite une
+- Messages de commit par `git commit -F <fichier>`, corps de PR par [% if git_seul %]l'outil d'écriture[% else %]`--body-file`[% endif %] : aucun ne cite une
   commande refusée par le hook.
 [%- endif %]
 - **Si `[[ branche_principale ]]` a bougé** : § 4.
